@@ -14,7 +14,7 @@ export default function NotFound() {
       <div className="void-grid absolute inset-0" aria-hidden />
       <div className="container relative z-10 text-center">
         <h1 className="font-display text-7xl font-semibold tracking-display text-ink-hi md:text-9xl">
-          4<span className="text-violet">[</span>4
+          4<span className="text-violet">{"{"}</span>4
         </h1>
         <p className="mx-auto mb-8 mt-4 max-w-md text-base md:text-lg">
           This bracket never got closed. The page you&apos;re looking for moved

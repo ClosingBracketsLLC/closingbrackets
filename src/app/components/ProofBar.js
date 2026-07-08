@@ -3,18 +3,15 @@ import { guaranteeChips } from "@/data/differentiators";
 const proofs = [
   {
     stat: "0",
-    label: "servers behind this site",
-    detail: "Fully static — nothing to hack, nothing to crash",
+    label: "servers — now and always",
   },
   {
     stat: "< 1s",
     label: "page loads on this site",
-    detail: "Pre-rendered HTML from a CDN edge near you",
   },
   {
     stat: "100%",
     label: "of the code is yours",
-    detail: "Every client leaves with their own repository",
   },
 ];
 
@@ -39,7 +36,13 @@ export default function ProofBar() {
             </div>
           ))}
         </div>
-        <p className="mt-4 text-xs text-ink-low">
+        <p className="mt-4 text-sm text-ink-hi">
+          There will always be zero servers behind this site. Every page is
+          pre-built and served from the edge — nothing to hack, nothing to
+          crash, nothing slowing you down. That&apos;s the architecture, not an
+          accident.
+        </p>
+        <p className="mt-3 text-xs text-ink-low">
           Don&apos;t take our word for it — open DevTools and run Lighthouse on
           this page. That score is our baseline for client work.
         </p>

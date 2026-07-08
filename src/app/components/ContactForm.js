@@ -81,7 +81,7 @@ export default function ContactForm({ variant = "full", formName = "Contact page
       <div className="card p-8 text-center" role="status">
         <p className="font-display text-2xl font-semibold text-ink-hi">
           <span className="text-violet" aria-hidden>
-            ]{" "}
+            {"} "}
           </span>
           done.
         </p>

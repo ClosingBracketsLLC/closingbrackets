@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import PageHero from "../../components/PageHero";
+import AgentTeamSection from "../../components/AgentTeamSection";
 import SectionHeading from "../../components/SectionHeading";
 import Reveal from "../../components/Reveal";
 import FAQSection from "../../components/FAQSection";
@@ -87,6 +88,11 @@ export default async function ServiceDetailPage({ params }) {
           </div>
         </div>
       </section>
+
+      {/* AI pillar: the agent-team offering in depth */}
+      {service.slug === "ai-automation" ? (
+        <AgentTeamSection withCta={false} />
+      ) : null}
 
       {/* What shipping looks like */}
       <section className="relative overflow-hidden py-20 lg:py-28">

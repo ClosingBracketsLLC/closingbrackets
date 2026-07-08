@@ -164,51 +164,18 @@ body {
   }
 }
 
-/* ------------------------------------------------------------------ */
-/* Hero brackets — two outlined brackets ease inward ("closing").      */
-/* ------------------------------------------------------------------ */
-.hero-bracket {
-  color: rgba(139, 124, 255, 0.28);
-  font-weight: 300;
-  user-select: none;
-  pointer-events: none;
-  animation: bracket-close 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-.hero-bracket--right {
-  animation-name: bracket-close-r;
-}
-@keyframes bracket-close {
-  from {
-    opacity: 0;
-    transform: translateX(-24px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes bracket-close-r {
-  from {
-    opacity: 0;
-    transform: translateX(24px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* Logo "blink": brackets pinch once on hover. */
+/* Logo "blink": the brace mark pinches once on hover. */
 @keyframes bracket-blink {
   0%,
   100% {
-    letter-spacing: 0;
+    transform: scaleX(1);
   }
   50% {
-    letter-spacing: -0.12em;
+    transform: scaleX(0.72);
   }
 }
 .logo-mark:hover .logo-brackets {
+  display: inline-flex;
   animation: bracket-blink 0.45s ease;
 }
 

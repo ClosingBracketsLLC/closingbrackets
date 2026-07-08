@@ -93,7 +93,7 @@ export const services = [
       description:
         "AI strategy, custom agents, chatbots, and workflow automation grounded in your real data — deployed where AI creates measurable ROI, not demos.",
       intro:
-        "Most AI features are demos. We deploy agents grounded in your actual documents and workflows — support that answers correctly, intake that qualifies leads while you sleep, and automation that gives your team hours back every week.",
+        "Most AI features are demos. We build entire teams of coordinated AI agents grounded in your actual documents and workflows — support that answers correctly, intake that qualifies leads while you sleep, and ops that run themselves. It's how we deliver our own projects better and faster, and we'll build the same capability inside your business.",
     },
   },
 ];

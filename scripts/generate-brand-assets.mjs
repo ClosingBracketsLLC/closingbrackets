@@ -25,12 +25,12 @@ const ogSvg = `
   <rect width="1200" height="630" fill="#060714"/>
   <rect width="1200" height="630" fill="url(#g1)"/>
   <rect width="1200" height="630" fill="url(#g2)"/>
-  <!-- bracket devices -->
-  <path d="M150 175 H105 V455 H150" stroke="#767D9E" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M1050 175 H1095 V455 H1050" stroke="#8B7CFF" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- curly-brace devices -->
+  <path d="M160 165 c-38 0 -44 19 -44 50 v50 c0 31 -12 44 -37 50 c25 6 37 19 37 50 v50 c0 31 6 50 44 50" stroke="#767D9E" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M1040 165 c38 0 44 19 44 50 v50 c0 31 12 44 37 50 c-25 6 -37 19 -37 50 v50 c0 31 -6 50 -44 50" stroke="#8B7CFF" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <text x="600" y="290" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-weight="bold" font-size="76" fill="#EEF0FF">Closing Brackets</text>
   <text x="600" y="360" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-weight="bold" font-size="34" fill="url(#aurora)">Websites, software &amp; AI that pay for themselves</text>
-  <text x="600" y="425" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-size="24" fill="#A8AECF">Software  ·  Marketing  ·  AI  —  Spokane, WA</text>
+  <text x="600" y="425" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-size="24" fill="#A8AECF">Consulting  ·  Software  ·  Marketing  ·  AI</text>
 </svg>`;
 
 await sharp(Buffer.from(ogSvg)).png({ quality: 90 }).toFile(`${PUB}/img/og-image.png`);
@@ -38,14 +38,14 @@ console.log("og-image.png written");
 
 // --- Favicons -------------------------------------------------------------
 // Solid-background mark so it reads at tiny sizes in any browser theme.
-const iconSvg = (pad) => `
+const iconSvg = () => `
 <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
   <rect width="256" height="256" rx="52" fill="#060714"/>
-  <path d="M92 ${52 + pad} H${52 + pad} V${204 - pad} H92" stroke="#767D9E" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M164 ${52 + pad} h${52 - pad} V${204 - pad} h-${52 - pad}" stroke="#8B7CFF" stroke-width="26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M100 40 c-24 0 -28 12 -28 32 v28 c0 20 -8 26 -24 28 c16 2 24 8 24 28 v28 c0 20 4 32 28 32" stroke="#767D9E" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M156 40 c24 0 28 12 28 32 v28 c0 20 8 26 24 28 c-16 2 -24 8 -24 28 v28 c0 20 -4 32 -28 32" stroke="#8B7CFF" stroke-width="26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
 
-const icon = Buffer.from(iconSvg(0));
+const icon = Buffer.from(iconSvg());
 await sharp(icon).resize(16, 16).png().toFile(`${PUB}/favicon-16x16.png`);
 await sharp(icon).resize(32, 32).png().toFile(`${PUB}/favicon-32x32.png`);
 await sharp(icon).resize(180, 180).png().toFile(`${PUB}/apple-touch-icon.png`);

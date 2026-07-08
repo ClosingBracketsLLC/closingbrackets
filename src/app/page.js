@@ -1,5 +1,6 @@
 import Link from "next/link";
 import HeroVisual from "./components/HeroVisual";
+import AgentTeamSection from "./components/AgentTeamSection";
 import SectionHeading from "./components/SectionHeading";
 import Reveal from "./components/Reveal";
 import ShowcaseCard from "./components/ShowcaseCard";
@@ -43,20 +44,12 @@ export default function Home() {
         <div className="container relative z-10 pb-24 pt-24 text-center md:pb-32 md:pt-36">
           <p className="mb-5 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-ink-low">
             <BracketTick />
-            Spokane, WA · Software · Marketing · AI
+            Consulting · Software · Marketing · AI
           </p>
-          <div className="flex items-stretch justify-center gap-3 md:gap-6">
-            <span className="hero-bracket hidden font-display text-7xl sm:block md:text-9xl">
-              [
-            </span>
-            <h1 className="max-w-3xl font-display text-4xl font-semibold tracking-display text-ink-hi sm:text-5xl md:text-7xl">
-              Websites, software &{" "}
-              <span className="gd-title">AI that pay for themselves.</span>
-            </h1>
-            <span className="hero-bracket hero-bracket--right hidden font-display text-7xl sm:block md:text-9xl">
-              ]
-            </span>
-          </div>
+          <h1 className="mx-auto max-w-3xl font-display text-4xl font-semibold tracking-display text-ink-hi sm:text-5xl md:text-7xl">
+            Websites, software &{" "}
+            <span className="gd-title">AI that pay for themselves.</span>
+          </h1>
           <p className="mx-auto mt-6 max-w-xl text-base md:text-xl">
             One senior team that designs it, builds it, markets it, and
             automates it — so your next project actually grows the business.
@@ -129,7 +122,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4 · Capability showcases — honest by design */}
+      {/* 4 · The agent swarm — how we deliver better and faster */}
+      <AgentTeamSection />
+
+      {/* 5 · Capability showcases — honest by design */}
       <section className="relative py-20 lg:py-28">
         <div className="container">
           <SectionHeading
@@ -155,7 +151,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5 · Process */}
+      {/* 6 · Process */}
       <section className="relative overflow-hidden py-20 lg:py-28">
         <div className="void-grid absolute inset-0" aria-hidden />
         <div className="container relative z-10">
@@ -176,11 +172,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6 · FAQ */}
+      {/* 7 · FAQ */}
       <FAQSection />
       <JsonLd data={faqSchema(faqs)} />
 
-      {/* 7 · Closing CTA — the only pre-footer band */}
+      {/* 8 · Closing CTA — the only pre-footer band */}
       <CTASection />
     </>
   );

@@ -36,7 +36,7 @@ export default function FAQSection({ items, title = "Frequently asked questions"
                         open ? "rotate-90" : ""
                       }`}
                     >
-                      ]
+                      {"}"}
                     </span>
                   </button>
                 </h3>
