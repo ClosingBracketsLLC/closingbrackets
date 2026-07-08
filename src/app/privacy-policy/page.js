@@ -1,27 +1,26 @@
-import React from "react";
+import PageHero from "../components/PageHero";
 import PrivacyPolicy from "../components/PrivacyPolicy";
 
-export default function page() {
+export const metadata = {
+  title: "Privacy Policy",
+  description:
+    "How Closing Brackets collects, uses, and protects the information you share through our website and contact form, including analytics and your rights.",
+  alternates: { canonical: "/privacy-policy" },
+};
+
+export default function PrivacyPolicyPage() {
   return (
-    <div className="overflow-hidden font-normal bg-b-900">
-      <div className="pt-[135px] lg:pt-[164px] pb-24 bg-center bg-no-repeat bg-cover bg-primary-hero">
-        <div className="container px-5 mx-auto xl:px-0">
-          <h2
-            data-aos="fade-up"
-            className="gd-title text-center tracking-[-0.02em] md:leading-[84px] text-3xl md:text-64x font-semibold"
-          >
-            closingbrackets
-            <span className="block">Privacy Policy</span>
-          </h2>
-          <p
-            data-aos="fade-up"
-            className="mt-6 text-base text-center md:text-xl text-w-100"
-          >
-            Latest Update: November 1, 2023
-          </p>
-        </div>
-      </div>
+    <>
+      <PageHero
+        eyebrow="Privacy"
+        title="Privacy Policy"
+        subtitle="How we handle the information you share with Closing Brackets."
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Privacy Policy", path: "/privacy-policy" },
+        ]}
+      />
       <PrivacyPolicy />
-    </div>
+    </>
   );
 }

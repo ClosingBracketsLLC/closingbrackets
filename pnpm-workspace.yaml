@@ -1,0 +1,6 @@
+# pnpm build-script approvals.
+# `sharp` is an optional native dependency of Next's image optimizer. This site uses
+# `images.unoptimized: true` (static export), so sharp is never invoked — skip its
+# native build to keep installs fast and portable (incl. Render's build image).
+allowBuilds:
+  sharp: false

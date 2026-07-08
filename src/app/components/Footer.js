@@ -1,197 +1,131 @@
-import Image from "next/image";
 import Link from "next/link";
+import BracketMark from "./BracketMark";
+import { site } from "@/data/site";
 
-const Footer = () => {
+const columns = [
+  {
+    title: "Services",
+    links: [
+      { href: "/services", label: "All services" },
+      { href: "/services/custom-software", label: "Custom Software" },
+      { href: "/services/digital-marketing", label: "Digital Marketing" },
+      { href: "/services/ai-automation", label: "AI & Automation" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { href: "/work", label: "Work" },
+      { href: "/process", label: "Process" },
+      { href: "/about", label: "About" },
+      { href: "/contact", label: "Contact" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [{ href: "/blog", label: "Blog" }],
+  },
+];
+
+const socialLabels = {
+  x: "X",
+  linkedin: "LinkedIn",
+  instagram: "Instagram",
+  facebook: "Facebook",
+  youtube: "YouTube",
+  github: "GitHub",
+};
+
+// Only render socials with real URLs — "#" placeholders show nothing.
+const realSocials = Object.entries(site.social).filter(
+  ([, url]) => url && url !== "#"
+);
+
+export default function Footer() {
   return (
-    <footer className="pt-24 bg-center bg-no-repeat bg-cover bg-footer">
-      <div className="container px-5 pb-24 mx-auto xl:px-0">
-        <div className="flex flex-col items-start justify-between gap-12 lg:flex-row lg:gap-24">
-          <div className="flex flex-col justify-start items-start gap-8 lg:gap-[112px]">
-            <Link href="/" className="flex items-center justify-start gap-2">
-              <Image src="/img/logo.svg" alt="logo" width={31} height={28} />
-              <span className="text-xl font-medium text-w-900">closingbrackets</span>
+    <footer className="border-t border-line bg-void-0">
+      <div className="container py-16">
+        <div className="flex flex-col justify-between gap-12 lg:flex-row lg:gap-24">
+          <div className="flex max-w-sm flex-col items-start gap-5">
+            <Link href="/" className="flex items-center gap-2.5">
+              <BracketMark size={28} />
+              <span className="font-display text-lg font-semibold tracking-display text-ink-hi">
+                Closing Brackets
+              </span>
             </Link>
-            <div className="flex gap-4">
-              <Link href="#" className="hover:opacity-80">
-                <Image
-                  src="/img/icons/facebook.svg"
-                  alt="Facebook icon"
-                  width={24}
-                  height={24}
-                />
-              </Link>
-              <Link href="#" className="hover:opacity-80">
-                <Image
-                  src="/img/icons/instagram.svg"
-                  alt="Instagram icon"
-                  width={24}
-                  height={24}
-                />
-              </Link>
-              <Link href="#" className="hover:opacity-80">
-                <Image
-                  src="/img/icons/x.svg"
-                  alt="X icon"
-                  width={24}
-                  height={24}
-                />
-              </Link>
-              <Link href="#" className="hover:opacity-80">
-                <Image
-                  src="/img/icons/linkedin.svg"
-                  alt="LinkedIn icon"
-                  width={24}
-                  height={24}
-                />
-              </Link>
-              <Link href="#" className="hover:opacity-80">
-                <Image
-                  src="/img/icons/youtube.svg"
-                  alt="YouTube icon"
-                  width={24}
-                  height={24}
-                />
-              </Link>
+            <p className="text-sm">
+              {site.shortDescription}
+            </p>
+            <div className="flex flex-col gap-1">
+              <a
+                href={`tel:${site.phone}`}
+                className="text-sm font-medium text-ink-hi hover:text-violet"
+              >
+                {site.phoneDisplay}
+              </a>
+              <a
+                href={`mailto:${site.email}`}
+                className="text-sm font-medium text-ink-hi hover:text-violet"
+              >
+                {site.email}
+              </a>
+              <p className="text-sm text-ink-low">
+                {site.locality}, {site.region}
+              </p>
             </div>
+            {realSocials.length ? (
+              <div className="flex gap-4">
+                {realSocials.map(([key, url]) => (
+                  <a
+                    key={key}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-ink-mid hover:text-violet"
+                  >
+                    {socialLabels[key] || key}
+                  </a>
+                ))}
+              </div>
+            ) : null}
           </div>
-          <div className="flex flex-col items-start justify-start gap-12 lg:flex-row lg:gap-24">
-            <div className="flex flex-col items-start justify-start gap-4">
-              <h4 className="text-sm font-medium uppercase text-w-500">
-                company
-              </h4>
-              <Link
-                href="/"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                homepage
-              </Link>
-              <Link
-                href="/contact"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                contact us
-              </Link>
-              <Link
-                href="/sign-in"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                sign in
-              </Link>
-              <Link
-                href="/sign-up"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                sign up
-              </Link>
-            </div>
-            <div className="flex flex-col items-start justify-start gap-4">
-              <h4 className="text-sm font-medium uppercase text-w-500">
-                solutions
-              </h4>
-              <Link
-                href="/solution"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                Advanced prompts
-              </Link>
-              <Link
-                href="/documentation"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                documentation
-              </Link>
-              <Link
-                href="/how-it-work"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                how it works
-              </Link>
-              <Link
-                href="/media-kit"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                media kit
-              </Link>
-            </div>
-            <div className="flex flex-col items-start justify-start gap-4">
-              <h4 className="text-sm font-medium uppercase text-w-500">
-                resources
-              </h4>
-              <Link
-                href="/blog"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                blog
-              </Link>
-              <Link
-                href="/blog-single"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                blog Single
-              </Link>
-              <Link
-                href="/case-studies"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                case studies
-              </Link>
-              <Link
-                href="/case-studies-single"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                case studies single
-              </Link>
-            </div>
-            <div className="flex flex-col items-start justify-start gap-4">
-              <h4 className="text-sm font-medium uppercase text-w-500">
-                about us
-              </h4>
-              <Link
-                href="/patent"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                Our Patents
-              </Link>
-              <Link
-                href="/service"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                Our Services
-              </Link>
-              <Link
-                href="/story"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                Our Story
-              </Link>
-              <Link
-                href="/team"
-                className="text-sm font-medium capitalize transition-all duration-300 text-w-100 hover:text-tropical-indigo"
-              >
-                Our Team
-              </Link>
-            </div>
+
+          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:gap-20">
+            {columns.map((col) => (
+              <div key={col.title} className="flex flex-col items-start gap-3.5">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-low">
+                  {col.title}
+                </p>
+                {col.links.map((link) => (
+                  <Link
+                    key={link.href + link.label}
+                    href={link.href}
+                    className="text-sm font-medium text-ink-mid transition-colors duration-200 hover:text-ink-hi"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       </div>
-      <div className="container px-5 pb-6 mx-auto xl:px-0 md:py-6">
-        <div className="flex flex-col items-center justify-center gap-2 md:flex-row md:justify-between md:gap-8">
-          <p className="text-xs text-w-100">
-            Copyright &copy; 2024 <Link href="/">closingbrackets</Link>. All rights
-            reserved
+
+      <div className="border-t border-line">
+        <div className="container flex flex-col items-center gap-2 py-6 md:flex-row md:justify-between">
+          <p className="text-xs text-ink-low">
+            © 2026 <Link href="/">Closing Brackets LLC</Link>. All rights reserved.
           </p>
-          <ul className="flex items-center gap-8 md:justify-end">
-            <li className="text-xs transition-all duration-300 text-w-100 hover:text-tropical-indigo">
+          <ul className="flex items-center gap-8">
+            <li className="text-xs text-ink-low hover:text-ink-mid">
               <Link href="/privacy-policy">Privacy Policy</Link>
             </li>
-            <li className="text-xs transition-all duration-300 text-w-100 hover:text-tropical-indigo">
-              <Link href="/terms-of-service">Terms of Services</Link>
+            <li className="text-xs text-ink-low hover:text-ink-mid">
+              <Link href="/terms-of-service">Terms of Service</Link>
             </li>
           </ul>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

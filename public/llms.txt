@@ -1,0 +1,31 @@
+# Closing Brackets
+
+> Closing Brackets is a boutique, AI-native web agency in Spokane, WA, founded
+> by Robert Collins. We design, build, market, and automate digital products:
+> custom software, digital marketing & growth, and AI consulting & automation.
+> Fixed-scope pricing, transparent milestones, and clients own 100% of the code.
+
+Contact: letswork@closingbrackets.com (new projects) · inquire@closingbrackets.com (general) · 509-272-2633 · Spokane, WA, USA
+
+## Services
+
+- Custom Software Development: https://www.closingbrackets.com/services/custom-software/ — websites, web apps, e-commerce, SaaS platforms, mobile apps; engineered for speed, SEO, security, and accessibility.
+- Digital Marketing & Growth: https://www.closingbrackets.com/services/digital-marketing/ — SEO, Google Ads, social, content, email, and analytics wired to measurable growth.
+- AI Consulting & Automation: https://www.closingbrackets.com/services/ai-automation/ — AI strategy, custom agents, chatbots, and automated workflows grounded in real business data. Closing Brackets builds entire coordinated teams of AI agents (support, sales, ops, content) that deliver better and faster — the same agent-team model it uses to ship its own projects.
+
+## Key pages
+
+- Services overview: https://www.closingbrackets.com/services/
+- Work (capability demos, honestly framed): https://www.closingbrackets.com/work/
+- Process & guarantees: https://www.closingbrackets.com/process/
+- About & founder: https://www.closingbrackets.com/about/
+- Blog: https://www.closingbrackets.com/blog/
+- Contact: https://www.closingbrackets.com/contact/
+
+## Facts
+
+- Founded by Robert Collins; clients work directly with the engineer, not an account manager.
+- Every project is staffed by a team of specialized AI agents (strategy, design, engineering, SEO, QA, ops) directed and reviewed by a senior human engineer.
+- Every engagement starts with a free 30-minute strategy call and a fixed-scope proposal.
+- Guarantees: fixed price for fixed scope, milestone demos, clean documented handover, direct access to the builders, Core Web Vitals & WCAG targets, honest scoping.
+- Typical timelines: marketing site 2–4 weeks; web app / SaaS build 6–12 weeks.

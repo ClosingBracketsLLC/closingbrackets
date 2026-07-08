@@ -1,273 +1,151 @@
-"use client";
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { site } from "@/data/site";
 
-const TermsSection = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [activeLink, setActiveLink] = useState("#intro");
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  const handleLinkClick = (event, href) => {
-    event.preventDefault();
-    setActiveLink(href);
-
-    const targetElement = document.querySelector(href);
-    if (targetElement) {
-      window.scrollTo({
-        top: targetElement.offsetTop - 80, // Adjust offset as needed
-        behavior: "smooth",
-      });
-    }
-  };
-
+const TermsOfService = () => {
   return (
-    <div className="pb-24 bg-center bg-no-repeat bg-cover lg:py-24 bg-terms">
-      <div className="container px-5 mx-auto xl:px-0">
-        <div className="flex flex-col md:flex-row justify-start items-start gap-[30px]">
-          <div
-            className={`flex flex-col justify-start items-start gap-4 w-full md:max-w-[410px] ${
-              isScrolled ? "shadow-md" : ""
-            }`}
-            id="nav-container"
-          >
-            {[
-              { href: "#intro", label: "Introduction" },
-              { href: "#acceptance-of-terms", label: "Acceptance of Terms" },
-              {
-                href: "#changes-to-terms-or-service",
-                label: "Changes to Terms or Service",
-              },
-              { href: "#privacy-policy", label: "Privacy Policy" },
-              {
-                href: "#access-to-the-service",
-                label: "Access to the Service",
-              },
-              { href: "#user-content", label: "User Content" },
-              { href: "#prohibited-conduct", label: "Prohibited Conduct" },
-              {
-                href: "#intellectual-property",
-                label: "Intellectual Property",
-              },
-              { href: "#termination", label: "Termination" },
-              { href: "#disclaimer", label: "Disclaimer" },
-              {
-                href: "#limitation-of-liability",
-                label: "Limitation of Liability",
-              },
-              { href: "#governing-law", label: "Governing Law" },
-              { href: "#contact-us", label: "Contact Us" },
-            ].map((link) => (
-              <Link key={link.href} href={link.href} legacyBehavior>
-                <a
-                  className={`inline-block text-xl font-medium ${
-                    activeLink === link.href ? "gd-title" : "text-w-100"
-                  }`}
-                  onClick={(event) => handleLinkClick(event, link.href)}
-                >
-                  {link.label}
-                </a>
-              </Link>
-            ))}
-          </div>
-          <div className="ps-[30px] w-full md:max-w-[810px] border-s border-b-600">
-            <h2
-              data-aos="fade-up"
-              className="mb-4 text-2xl font-medium text-w-500"
-              id="intro"
+    <section className="relative py-20 overflow-hidden lg:py-28">
+      <div className="absolute inset-0 void-grid" aria-hidden />
+      <div className="container relative z-10 px-5 mx-auto xl:px-0">
+        <div className="mx-auto max-w-3xl">
+          <p className="mb-10 text-sm text-ink-mid">Last updated: July 2026</p>
+
+          <p className="text-base text-ink-mid">
+            These Terms of Service (&quot;Terms&quot;) govern your use of the{" "}
+            {site.name} website at{" "}
+            <a
+              href={site.url}
+              className="underline underline-offset-4 hover:text-violet"
             >
-              Introduction
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              Welcome to closingbrackets! These Terms of Service (&rdquo;Terms&rdquo;)
-              govern your use of our website located at
-              <a href="http://www.closingbrackets.ai/">www.closingbrackets.ai</a> and our
-              related services (collectively, the &rdquo;Service&rdquo;). Our
-              Service is provided to you by closingbrackets AI, Inc.
-              (&rdquo;closingbrackets,&rdquo; &rdquo;we,&rdquo; &rdquo;us,&rdquo; or
-              &rdquo;our&rdquo;).
-            </p>
-            <h2
-              data-aos="fade-up"
-              className="pt-12 mb-4 text-2xl font-medium text-w-500"
-              id="acceptance-of-terms"
+              {site.url.replace("https://", "")}
+            </a>{" "}
+            (the &quot;Site&quot;). By using the Site, you agree to these Terms.
+            If you do not agree, please do not use the Site.
+          </p>
+
+          <h2 className="mt-12 mb-4 text-2xl font-medium text-ink-hi font-display">
+            Acceptance of terms
+          </h2>
+          <p className="text-base text-ink-mid">
+            By accessing or browsing the Site, you confirm that you have read,
+            understood, and agree to be bound by these Terms and our Privacy
+            Policy. We may update these Terms from time to time; continued use
+            of the Site after changes take effect means you accept the revised
+            Terms.
+          </p>
+
+          <h2 className="mt-12 mb-4 text-2xl font-medium text-ink-hi font-display">
+            Use of the site
+          </h2>
+          <p className="text-base text-ink-mid">
+            The Site is provided for general information about {site.name} and
+            our services. You agree to use it lawfully and not to misuse it —
+            for example, by attempting to disrupt the Site, gain unauthorized
+            access, scrape it at scale, or introduce malicious code. We may
+            modify, suspend, or discontinue any part of the Site at any time.
+          </p>
+
+          <h2 className="mt-12 mb-4 text-2xl font-medium text-ink-hi font-display">
+            Intellectual property
+          </h2>
+          <p className="text-base text-ink-mid">
+            The content on this Site — including text, graphics, logos, and the{" "}
+            {site.name} name and branding — is owned by {site.name} or its
+            licensors and is protected by intellectual property laws. You may
+            not copy, reproduce, or reuse it without our prior written
+            permission. Work we create for clients under a project engagement is
+            governed by that engagement&#39;s agreement, not by this Site notice.
+          </p>
+
+          <h2 className="mt-12 mb-4 text-2xl font-medium text-ink-hi font-display">
+            Project engagements
+          </h2>
+          <p className="text-base text-ink-mid">
+            Nothing on this Site is an offer or a binding proposal. Any work we
+            perform for you — including scope, deliverables, pricing, timelines,
+            ownership of deliverables, and confidentiality — is governed by a
+            separate written agreement or statement of work between you and{" "}
+            {site.name}. In the event of a conflict, that agreement controls
+            over these Terms. For active engagements, invoice and payment
+            questions go to{" "}
+            <a
+              href={`mailto:${site.emails.billing}`}
+              className="underline underline-offset-4 hover:text-violet"
             >
-              Acceptance of Terms
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              By accessing or using our Service, you agree to be bound by these
-              Terms and all terms incorporated by reference. If you do not agree
-              to all these Terms, then you may not access or use the Service.
-            </p>
-            <h2
-              data-aos="fade-up"
-              className="pt-12 mb-4 text-2xl font-medium text-w-500"
-              id="changes-to-terms-or-service"
+              {site.emails.billing}
+            </a>{" "}
+            and service or support requests to{" "}
+            <a
+              href={`mailto:${site.emails.support}`}
+              className="underline underline-offset-4 hover:text-violet"
             >
-              Changes to Terms or Service
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              We reserve the right to update or modify these Terms at any time
-              without prior notice. Your use of the Service after any such
-              changes constitutes your acceptance of the new Terms. It is your
-              responsibility to review these Terms regularly.
-            </p>
-            <h2
-              data-aos="fade-up"
-              className="pt-12 mb-4 text-2xl font-medium text-w-500"
-              id="privacy-policy"
+              {site.emails.support}
+            </a>
+            .
+          </p>
+
+          <h2 className="mt-12 mb-4 text-2xl font-medium text-ink-hi font-display">
+            Disclaimers
+          </h2>
+          <p className="text-base text-ink-mid">
+            The Site is provided on an &quot;as is&quot; and &quot;as
+            available&quot; basis without warranties of any kind, whether
+            express or implied. We do not warrant that the Site will be
+            uninterrupted, error-free, or free of harmful components, or that
+            the information on it is complete or current.
+          </p>
+
+          <h2 className="mt-12 mb-4 text-2xl font-medium text-ink-hi font-display">
+            Limitation of liability
+          </h2>
+          <p className="text-base text-ink-mid">
+            To the fullest extent permitted by law, {site.name} will not be
+            liable for any indirect, incidental, special, consequential, or
+            punitive damages, or any loss of profits or data, arising from your
+            use of — or inability to use — the Site.
+          </p>
+
+          <h2 className="mt-12 mb-4 text-2xl font-medium text-ink-hi font-display">
+            Governing law
+          </h2>
+          <p className="text-base text-ink-mid">
+            These Terms are governed by the laws of the State of Washington,
+            USA, without regard to its conflict-of-law principles. Any disputes
+            relating to the Site will be subject to the exclusive jurisdiction
+            of the state and federal courts located in Washington.
+          </p>
+
+          <h2 className="mt-12 mb-4 text-2xl font-medium text-ink-hi font-display">
+            Changes to these terms
+          </h2>
+          <p className="text-base text-ink-mid">
+            We may revise these Terms at any time by updating this page. The
+            &quot;Last updated&quot; date above indicates when the latest
+            changes took effect. Please review this page periodically.
+          </p>
+
+          <h2 className="mt-12 mb-4 text-2xl font-medium text-ink-hi font-display">
+            Contact
+          </h2>
+          <p className="text-base text-ink-mid">
+            Questions about these Terms? Email us at{" "}
+            <a
+              href={`mailto:${site.emails.admin}`}
+              className="underline underline-offset-4 hover:text-violet"
             >
-              Privacy Policy
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              Please review our Privacy Policy, which also governs your use of
-              the Service, to understand our practices.
-            </p>
-            <h2
-              data-aos="fade-up"
-              className="pt-12 mb-4 text-2xl font-medium text-w-500"
-              id="access-to-the-service"
+              {site.emails.admin}
+            </a>{" "}
+            or call{" "}
+            <a
+              href={`tel:${site.phone}`}
+              className="underline underline-offset-4 hover:text-violet"
             >
-              Access to the Service
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              Please review our Privacy Policy, which also governs your use of
-              the Service, to understand our practices.
-            </p>
-            <h2
-              data-aos="fade-up"
-              className="pt-12 mb-4 text-2xl font-medium text-w-500"
-              id="user-content"
-            >
-              User Content
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              Our Service may allow you to post, link, store, share, and
-              otherwise make available certain information, text, graphics,
-              videos, or other material (&rdquo;Content&rdquo;). You are
-              responsible for the Content that you post to the Service,
-              including its legality, reliability, and appropriateness.
-            </p>
-            <h2
-              data-aos="fade-up"
-              className="pt-12 mb-4 text-2xl font-medium text-w-500"
-              id="prohibited-conduct"
-            >
-              Prohibited Conduct
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              When using the Service, you agree not to engage in any of the
-              following prohibited activities:
-            </p>
-            <ul
-              data-aos="fade-up"
-              className="flex flex-col text-base list-disc ms-5 text-w-100"
-            >
-              <li>Violating any law, regulation, or our policies.</li>
-              <li>
-                Using the Service in any manner that could interfere with,
-                disrupt, negatively affect, or inhibit other users from fully
-                enjoying the Service.
-              </li>
-              <li>Impersonating or intimidating others.</li>
-              <li>
-                Using any data mining, robots, or similar data gathering or
-                extraction methods.
-              </li>
-              <li>
-                Transmitting any viruses, worms, defects, Trojan horses, or any
-                items of a destructive nature.
-              </li>
-            </ul>
-            <h2
-              data-aos="fade-up"
-              className="pt-12 mb-4 text-2xl font-medium text-w-500"
-              id="intellectual-property"
-            >
-              Intellectual Property
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              All Content on the Service, including but not limited to text,
-              graphics, logos, button icons, images, audio clips, digital
-              downloads, data compilations, and software, is the property of
-              closingbrackets or its Content suppliers and is protected by copyright,
-              trademark, and other intellectual property laws.
-            </p>
-            <h2
-              data-aos="fade-up"
-              className="pt-12 mb-4 text-2xl font-medium text-w-500"
-              id="termination"
-            >
-              Termination
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              We may terminate or suspend access to our Service immediately,
-              without prior notice or liability, for any reason whatsoever,
-              including without limitation if you breach these Terms.
-            </p>
-            <h2
-              data-aos="fade-up"
-              className="pt-12 mb-4 text-2xl font-medium text-w-500"
-              id="disclaimer"
-            >
-              Disclaimer
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              Our Service is provided on an &rdquo;as is&rdquo; and &rdquo;as
-              available&rdquo; basis. We make no warranties or representations
-              regarding the accuracy or completeness of the Service.
-            </p>
-            <h2
-              data-aos="fade-up"
-              className="pt-12 mb-4 text-2xl font-medium text-w-500"
-              id="limitation-of-liability"
-            >
-              Limitation of Liability
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              In no event shall closingbrackets be liable for any indirect,
-              incidental, special, consequential, or punitive damages, including
-              without limitation lost profits, data, or other intangible losses,
-              resulting from your use or inability to use the Service.
-            </p>
-            <h2
-              data-aos="fade-up"
-              className="pt-12 mb-4 text-2xl font-medium text-w-500"
-              id="governing-law"
-            >
-              Governing Law
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              These Terms shall be governed and construed in accordance with the
-              laws of the State of [Your State], without regard to its conflict
-              of law principles.
-            </p>
-            <h2
-              data-aos="fade-up"
-              className="pt-12 mb-4 text-2xl font-medium text-w-500"
-              id="contact-us"
-            >
-              Contact Us
-            </h2>
-            <p data-aos="fade-up" className="text-base text-w-100">
-              If you have any questions about these Terms, please contact us at
-              support@closingbrackets.ai.
-            </p>
-          </div>
+              {site.phoneDisplay}
+            </a>
+            .
+          </p>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
-export default TermsSection;
+export default TermsOfService;
