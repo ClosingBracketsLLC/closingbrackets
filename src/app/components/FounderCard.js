@@ -36,10 +36,10 @@ export default function FounderCard() {
           {site.phoneDisplay}
         </a>
         <a
-          href={`mailto:${site.email}`}
+          href={`mailto:${site.emails.founder}`}
           className="text-sm font-semibold text-violet hover:underline underline-offset-4"
         >
-          {site.email}
+          {site.emails.founder}
         </a>
         <p className="text-xs text-ink-low">
           {site.locality}, {site.region} · Replies within 1 business day

@@ -122,10 +122,10 @@ const PrivacyPolicy = () => {
           <p className="text-base text-ink-mid">
             Questions about this policy or your data? Email us at{" "}
             <a
-              href={`mailto:${site.email}`}
+              href={`mailto:${site.emails.admin}`}
               className="underline underline-offset-4 hover:text-violet"
             >
-              {site.email}
+              {site.emails.admin}
             </a>{" "}
             or call{" "}
             <a

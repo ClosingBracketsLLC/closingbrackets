@@ -24,7 +24,7 @@ export const organizationSchema = {
   name: site.name,
   url: site.url,
   description: site.shortDescription,
-  email: site.email,
+  email: site.emails.inquiries,
   telephone: site.phone,
   founder: { "@type": "Person", name: site.founder },
   image: `${site.url}${site.ogImage}`,

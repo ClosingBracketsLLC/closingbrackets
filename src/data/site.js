@@ -10,7 +10,17 @@ export const site = {
   url: "https://www.closingbrackets.com",
   ogImage: "/img/og-image.png",
   founder: "Robert Collins",
-  email: "robert@closingbrackets.com",
+  // Primary public contact — new-business surfaces (contact page, footer,
+  // lead-form fallbacks). Purpose-specific aliases live in `emails`.
+  email: "letswork@closingbrackets.com",
+  emails: {
+    founder: "robert@closingbrackets.com", // the personal line — founder card only
+    work: "letswork@closingbrackets.com", // new projects & proposals
+    inquiries: "inquire@closingbrackets.com", // general questions (JSON-LD, llms.txt)
+    support: "support@closingbrackets.com", // existing-client support
+    billing: "billing@closingbrackets.com", // invoices & payments
+    admin: "admin@closingbrackets.com", // legal / site administration
+  },
   // E.164 for tel: links, plus a display version. 509-272-CODE.
   phone: "+15092722633",
   phoneDisplay: "509-272-2633",

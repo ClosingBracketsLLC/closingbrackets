@@ -64,7 +64,22 @@ const TermsOfService = () => {
             ownership of deliverables, and confidentiality — is governed by a
             separate written agreement or statement of work between you and{" "}
             {site.name}. In the event of a conflict, that agreement controls
-            over these Terms.
+            over these Terms. For active engagements, invoice and payment
+            questions go to{" "}
+            <a
+              href={`mailto:${site.emails.billing}`}
+              className="underline underline-offset-4 hover:text-violet"
+            >
+              {site.emails.billing}
+            </a>{" "}
+            and service or support requests to{" "}
+            <a
+              href={`mailto:${site.emails.support}`}
+              className="underline underline-offset-4 hover:text-violet"
+            >
+              {site.emails.support}
+            </a>
+            .
           </p>
 
           <h2 className="mt-12 mb-4 text-2xl font-medium text-ink-hi font-display">
@@ -113,10 +128,10 @@ const TermsOfService = () => {
           <p className="text-base text-ink-mid">
             Questions about these Terms? Email us at{" "}
             <a
-              href={`mailto:${site.email}`}
+              href={`mailto:${site.emails.admin}`}
               className="underline underline-offset-4 hover:text-violet"
             >
-              {site.email}
+              {site.emails.admin}
             </a>{" "}
             or call{" "}
             <a

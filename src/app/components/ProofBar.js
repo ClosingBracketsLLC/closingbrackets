@@ -2,7 +2,7 @@ import { guaranteeChips } from "@/data/differentiators";
 
 const proofs = [
   {
-    stat: "100",
+    stat: "95%+",
     label: "Lighthouse SEO score, every page",
   },
   {
