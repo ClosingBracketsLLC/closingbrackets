@@ -1,5 +1,5 @@
 import ContactForm from "./ContactForm";
-import { BracketTick } from "./BracketMark";
+import { BracePair } from "./BracketMark";
 import { site } from "@/data/site";
 
 /**
@@ -17,9 +17,8 @@ export default function CTASection({
       <div className="container relative z-10 py-20 lg:py-28">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-ink-low">
-              <BracketTick />
-              Start here
+            <p className="mb-3 flex items-center text-xs font-semibold uppercase tracking-[0.18em] text-ink-low">
+              <BracePair>Start here</BracePair>
             </p>
             <h2 className="font-display text-3xl font-semibold tracking-display text-ink-hi md:text-5xl">
               {title}

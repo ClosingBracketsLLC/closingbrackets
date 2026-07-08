@@ -10,7 +10,7 @@ import ProcessSteps from "./components/ProcessSteps";
 import FAQSection from "./components/FAQSection";
 import CTASection from "./components/CTASection";
 import JsonLd, { faqSchema } from "./components/JsonLd";
-import { BracketTick } from "./components/BracketMark";
+import { BracePair } from "./components/BracketMark";
 import { services } from "@/data/site";
 import { showcases } from "@/data/showcases";
 import { faqs } from "@/data/faqs";
@@ -42,9 +42,8 @@ export default function Home() {
       <section className="relative overflow-hidden">
         <HeroVisual />
         <div className="container relative z-10 pb-24 pt-24 text-center md:pb-32 md:pt-36">
-          <p className="mb-5 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-ink-low">
-            <BracketTick />
-            Consulting · Software · Marketing · AI
+          <p className="mb-5 flex items-center justify-center text-xs font-semibold uppercase tracking-[0.18em] text-ink-low">
+            <BracePair>Consulting · Software · Marketing · AI</BracePair>
           </p>
           <h1 className="mx-auto max-w-3xl font-display text-4xl font-semibold tracking-display text-ink-hi sm:text-5xl md:text-7xl">
             Websites, software &{" "}

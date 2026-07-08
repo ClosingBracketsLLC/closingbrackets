@@ -1,9 +1,9 @@
-import { BracketTick } from "./BracketMark";
+import { BracePair } from "./BracketMark";
 
 /**
- * Standard section opener: a bracket-tick eyebrow, a display H2, and an
- * optional lead paragraph. Replaces the old `// comment` code-eyebrow motif
- * everywhere.
+ * Standard section opener: an eyebrow wrapped in the curly-brace pair, a
+ * display H2, and an optional lead paragraph. Replaces the old `// comment`
+ * code-eyebrow motif everywhere.
  */
 export default function SectionHeading({
   eyebrow,
@@ -19,12 +19,11 @@ export default function SectionHeading({
     >
       {eyebrow ? (
         <p
-          className={`mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-ink-low ${
+          className={`mb-3 flex items-center text-xs font-semibold uppercase tracking-[0.18em] text-ink-low ${
             centered ? "justify-center" : ""
           }`}
         >
-          <BracketTick />
-          {eyebrow}
+          <BracePair>{eyebrow}</BracePair>
         </p>
       ) : null}
       <Tag className="font-display text-3xl font-semibold tracking-display text-ink-hi md:text-5xl">

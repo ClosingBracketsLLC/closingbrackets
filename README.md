@@ -13,12 +13,13 @@ gated 3D scenes, so every page still holds Lighthouse ≥ 95 on mobile.
 - **React 19**
 - **Tailwind CSS 3** over semantic CSS variables (dark-only today; a light theme
   is a `[data-theme="light"]` re-declaration away)
-- **three.js + @react-three/fiber** for the 3D curly-brace hero, interior-page
-  accents, and the agent-swarm scene — all dynamically imported behind
-  `VisibilityGate` (desktop + WebGL + in-view + idle + motion-safe), so mobile
-  and reduced-motion users never download the 3D chunk
-- Scroll reveals are a ~30-line IntersectionObserver component (`Reveal.js`);
-  mobile heroes get a ~2 KB hand-rolled canvas particle field instead of 3D
+- **Cursor-reactive particle swarm** (`SwarmField.js`) on every hero — a
+  hand-rolled 2D canvas where motes drift lazily and flock toward the pointer;
+  runs on all devices, no WebGL
+- **three.js + @react-three/fiber** for the agent-swarm scene, dynamically
+  imported behind `VisibilityGate` (desktop + WebGL + in-view + idle +
+  motion-safe), so mobile and reduced-motion users never download the 3D chunk
+- Scroll reveals are a ~30-line IntersectionObserver component (`Reveal.js`)
 - **pnpm** package manager · **Node 22 LTS**
 - Optional **Microsoft Clarity** analytics (env-gated)
 
@@ -98,7 +99,7 @@ nothing in the footer and are excluded from JSON-LD until set.
 ## Branding & assets ("Void & Signal")
 
 - **Device:** the curly brace `{ }` — drawn only by `BracketMark.js` /
-  `public/img/logo.svg`; the 3D scenes trace the same curves (`three/braceCurve.js`).
+  `public/img/logo.svg`; eyebrow labels sit inside a `{ … }` pair (`BracePair`).
 - **Colors** (CSS variables in `globals.css`, mapped in `tailwind.config.js`):
   void `#060714`, violet `#8B7CFF` (accents), signal amber `#FFB74A`
   (**CTAs only** — nothing else is warm).

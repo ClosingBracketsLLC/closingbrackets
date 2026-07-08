@@ -32,7 +32,7 @@ export default function BracketMark({ size = 28, className = "" }) {
   );
 }
 
-/** Small violet closing-brace tick used by SectionHeading eyebrows. */
+/** Small violet closing-brace tick used as a list bullet. */
 export function BracketTick({ className = "" }) {
   return (
     <span
@@ -40,6 +40,21 @@ export function BracketTick({ className = "" }) {
       className={`font-display font-bold text-violet ${className}`}
     >
       {"}"}
+    </span>
+  );
+}
+
+/** Eyebrow wrapper: renders its children inside a violet curly-brace pair. */
+export function BracePair({ children, className = "" }) {
+  return (
+    <span className={`inline-flex items-center gap-2 ${className}`}>
+      <span aria-hidden className="font-display font-bold text-violet">
+        {"{"}
+      </span>
+      {children}
+      <span aria-hidden className="font-display font-bold text-violet">
+        {"}"}
+      </span>
     </span>
   );
 }
