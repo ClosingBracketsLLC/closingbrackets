@@ -1,10 +1,131 @@
+# Render Blueprint — deploys Closing Brackets as a static site.
+# The Next.js build (`output: "export"`) writes fully static HTML/CSS/JS to ./out.
 services:
   - type: web
-    name: closingbrackets
+    name: closing-brackets
     runtime: static
-    buildCommand: pnpm i; pnpm build
-    staticPublishPath: out
-    pullRequestPreviewsEnabled: true # optional
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
+    staticPublishPath: ./out
+    pullRequestPreviewsEnabled: true
     envVars:
+      - key: NODE_VERSION
+        value: "22.11.0"
       - key: NODE_ENV
         value: production
+      # Optional: paste your Microsoft Clarity project ID to enable analytics.
+      # Leave blank to ship with no analytics script. Configured in the Render
+      # dashboard so it is inlined at build time (NEXT_PUBLIC_* is build-time).
+      - key: NEXT_PUBLIC_CLARITY_ID
+        sync: false
+      # Web3Forms access key for the contact/CTA lead forms. The key is
+      # designed to be public (it only routes submissions to your inbox), so
+      # inlining it at build time is safe. Get one free at web3forms.com.
+      - key: NEXT_PUBLIC_WEB3FORMS_KEY
+        sync: false
+    # 301 redirects from the pre-redesign URLs. Render only applies a rule
+    # when no file exists at the source path; the old route dirs are deleted,
+    # so every rule fires. Both bare and trailing-slash sources are listed
+    # because the old site was indexed with trailingSlash: true.
+    routes:
+      - type: redirect
+        source: /solution/
+        destination: /services/
+      - type: redirect
+        source: /solution
+        destination: /services/
+      - type: redirect
+        source: /service/
+        destination: /services/
+      - type: redirect
+        source: /service
+        destination: /services/
+      - type: redirect
+        source: /case-studies-single/
+        destination: /work/
+      - type: redirect
+        source: /case-studies-single
+        destination: /work/
+      - type: redirect
+        source: /case-studies/
+        destination: /work/
+      - type: redirect
+        source: /case-studies
+        destination: /work/
+      - type: redirect
+        source: /how-it-work/
+        destination: /process/
+      - type: redirect
+        source: /how-it-work
+        destination: /process/
+      - type: redirect
+        source: /patent/
+        destination: /process/
+      - type: redirect
+        source: /patent
+        destination: /process/
+      - type: redirect
+        source: /story/
+        destination: /about/
+      - type: redirect
+        source: /story
+        destination: /about/
+      - type: redirect
+        source: /team/
+        destination: /about/
+      - type: redirect
+        source: /team
+        destination: /about/
+      - type: redirect
+        source: /media-kit/
+        destination: /about/
+      - type: redirect
+        source: /media-kit
+        destination: /about/
+      - type: redirect
+        source: /documentation/
+        destination: /blog/
+      - type: redirect
+        source: /documentation
+        destination: /blog/
+      - type: redirect
+        source: /blog-single/
+        destination: /blog/
+      - type: redirect
+        source: /blog-single
+        destination: /blog/
+      - type: redirect
+        source: /sign-in/
+        destination: /contact/
+      - type: redirect
+        source: /sign-in
+        destination: /contact/
+      - type: redirect
+        source: /sign-up/
+        destination: /contact/
+      - type: redirect
+        source: /sign-up
+        destination: /contact/
+      - type: redirect
+        source: /not-found/
+        destination: /
+    # Security + caching headers for a strong Lighthouse "Best Practices" score.
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
+      # Hashed build assets are immutable — cache them for a year.
+      - path: /_next/static/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /img/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable

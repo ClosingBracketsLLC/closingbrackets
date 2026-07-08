@@ -1,123 +1,67 @@
-import React from "react";
-import Cta from "../components/Cta";
-import UpdateCard from "../components/UpdateCard";
-import updateCardData from "/src/data/updateCardData.json";
+import Link from "next/link";
+import PageHero from "../components/PageHero";
+import Reveal from "../components/Reveal";
+import CTASection from "../components/CTASection";
+import { posts } from "@/data/posts";
 
-export default function page() {
+export const metadata = {
+  title: "Blog",
+  description:
+    "Essays from Closing Brackets on custom software, growth marketing, and AI automation — practical, honest, and written by the person who does the work.",
+  alternates: { canonical: "/blog" },
+};
+
+export default function BlogPage() {
   return (
-    <div className="overflow-hidden font-normal bg-b-900">
-      <div className="pt-[135px] lg:pt-[164px] pb-24  bg-center bg-no-repeat bg-cover bg-primary-hero">
-        <div className="container px-5 mx-auto xl:px-0">
-          <h1
-            data-aos="fade-up"
-            className="gd-title tracking-[-0.02em] text-center text-3xl md:text-4xl lg:text-64x leading-tight md:leading-relaxed lg:leading-[84px] font-semibold"
-          >
-            Blog &amp; Updates
-            <span className="block"></span>by closingbrackets
-          </h1>
-          <p
-            data-aos="fade-up"
-            className="mt-6 text-base text-center md:text-xl text-w-100"
-          >
-            closingbrackets blog for the latest news, tips, tricks, and how-to
-            articles
-            <span className="inline-block lg:block"></span>on
-            closingbrackets&apos;s advanced synthetic monitoring platform.
-          </p>
-        </div>
-      </div>
-      <div className="py-8 bg-center bg-no-repeat bg-cover lg:py-24 bg-blog">
-        <div className="container px-5 mx-auto xl:px-0">
-          <h2
-            data-aos="fade-down"
-            className="gd-title mb-16 text-center tracking-[-0.02em] lg:leading-[64px] text-3xl md:text-5xl font-semibold"
-          >
-            Explore closingbrackets&apos;s
-            <span className="block"></span>Engineering Approach
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[30px]">
-            {updateCardData.map((item, index) => (
-              <UpdateCard
-                key={index}
-                imageSrc={item.imageSrc}
-                heading={item.heading}
-                headingHref={item.headingHref}
-                tag1={item.tags[0].tag}
-                tag1Href={item.tags[0].tagHref}
-                tag2={item.tags[1].tag}
-                tag2Href={item.tags[1].tagHref}
-              />
+    <>
+      <PageHero
+        eyebrow="Blog"
+        title="Notes on software, growth & AI"
+        subtitle="Practical essays written by the person who does the work — no ghostwritten filler, no keyword sludge."
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Blog", path: "/blog" },
+        ]}
+      />
+
+      <section className="relative py-20 lg:py-28">
+        <div className="container">
+          <div className="mx-auto flex max-w-3xl flex-col gap-6">
+            {posts.map((post, i) => (
+              <Reveal key={post.slug} delay={(i % 2) * 60}>
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="card group block p-8 transition-colors duration-200 hover:!border-violet"
+                >
+                  <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-ink-low">
+                    <span className="rounded-full border border-line px-3 py-1 text-violet">
+                      {post.category}
+                    </span>
+                    <time dateTime={post.date}>
+                      {new Date(post.date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </time>
+                    <span aria-hidden>·</span>
+                    <span>{post.readingTime}</span>
+                  </div>
+                  <h2 className="mt-4 font-display text-2xl font-semibold tracking-display text-ink-hi group-hover:text-violet md:text-3xl">
+                    {post.title}
+                  </h2>
+                  <p className="mt-3 text-base">{post.excerpt}</p>
+                  <span className="mt-5 inline-block text-sm font-semibold text-violet">
+                    Read the essay →
+                  </span>
+                </Link>
+              </Reveal>
             ))}
           </div>
-          <div className="flex justify-center mt-16">
-            <nav className="flex items-center justify-center gap-1 p-3 border rounded-full border-b-600">
-              <button
-                type="button"
-                className="inline-flex items-center justify-center px-4 py-3 border rounded-full border-tropical-indigo bg-gd-secondary hover:bg-gray-100 focus:outline-none disabled:opacity-50 disabled:pointer-events-none text-w-900"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M3.06457 8.79998L9.14048 14.8759L8 16L0 8L8 0L9.14048 1.12408L3.06457 7.20002L16 7.20002V8.79998L3.06457 8.79998Z"
-                    fill="#EEEBFF"
-                  />
-                </svg>
-
-                <span aria-hidden="true" className="sr-only">
-                  Previous
-                </span>
-              </button>
-              <button
-                type="button"
-                className="flex justify-center items-center py-2 px-[18px] text-base rounded-full focus:outline-none focus:text-tropical-indigo active:text-tropical-indigo focus:bg-b-600 disabled:opacity-50 disabled:pointer-events-none text-w-100"
-                aria-current="page"
-              >
-                1
-              </button>
-              <button
-                type="button"
-                className="flex justify-center items-center py-2 px-[18px] text-base rounded-full focus:outline-none focus:text-tropical-indigo active:text-tropical-indigo focus:bg-b-600 disabled:opacity-50 disabled:pointer-events-none text-w-100"
-                aria-current="page"
-              >
-                2
-              </button>
-              <button
-                type="button"
-                className="flex justify-center items-center py-2 px-[18px] text-base rounded-full focus:outline-none focus:text-tropical-indigo active:text-tropical-indigo focus:bg-b-600 disabled:opacity-50 disabled:pointer-events-none text-w-100"
-                aria-current="page"
-              >
-                3
-              </button>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center px-4 py-3 border rounded-full border-tropical-indigo bg-gd-secondary hover:bg-gray-100 focus:outline-none disabled:opacity-50 disabled:pointer-events-none text-w-900"
-              >
-                <span aria-hidden="true" className="sr-only">
-                  Next
-                </span>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12.9354 7.20002L6.85952 1.12408L8 -6.99382e-07L16 8L8 16L6.85952 14.8759L12.9354 8.79998L6.29446e-07 8.79997L7.69318e-07 7.20002L12.9354 7.20002Z"
-                    fill="#EEEBFF"
-                  />
-                </svg>
-              </button>
-            </nav>
-          </div>
         </div>
-      </div>
-      <Cta />
-    </div>
+      </section>
+
+      <CTASection />
+    </>
   );
 }

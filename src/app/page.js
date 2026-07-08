@@ -1,269 +1,187 @@
-"use client";
-import AOS from "aos";
-import "aos/dist/aos.css";
-import { useEffect } from "react";
-import Lenis from "@studio-freight/lenis";
-import Hero from "./components/Hero";
-import Image from "next/image";
-import VideoSection from "./components/VideoSection";
 import Link from "next/link";
-import UpdateCard from "./components/UpdateCard";
+import HeroVisual from "./components/HeroVisual";
+import SectionHeading from "./components/SectionHeading";
+import Reveal from "./components/Reveal";
+import ShowcaseCard from "./components/ShowcaseCard";
+import FounderCard from "./components/FounderCard";
+import ProofBar from "./components/ProofBar";
+import ProcessSteps from "./components/ProcessSteps";
 import FAQSection from "./components/FAQSection";
-import "./globals.css";
-import updateCardData from "/src/data/updateCardData.json";
+import CTASection from "./components/CTASection";
+import JsonLd, { faqSchema } from "./components/JsonLd";
+import { BracketTick } from "./components/BracketMark";
+import { services } from "@/data/site";
+import { showcases } from "@/data/showcases";
+import { faqs } from "@/data/faqs";
+
+export const metadata = {
+  title:
+    "Closing Brackets — Web Agency in Spokane, WA · Software, Marketing & AI",
+  description:
+    "Closing Brackets is a Spokane web agency building websites, custom software, growth marketing, and AI automation that pay for themselves. Fixed-scope pricing, you own the code.",
+  alternates: { canonical: "/" },
+};
+
+const arrow = (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <path
+      d="M5 12h14M13 6l6 6-6 6"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
 export default function Home() {
-  useEffect(() => {
-    // Initialize AOS for animations on scroll
-    AOS.init({});
-
-    // Initialize Lenis with smooth scrolling configuration
-    const lenis = new Lenis({
-      duration: 1.2, // Duration of the animation (in seconds)
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Easing function
-      orientation: "vertical",
-      smoothWheel: true, // Enable smooth scrolling for mouse wheel
-      smoothTouch: false, // Disable smooth scrolling for touch devices
-      touchMultiplier: 2, // Touch sensitivity multiplier
-    });
-
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    // Cleanup on component unmount
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
   return (
-    <div className="overflow-hidden font-normal">
-      <Hero />
-      <div className="py-8 overflow-hidden bg-center bg-no-repeat bg-cover lg:py-24 bg-semantic">
-        <div className="container px-5 mx-auto xl:px-0">
-          <div className="flex flex-col items-center justify-center">
-            <h2
-              data-aos="fade-up"
-              className="gd-title mb-16 text-center tracking-[-0.02em] lg:leading-[64px] text-3xl md:text-5xl font-semibold"
-            >
-              Revolutionize Your Business
-              <span className="inline-block md:block"></span> with Semantic AI
-            </h2>
-            <div className="flex flex-col gap-[30px] overflow-hidden">
-              <div className="flex flex-col lg:flex-row gap-[30px]">
-                <div
-                  data-aos="fade-up"
-                  data-aos-offset="300"
-                  data-aos-easing="ease-in-sine"
-                  className="p-8 border rounded-lg md:p-12 border-b-600 bg-gd-tertiary max-w-[740px] overflow-hidden"
-                >
-                  <h3 className="mb-4 md:leading-[42px] text-2xl md:text-32x font-medium text-w-500">
-                    AI Prompt Engine
-                  </h3>
-                  <p className="mb-12 text-base text-w-100">
-                    Explore our AI Prompt Engine transforming data interaction
-                    with precision and speed for unparalleled productivity.
-                  </p>
-                  <Image
-                    src="/img/revolution-card1.png"
-                    alt="AI Prompt Engine"
-                    width={644}
-                    height={390}
-                  />
-                </div>
-                <div
-                  data-aos="fade-up"
-                  data-aos-offset="300"
-                  data-aos-easing="ease-in-sine"
-                  className="p-8 border rounded-lg md:p-12 border-b-600 bg-gd-tertiary max-w-[520px] overflow-hidden"
-                >
-                  <h3 className="mb-4 md:leading-[42px] text-2xl md:text-32x font-medium text-w-500">
-                    Smart Search
-                  </h3>
-                  <p className="mb-12 text-base text-w-100">
-                    Experience precise search results with our semantic search
-                    technology.
-                  </p>
-                  <Image
-                    src="/img/revolution-card2.png"
-                    alt="Smart Search"
-                    width={424}
-                    height={390}
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col-reverse lg:flex-row-reverse gap-[30px]">
-                <div
-                  data-aos="fade-up"
-                  data-aos-offset="300"
-                  data-aos-easing="ease-in-sine"
-                  className="p-8 border rounded-lg md:p-12 border-b-600 bg-gd-tertiary max-w-[740px] overflow-hidden"
-                >
-                  <h3 className="mb-4 md:leading-[42px] text-3xl md:text-32x font-medium text-w-500">
-                    AI Guided Suggestions
-                  </h3>
-                  <p className="mb-12 text-base text-w-100">
-                    Discover personalized recommendations powered by AI.
-                    Tailored just for you, effortlessly find what you&#39;re
-                    looking for.
-                  </p>
-                  <Image
-                    src="/img/revolution-card3.png"
-                    alt="AI Guided Suggestions"
-                    width={644}
-                    height={390}
-                  />
-                </div>
-                <div
-                  data-aos="fade-up"
-                  data-aos-offset="300"
-                  data-aos-easing="ease-in-sine"
-                  className="p-8 border rounded-lg md:p-12 border-b-600 bg-gd-tertiary max-w-[520px] overflow-hidden"
-                >
-                  <h3 className="mb-4 md:leading-[42px] text-3xl md:text-32x font-medium text-w-500">
-                    AI Profitization
-                  </h3>
-                  <p className="mb-12 text-base text-w-100">
-                    Boost revenue with AI-driven monetization. Unlock new income
-                    streams and grow your business.
-                  </p>
-                  <Image
-                    src="/img/revolution-card4.png"
-                    alt="AI Profitization"
-                    width={424}
-                    height={390}
-                  />
-                </div>
-              </div>
-            </div>
+    <>
+      {/* 1 · Hero — answers what / for whom / do what in the first fold */}
+      <section className="relative overflow-hidden">
+        <HeroVisual />
+        <div className="container relative z-10 pb-24 pt-24 text-center md:pb-32 md:pt-36">
+          <p className="mb-5 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-ink-low">
+            <BracketTick />
+            Spokane, WA · Software · Marketing · AI
+          </p>
+          <div className="flex items-stretch justify-center gap-3 md:gap-6">
+            <span className="hero-bracket hidden font-display text-7xl sm:block md:text-9xl">
+              [
+            </span>
+            <h1 className="max-w-3xl font-display text-4xl font-semibold tracking-display text-ink-hi sm:text-5xl md:text-7xl">
+              Websites, software &{" "}
+              <span className="gd-title">AI that pay for themselves.</span>
+            </h1>
+            <span className="hero-bracket hero-bracket--right hidden font-display text-7xl sm:block md:text-9xl">
+              ]
+            </span>
           </div>
+          <p className="mx-auto mt-6 max-w-xl text-base md:text-xl">
+            One senior team that designs it, builds it, markets it, and
+            automates it — so your next project actually grows the business.
+          </p>
+          <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link href="/contact" className="btn-signal">
+              Book a free strategy call
+            </Link>
+            <Link href="/work" className="btn-ghost">
+              See what we build {arrow}
+            </Link>
+          </div>
+          <p className="mt-6 text-xs font-medium text-ink-low">
+            Fixed-scope pricing · You own the code · Reply in 1 business day
+          </p>
         </div>
-      </div>
+      </section>
 
-      <VideoSection />
-      <div className="py-8 bg-center bg-no-repeat bg-cover lg:py-24 bg-linked">
-        <div className="container px-5 mx-auto xl:px-0">
-          <h2
-            data-aos="fade-up"
-            className="gd-title mb-16 text-center tracking-[-0.02em] lg:leading-[64px] text-3xl md:text-5xl font-semibold"
-          >
-            Enhance Product Discovery
-            <span className="inline-block lg:block"></span> with Linked Prompts
-          </h2>
-          <div className="flex flex-col">
-            <div className="flex flex-col gap-[30px]">
-              <div
-                data-aos="fade-up-right"
-                className="flex flex-col-reverse lg:flex-row justify-start lg:justify-between gap-[30px] lg:gap-[126px] p-6 md:p-12 rounded-lg border border-b-600 bg-gd-tertiary"
-              >
-                <div className="flex flex-col items-start justify-center">
-                  <h3 className="mb-4 md:leading-[42px] text-2xl md:text-32x font-medium text-w-500">
-                    Masters of Data
-                    <span className="inline-block lg:block">
-                      & Machine Learning
-                    </span>
+      {/* 2 · Three pillars */}
+      <section className="relative py-20 lg:py-28">
+        <div className="container">
+          <SectionHeading
+            eyebrow="What we do"
+            title="Three disciplines, one throughline"
+            lead="Most agencies do one of these. We do all three under one roof, so the strategy, the build, and the automation actually fit together."
+          />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {services.map((s, i) => (
+              <Reveal key={s.slug} delay={i * 80} className="h-full">
+                <Link
+                  href={`/services/${s.slug}`}
+                  className="card group flex h-full flex-col p-8 transition-colors duration-200 hover:!border-violet"
+                >
+                  <span className="font-display text-sm font-bold text-violet">
+                    0{i + 1}
+                  </span>
+                  <h3 className="mt-3 font-display text-xl font-semibold tracking-display text-ink-hi md:text-2xl">
+                    {s.name}
                   </h3>
-                  <p className="mb-6 w-full md:max-w-[534px] text-base text-w-100">
-                    Founded in 2016 by experienced data scientists, engineers,
-                    and consultants, closingbrackets AI is dedicated to
-                    maximizing the business potential of data and AI.
+                  <p className="mt-2 text-sm font-medium text-ink-hi">
+                    {s.tagline}
                   </p>
-                  <Link href="/team" legacyBehavior>
-                    <a className="flex flex-row items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full border-tropical-indigo bg-gd-secondary text-w-900">
-                      Meet Our Team
-                      <Image
-                        src="/img/icons/arrow-right.svg"
-                        alt="arrow"
-                        width={20}
-                        height={20}
-                      />
-                    </a>
-                  </Link>
-                </div>
-                <div className="relative w-full lg:w-[534px] lg:h-[464px]">
-                  <Image
-                    src="/img/prompts1.png"
-                    alt="prompts-img"
-                    className="object-contain rounded-lg"
-                    fill
-                  />
-                </div>
-              </div>
-              <div
-                data-aos="fade-up-left"
-                className="flex flex-col-reverse lg:flex-row-reverse justify-start lg:justify-between gap-[30px] lg:gap-[126px] p-6 md:p-12 rounded-lg border border-b-600 bg-gd-tertiary"
-              >
-                <div className="flex flex-col items-start justify-center">
-                  <h3 className="mb-4 md:leading-[42px] text-2xl md:text-32x font-medium text-w-500">
-                    Powered by
-                    <span className="inline-block lg:block">
-                      Established Technology
-                    </span>
-                  </h3>
-                  <p className="mb-6 w-full md:max-w-[534px] text-base text-w-100">
-                    closingbrackets AI possesses an extensive intellectual
-                    property portfolio in AI technology, comprising 32 granted
-                    patents and 88 patent applications spanning the globe.
-                  </p>
-                  <Link href="/patent" legacyBehavior>
-                    <a className="flex flex-row items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full border-tropical-indigo bg-gd-secondary text-w-900">
-                      Check Our Patents
-                      <Image
-                        src="/img/icons/arrow-right.svg"
-                        alt="arrow"
-                        width={20}
-                        height={20}
-                      />
-                    </a>
-                  </Link>
-                </div>
-                <div className="relative w-full lg:w-[534px] lg:h-[464px]">
-                  <Image
-                    src="/img/prompts2.png"
-                    alt="prompts-img"
-                    className="object-contain rounded-lg"
-                    fill
-                  />
-                </div>
-              </div>
-            </div>
+                  <p className="mt-3 text-sm">{s.summary}</p>
+                  <span className="mt-auto flex items-center gap-2 pt-6 text-sm font-semibold text-violet">
+                    Explore {arrow}
+                  </span>
+                </Link>
+              </Reveal>
+            ))}
           </div>
         </div>
-      </div>
-      <div className="py-24 bg-center bg-no-repeat bg-cover bg-media">
-        <div className="container px-5 mx-auto xl:px-0">
-          <div className="flex flex-col items-center justify-center">
-            <h2
-              data-aos="fade-down"
-              className="gd-title mb-16 text-center tracking-[-0.02em] lg:leading-[64px] text-3xl md:text-5xl font-semibold"
-            >
-              Updates &amp;
-              <span className="block"></span> Media Coverage
-            </h2>
-            <div
-              data-aos="fade-up"
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[30px]"
-            >
-              {updateCardData.slice(0, 3).map((item, index) => (
-                <UpdateCard
-                  key={index}
-                  imageSrc={item.imageSrc}
-                  heading={item.heading}
-                  headingHref={item.headingHref}
-                  tag1={item.tags[0].tag}
-                  tag1Href={item.tags[0].tagHref}
-                  tag2={item.tags[1].tag}
-                  tag2Href={item.tags[1].tagHref}
-                />
-              ))}
-            </div>
+      </section>
+
+      {/* 3 · Trust fold — real founder + verifiable proof, no fake testimonials */}
+      <section className="relative overflow-hidden py-20 lg:py-28">
+        <div className="void-grid absolute inset-0" aria-hidden />
+        <div className="container relative z-10">
+          <SectionHeading
+            eyebrow="Who you're hiring"
+            title="Talk to the engineer, not an account manager"
+          />
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <Reveal className="h-full">
+              <FounderCard />
+            </Reveal>
+            <Reveal delay={100} className="h-full">
+              <ProofBar />
+            </Reveal>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* 4 · Capability showcases — honest by design */}
+      <section className="relative py-20 lg:py-28">
+        <div className="container">
+          <SectionHeading
+            eyebrow="Proof of craft"
+            title="No fake case studies here"
+            lead="These are demo builds and living proof — judge the craft, then let's make yours the first real one on this page."
+          />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {showcases.slice(0, 3).map((sc, i) => (
+              <Reveal key={sc.slug} delay={i * 80} className="h-full">
+                <ShowcaseCard showcase={sc} />
+              </Reveal>
+            ))}
+          </div>
+          <div className="mt-12 text-center">
+            <Link
+              href="/work"
+              className="text-sm font-semibold text-violet hover:underline underline-offset-4"
+            >
+              See all demo builds →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 5 · Process */}
+      <section className="relative overflow-hidden py-20 lg:py-28">
+        <div className="void-grid absolute inset-0" aria-hidden />
+        <div className="container relative z-10">
+          <SectionHeading
+            eyebrow="How it works"
+            title="Four steps, zero black boxes"
+            lead="Fixed scope, visible milestones, and a hand-off where you own everything."
+          />
+          <ProcessSteps compact />
+          <div className="mt-12 text-center">
+            <Link
+              href="/process"
+              className="text-sm font-semibold text-violet hover:underline underline-offset-4"
+            >
+              See the full process & guarantees →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 6 · FAQ */}
       <FAQSection />
-    </div>
+      <JsonLd data={faqSchema(faqs)} />
+
+      {/* 7 · Closing CTA — the only pre-footer band */}
+      <CTASection />
+    </>
   );
 }

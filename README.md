@@ -1,147 +1,153 @@
-# closingbrackets - AI Deep Search Technology React Template
+# Closing Brackets — Agency Website
 
-closingbrackets is a modern React template built with Next.js, designed for AI technology companies, startups, and agencies. It features a sleek design with smooth animations and interactive components.
+Marketing + portfolio site for **Closing Brackets**, an AI-native web agency
+(Custom Software · Digital Marketing & Growth · AI Consulting & Automation).
 
-## Features
+Built as a **fully static** Next.js site — fast, SEO-friendly, and cheap to host.
+The "Void & Signal" design system is pure CSS (aurora gradients + a tiny lazy
+canvas particle layer), so every page holds Lighthouse ≥ 99 on mobile.
 
-- 🚀 Built with Next.js 14
-- 💫 Smooth scroll animations using Lenis
-- 🎨 Animated components with AOS (Animate On Scroll)
-- 📱 Fully responsive design
-- 🎯 Microsoft Clarity analytics integration
-- 🔍 AI-focused sections including:
-  - Smart Search
-  - AI Prompt Engine
-  - AI Guided Suggestions
-  - AI Profitization
+## Tech stack
 
-## Tech Stack
+- **Next.js 15** (App Router) with `output: "export"` → 100% static HTML in `out/`
+- **React 19**
+- **Tailwind CSS 3** over semantic CSS variables (dark-only today; a light theme
+  is a `[data-theme="light"]` re-declaration away)
+- **Zero animation libraries** — scroll reveals are a ~30-line IntersectionObserver
+  component (`Reveal.js`); the hero particle field is a ~2 KB hand-rolled canvas
+  gated by `VisibilityGate` (in-view + idle + motion-safe)
+- **pnpm** package manager · **Node 22 LTS**
+- Optional **Microsoft Clarity** analytics (env-gated)
 
-- Next.js 14
-- React 18
-- Tailwind CSS
-- AOS (Animate On Scroll)
-- Lenis Smooth Scroll
-- Microsoft Clarity
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 16.8 or later
-- npm or yarn package manager
-
-### Installation
-
-1. Clone the repository:
+## Getting started
 
 ```bash
-git clone [repository-url]
+corepack enable          # activates pnpm from package.json "packageManager"
+pnpm install
+pnpm dev                 # http://localhost:3000
 ```
 
-2. Install dependencies:
+Other scripts:
 
 ```bash
-npm install
-# or
-yarn install
+pnpm build         # production build → static export in ./out
+pnpm serve         # serve the built ./out locally to preview the static site
+pnpm lint          # ESLint (next/core-web-vitals)
+pnpm images        # pre-optimize rasters from public/img/src/ → WebP/AVIF
+pnpm brand-assets  # regenerate og-image.png + favicons from the bracket mark
 ```
 
-3. Run the development server:
+## Site map
+
+| Route | Purpose |
+|---|---|
+| `/` | Home — hero, pillars, trust fold, showcases, process, FAQ, CTA |
+| `/services/` | Pillar overview + engagement models |
+| `/services/custom-software/`, `/services/digital-marketing/`, `/services/ai-automation/` | Per-pillar detail (Service JSON-LD) |
+| `/work/` | Capability demos, honestly framed (no fake case studies) |
+| `/process/` | Four steps + differentiators + guarantees + comparison |
+| `/about/` | Mission, founder note, values, team model |
+| `/blog/` + `/blog/<slug>/` | Real essays only (Article JSON-LD) |
+| `/contact/` | Conversion page — full lead form + direct contact |
+
+Old template URLs (`/solution`, `/patent`, `/story`, …) 301-redirect via the
+`routes:` block in `render.yaml`.
+
+## Project structure
+
+```
+src/
+├── app/
+│   ├── layout.js              # fonts (Space Grotesk + Inter), metadata, JSON-LD, analytics
+│   ├── page.js                # home
+│   ├── sitemap.js             # → static sitemap.xml
+│   ├── robots.js              # → static robots.txt
+│   ├── not-found.js           # App-Router 404 → out/404.html
+│   ├── <route>/page.js        # one folder per page
+│   └── components/
+│       ├── BracketMark.js     # THE brand device (logo mark + eyebrow tick)
+│       ├── SectionHeading.js  # standard section opener (eyebrow/title/lead)
+│       ├── HeroVisual.js      # CSS aurora + grid + lazy ParticleField canvas
+│       ├── Reveal.js          # IntersectionObserver scroll reveal (CLS-free)
+│       ├── ContactForm.js     # Web3Forms lead form (full + mini variants)
+│       ├── CTASection.js      # THE pre-footer conversion band (one per page)
+│       ├── JsonLd.js          # Organization, WebSite, Breadcrumb, FAQ, Service, Article
+│       └── …                  # Header, Footer, PageHero, FAQSection, cards
+└── data/                      # ⭐ single sources of truth — edit content here
+    ├── site.js                # business info + service pillars (+ per-pillar SEO)
+    ├── process.js             # the four steps
+    ├── engagements.js         # the three engagement models
+    ├── differentiators.js     # differentiators, guarantees, chips, comparison
+    ├── showcases.js           # capability demos (replace with real case studies)
+    ├── posts.js               # blog essays (full bodies live here)
+    └── faqs.js                # FAQ content (also feeds FAQ rich results)
+```
+
+## Editing content
+
+Everything user-facing is data-driven — start in `src/data/`. Copy that used to
+repeat across pages (process, engagement models, "senior team / own the code")
+now lives in exactly one data file each; edit once, updates everywhere.
+
+Add social profile URLs in `site.js` (`social.*`) — placeholders (`"#"`) render
+nothing in the footer and are excluded from JSON-LD until set.
+
+## Branding & assets ("Void & Signal")
+
+- **Device:** the closing bracket — drawn only by `BracketMark.js` / `public/img/logo.svg`.
+- **Colors** (CSS variables in `globals.css`, mapped in `tailwind.config.js`):
+  void `#060714`, violet `#8B7CFF` (accents), signal amber `#FFB74A`
+  (**CTAs only** — nothing else is warm).
+- **Fonts:** Space Grotesk (display) + Inter (body), self-hosted via `next/font`.
+- **Social share image:** `public/img/og-image.png` (1200×630). **Favicons:**
+  regenerate all of it with `pnpm brand-assets`.
+
+## Forms (Web3Forms)
+
+The contact page and CTA-band mini form POST to Web3Forms from the static page
+(free tier: 250 submissions/mo, honeypot spam protection). Set the key —
+build-time, since the site is static:
 
 ```bash
-npm run dev
-# or
-yarn dev
+# .env.local
+NEXT_PUBLIC_WEB3FORMS_KEY=xxxxxxxx-xxxx-...   # free at web3forms.com
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+Without a key, forms gracefully fall back to a prefilled `mailto:` so no lead
+is lost. On submit errors, the form shows direct email + phone.
 
-## Project Structure
+## SEO
 
-```
-closingbrackets-react/
-├── src/
-│   ├── app/
-│   │   ├── components/
-│   │   │   ├── Header.js
-│   │   │   ├── Hero.js
-│   │   │   ├── VideoSection.js
-│   │   │   ├── SaleBtn.js
-│   │   │   └── ...
-│   │   ├── page.js
-│   │   ├── layout.js
-│   │   └── globals.css
-│   └── data/
-│       └── updateCardData.json
-├── public/
-│   ├── img/
-│   └── favicon.ico
-└── package.json
-```
+- Per-page titles/descriptions/canonicals via the Next Metadata API.
+- JSON-LD: `ProfessionalService` (with Spokane `PostalAddress`), `WebSite`,
+  `BreadcrumbList`, `FAQPage`, `Service` (per service page), `Article` (per post).
+- `sitemap.xml`, `robots.txt`, a real `404.html`, and `llms.txt` (AEO) at build.
+- 301 redirects from all pre-redesign URLs in `render.yaml`.
 
-## Key Components
+## Analytics (optional)
 
-### SaleBtn
+Microsoft Clarity is off unless you provide an ID. Set `NEXT_PUBLIC_CLARITY_ID`
+(build-time) — locally in `.env.local`, on Render as an env var.
 
-A fixed position button component that appears on all pages, promoting the template sale.
+## Deployment (Render)
 
-### VideoSection
+`render.yaml` is a Render Blueprint for a **static site**:
 
-Interactive video component with custom play/pause controls and outside click handling.
+- Build: `corepack enable && pnpm install --frozen-lockfile && pnpm build`
+- Publish directory: `./out`
+- Pinned to **Node 22**, PR previews enabled
+- Security + long-cache headers and the 301 redirect map preconfigured
+- Env vars (set in the dashboard): `NEXT_PUBLIC_WEB3FORMS_KEY`, optional
+  `NEXT_PUBLIC_CLARITY_ID`
 
-### UpdateCard
+Push to your connected repo (or use "New → Blueprint" in Render) and it deploys.
+Point the `www.closingbrackets.com` DNS at the Render static site and keep the
+same domain as `site.url` in `src/data/site.js`.
 
-Reusable card component for displaying blog posts and updates with tags.
+## Performance notes
 
-### EnhancingCard
-
-Component for displaying feature cards with icons and descriptions.
-
-## Customization
-
-### Styling
-
-- The project uses Tailwind CSS for styling
-- Global styles are defined in `src/app/globals.css`
-- Custom gradients and animations are available through utility classes
-
-### Analytics
-
-Microsoft Clarity tracking is integrated in `layout.js`. Update the tracking ID:
-
-```javascript
-<Script id="microsoft-clarity" strategy="afterInteractive">
-  {`
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "YOUR_CLARITY_ID");
-  `}
-</Script>
-```
-
-## Building for Production
-
-```bash
-npm run build
-# or
-yarn build
-```
-
-Then start the production server:
-
-```bash
-npm run start
-# or
-yarn start
-```
-
-## License
-
-This template is available for purchase on ThemeForest. Please refer to the license terms on ThemeForest for usage rights.
-
-## Support
-
-For support, please contact through ThemeForest or raise an issue in the repository.
+- Verified locally with Lighthouse (mobile, throttled): **99 / 100 / 100 / 100**
+  on every audited page, CLS 0.
+- No three.js, no animation libraries — first-load JS is ~102–110 kB per page.
+- The particle canvas mounts only in-view, on idle, and never under
+  `prefers-reduced-motion`. The critical render path stays HTML/CSS-only.
