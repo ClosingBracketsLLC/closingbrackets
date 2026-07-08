@@ -24,7 +24,7 @@ function Logo({ onClick }) {
       <span className="logo-brackets inline-flex">
         <BracketMark size={28} />
       </span>
-      <span className="font-display text-lg font-semibold tracking-display text-ink-hi">
+      <span className="hidden font-display text-lg font-semibold tracking-display text-ink-hi min-[360px]:inline">
         Closing Brackets
       </span>
     </Link>
@@ -66,8 +66,14 @@ export default function Header() {
           >
             {site.phoneDisplay}
           </a>
-          <Link href="/contact" className="btn-signal hidden !px-5 !py-2.5 md:inline-flex">
-            Book a free call
+          {/* Always visible so the primary CTA stays reachable at every
+              fold; compact with a shorter label on very small screens. */}
+          <Link
+            href="/contact"
+            className="btn-signal min-h-0 px-3 py-2 text-xs min-[418px]:px-4 sm:text-sm md:px-5 md:py-2.5"
+          >
+            <span className="min-[418px]:hidden">Book a call</span>
+            <span className="hidden min-[418px]:inline">Book a free call</span>
           </Link>
 
           {/* Mobile menu toggle */}

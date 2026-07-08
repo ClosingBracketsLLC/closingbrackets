@@ -180,21 +180,24 @@ body {
 }
 
 /* ------------------------------------------------------------------ */
-/* Buttons                                                             */
+/* Buttons — inside @layer components so Tailwind utilities (hidden,   */
+/* responsive px-*, etc.) can override them as expected.               */
 /* ------------------------------------------------------------------ */
-.btn-signal {
-  @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-signal px-6 py-3 font-display text-sm font-semibold text-signal-ink transition duration-200;
-}
-.btn-signal:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 40px -10px rgba(255, 183, 74, 0.55);
-}
-.btn-ghost {
-  @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-line px-6 py-3 font-display text-sm font-semibold text-ink-hi transition duration-200;
-}
-.btn-ghost:hover {
-  border-color: var(--violet);
-  color: var(--violet);
+@layer components {
+  .btn-signal {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-signal px-6 py-3 font-display text-sm font-semibold text-signal-ink transition duration-200;
+  }
+  .btn-signal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 40px -10px rgba(255, 183, 74, 0.55);
+  }
+  .btn-ghost {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-line px-6 py-3 font-display text-sm font-semibold text-ink-hi transition duration-200;
+  }
+  .btn-ghost:hover {
+    border-color: var(--violet);
+    color: var(--violet);
+  }
 }
 
 /* Focus visibility for keyboard users. */
@@ -210,6 +213,8 @@ textarea:focus-visible,
 }
 
 /* Card surface used across sections. */
-.card {
-  @apply rounded-2xl border border-line bg-void-1 bg-card-wash shadow-card;
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-void-1 bg-card-wash shadow-card;
+  }
 }
