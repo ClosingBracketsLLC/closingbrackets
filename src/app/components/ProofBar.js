@@ -2,8 +2,8 @@ import { guaranteeChips } from "@/data/differentiators";
 
 const proofs = [
   {
-    stat: "0",
-    label: "servers — now and always",
+    stat: "100",
+    label: "Lighthouse SEO score, every page",
   },
   {
     stat: "< 1s",
