@@ -1,220 +1,25 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* ------------------------------------------------------------------ */
-/* Void & Signal — semantic tokens. Dark-only at launch; a light theme */
-/* is a [data-theme="light"] re-declaration of these variables.        */
-/* ------------------------------------------------------------------ */
 :root {
-  --bg-0: #060714;
-  --bg-1: #0c0e1d;
-  --bg-2: #131630;
-  --border: #252a4a;
-  --text-hi: #eef0ff;
-  --text-mid: #a8aecf;
-  --text-low: #767d9e;
-  --violet: #8b7cff;
-  --violet-deep: #5b4dff;
-  --signal: #ffb74a;
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
-html,
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
 body {
-  @apply bg-void-0 font-sans text-ink-mid;
-}
-
-* {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-::selection {
-  background: rgba(139, 124, 255, 0.35);
-  color: var(--text-hi);
-}
-
-/* Respect users who ask for less motion: neutralize every animation. */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Header is sticky on EVERY viewport — the primary CTA must stay
-   reachable at all folds, especially on mobile. */
-#nav-container {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-/* Aurora gradient headline — the one warm-cool signature per page. */
-.gd-title {
-  background: linear-gradient(115deg, #5b4dff 0%, #8b7cff 40%, #c9d4ff 90%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ------------------------------------------------------------------ */
-/* Aurora backdrop — layered radial gradients with a slow drift.       */
-/* Pure CSS: zero JS, zero payload, LCP-neutral.                       */
-/* ------------------------------------------------------------------ */
-.aurora {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-.aurora::before,
-.aurora::after {
-  content: "";
-  position: absolute;
-  inset: -30%;
-  background:
-    radial-gradient(
-      42% 38% at 22% 28%,
-      rgba(91, 77, 255, 0.28) 0%,
-      transparent 70%
-    ),
-    radial-gradient(
-      36% 34% at 78% 22%,
-      rgba(139, 124, 255, 0.18) 0%,
-      transparent 70%
-    ),
-    radial-gradient(
-      50% 44% at 55% 82%,
-      rgba(91, 77, 255, 0.14) 0%,
-      transparent 72%
-    );
-  animation: aurora-drift 26s ease-in-out infinite alternate;
-}
-.aurora::after {
-  background:
-    radial-gradient(
-      30% 30% at 68% 68%,
-      rgba(201, 212, 255, 0.07) 0%,
-      transparent 70%
-    ),
-    radial-gradient(
-      26% 26% at 30% 72%,
-      rgba(139, 124, 255, 0.1) 0%,
-      transparent 70%
-    );
-  animation-duration: 34s;
-  animation-direction: alternate-reverse;
-}
-@keyframes aurora-drift {
-  from {
-    transform: translate3d(-3%, -2%, 0) scale(1);
-  }
-  to {
-    transform: translate3d(3%, 3%, 0) scale(1.08);
-  }
-}
-
-/* Film-grain overlay — tiny inline SVG noise, kills gradient banding. */
-.grain {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.5;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* Faint structural grid behind sections. */
-.void-grid {
-  background-image:
-    linear-gradient(rgba(139, 124, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(139, 124, 255, 0.04) 1px, transparent 1px);
-  background-size: 56px 56px;
-  -webkit-mask-image: radial-gradient(
-    ellipse at center,
-    #000 0%,
-    transparent 76%
-  );
-  mask-image: radial-gradient(ellipse at center, #000 0%, transparent 76%);
-}
-
-/* ------------------------------------------------------------------ */
-/* Scroll reveal — Reveal.js adds .in when the element enters view.    */
-/* Opacity/transform only: no layout shift, CLS stays 0.               */
-/* ------------------------------------------------------------------ */
-.reveal {
-  opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
-}
-.reveal.in {
-  opacity: 1;
-  transform: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .reveal {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* Logo "blink": the brace mark pinches once on hover. */
-@keyframes bracket-blink {
-  0%,
-  100% {
-    transform: scaleX(1);
-  }
-  50% {
-    transform: scaleX(0.72);
-  }
-}
-.logo-mark:hover .logo-brackets {
-  display: inline-flex;
-  animation: bracket-blink 0.45s ease;
-}
-
-/* ------------------------------------------------------------------ */
-/* Buttons — inside @layer components so Tailwind utilities (hidden,   */
-/* responsive px-*, etc.) can override them as expected.               */
-/* ------------------------------------------------------------------ */
-@layer components {
-  .btn-signal {
-    @apply inline-flex min-h-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-signal px-6 py-3 font-display text-sm font-semibold text-signal-ink transition duration-200;
-  }
-  .btn-signal:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 40px -10px rgba(255, 183, 74, 0.55);
-  }
-  .btn-ghost {
-    @apply inline-flex min-h-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-line px-6 py-3 font-display text-sm font-semibold text-ink-hi transition duration-200;
-  }
-  .btn-ghost:hover {
-    border-color: var(--violet);
-    color: var(--violet);
-  }
-}
-
-/* Focus visibility for keyboard users. */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible,
-[tabindex]:focus-visible {
-  outline: 2px solid var(--violet);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* Card surface used across sections. */
-@layer components {
-  .card {
-    @apply rounded-2xl border border-line bg-void-1 bg-card-wash shadow-card;
-  }
+  background: var(--background);
+  color: var(--foreground);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
 }

@@ -141,6 +141,7 @@ services:
       - path: /_next/static/*
         name: Cache-Control
         value: public, max-age=31536000, immutable
+      # Only safe to mark immutable for assets whose filename carries a version.
       - path: /img/*
         name: Cache-Control
         value: public, max-age=31536000, immutable

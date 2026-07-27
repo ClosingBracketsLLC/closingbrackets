@@ -1,6 +1,11 @@
-# pnpm build-script approvals.
-# `sharp` is an optional native dependency of Next's image optimizer. This site uses
-# `images.unoptimized: true` (static export), so sharp is never invoked — skip its
-# native build to keep installs fast and portable (incl. Render's build image).
+# pnpm build-script approvals. pnpm 11 fails the install (ERR_PNPM_IGNORED_BUILDS,
+# exit 1) unless every dependency with a build script is explicitly allowed or
+# denied here — which would break `pnpm install --frozen-lockfile` on Render.
 allowBuilds:
+  # `sharp` is an optional native dependency of Next's image optimizer. This site
+  # uses `images.unoptimized: true` (static export), so sharp is never invoked —
+  # skip its native build to keep installs fast and portable.
   sharp: false
+  # Native module resolver behind eslint-config-next's import plugin. Its build
+  # step links the prebuilt platform binary, which the linter needs.
+  unrs-resolver: true

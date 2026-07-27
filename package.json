@@ -1,34 +1,27 @@
 {
   "name": "closing-brackets",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
-  "description": "Closing Brackets — AI web agency portfolio site (Custom Software · Digital Marketing · AI Consulting).",
-  "packageManager": "pnpm@11.10.0",
+  "description": "Closing Brackets — company site.",
+  "packageManager": "pnpm@11.17.0",
   "engines": {
     "node": ">=20.9.0"
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "serve": "npx --yes serve@latest out",
-    "images": "node scripts/optimize-images.mjs",
-    "brand-assets": "node scripts/generate-brand-assets.mjs"
+    "lint": "eslint",
+    "serve": "npx --yes serve@latest out"
   },
   "dependencies": {
-    "@react-three/fiber": "^9.6.1",
-    "next": "^15.5.20",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "three": "^0.185.1"
+    "next": "^16.2.12",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.20",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "^15.5.20",
-    "postcss": "^8.5.1",
-    "sharp": "^0.34.2",
-    "tailwindcss": "^3.4.17"
+    "@tailwindcss/postcss": "^4.3.3",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.2.12",
+    "tailwindcss": "^4.3.3"
   }
 }
