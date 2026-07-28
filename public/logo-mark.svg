@@ -1,9 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 28" role="img" aria-label="Closing Brackets">
-  <!-- Neon halo: same geometry duplicated with a wide low-opacity stroke.
-       No filters — survives rasterisation at any size, drop for <=16px. -->
-  <path d="M12 2h9v24h-9v-4h5V6h-5z" fill="none" stroke="#2EF2DC" stroke-width="3" opacity=".3"/>
-  <rect x="3" y="14" width="6" height="12" fill="none" stroke="#FF4E64" stroke-width="3" opacity=".3"/>
-  <!-- Crisp tube -->
-  <path d="M12 2h9v24h-9v-4h5V6h-5z" fill="#2EF2DC"/>
-  <rect x="3" y="14" width="6" height="12" fill="#FF4E64"/>
+  <defs>
+    <filter id="mgGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="1.4"/>
+    </filter>
+  </defs>
+  <!-- ambient neon spill -->
+  <g filter="url(#mgGlow)" opacity="0.4">
+    <path d="M2 5.5Q2 3 4.5 3H19.5Q22 3 22 5.5V22.5Q22 25 19.5 25H4.5Q2 25 2 22.5V20.8H15.6Q17 20.8 17 19.4V8.6Q17 7.2 15.6 7.2H2Z" fill="#2EF2DC"/>
+    <rect x="2" y="9" width="8.4" height="10" rx="1.2" fill="#FF4E64"/>
+  </g>
+  <!-- bracket slab: top bar + right column + bottom bar, mouth open to the left -->
+  <path d="M2 5.5Q2 3 4.5 3H19.5Q22 3 22 5.5V22.5Q22 25 19.5 25H4.5Q2 25 2 22.5V20.8H15.6Q17 20.8 17 19.4V8.6Q17 7.2 15.6 7.2H2Z" fill="#2EF2DC" stroke="#060910" stroke-width="0.7"/>
+  <!-- cursor keyed into the mouth, flush with the open left edge -->
+  <rect x="2" y="9" width="8.4" height="10" rx="1.2" fill="#FF4E64" stroke="#060910" stroke-width="0.7"/>
+  <!-- cel gleams -->
+  <g fill="none" stroke-linecap="round" stroke-width="1">
+    <path d="M5.2 5.1H9.8" stroke="#F4F7FF" opacity="0.75"/>
+    <path d="M19.6 6.8V10.4" stroke="#F4F7FF" opacity="0.5"/>
+    <path d="M4.2 11.2H6.6" stroke="#FFEDF0" opacity="0.8"/>
+  </g>
 </svg>

@@ -21,28 +21,26 @@ CORAL = (255, 78, 100)
 CYAN = (46, 242, 220)
 
 # (x0, y0, x1, y1, color) in the 32x32 viewBox — mirrors icon.svg:
-# coral block cursor, then the "]" as top arm / stem / bottom arm.
+# Interlock Monogram — bracket slab as top bar / right column / bottom bar,
+# coral cursor keyed into the open mouth.
 GEOMETRY = [
-    (6, 14, 12, 26, CORAL),
-    (16, 6, 26, 10, CYAN),
-    (22, 10, 26, 22, CYAN),
-    (16, 22, 26, 26, CYAN),
+    (6, 6, 26, 10, CYAN),
+    (22, 6, 26, 26, CYAN),
+    (6, 22, 26, 26, CYAN),
+    (6, 12, 14, 20, CORAL),
 ]
 
 S = 32  # supersample factor -> 1024px master
 
 
 def draw(tile_style):
-    """tile_style: 'rounded' (favicon, rain ring) or 'square' (apple-icon,
-    full-bleed — iOS rounds the corners itself)."""
+    """tile_style: 'rounded' (favicon, plain ink tile like icon.svg) or
+    'square' (apple-icon, full-bleed — iOS rounds the corners itself)."""
     px = 32 * S
     if tile_style == "rounded":
         img = Image.new("RGBA", (px, px), (0, 0, 0, 0))
         d = ImageDraw.Draw(img)
-        d.rounded_rectangle([0, 0, px - 1, px - 1], radius=7 * S, fill=RAIN)
-        d.rounded_rectangle(
-            [2 * S, 2 * S, px - 1 - 2 * S, px - 1 - 2 * S], radius=5 * S, fill=INK
-        )
+        d.rounded_rectangle([0, 0, px - 1, px - 1], radius=6 * S, fill=INK)
     else:
         img = Image.new("RGB", (px, px), INK)
         d = ImageDraw.Draw(img)
