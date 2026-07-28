@@ -33,88 +33,52 @@ services:
     # when no file exists at the source path; the old route dirs are deleted,
     # so every rule fires. Both bare and trailing-slash sources are listed
     # because the old site was indexed with trailingSlash: true.
+    #
+    # Only / and /contact/ exist today. A redirect that lands on a 404 throws
+    # away the old URL's link equity, so every content-ish source goes to /
+    # for now; retarget to /services/, /work/, /about/ etc. when those ship.
     routes:
-      - type: redirect
-        source: /solution/
-        destination: /services/
-      - type: redirect
-        source: /solution
-        destination: /services/
-      - type: redirect
-        source: /service/
-        destination: /services/
-      - type: redirect
-        source: /service
-        destination: /services/
-      - type: redirect
-        source: /case-studies-single/
-        destination: /work/
-      - type: redirect
-        source: /case-studies-single
-        destination: /work/
-      - type: redirect
-        source: /case-studies/
-        destination: /work/
-      - type: redirect
-        source: /case-studies
-        destination: /work/
-      - type: redirect
-        source: /how-it-work/
-        destination: /process/
-      - type: redirect
-        source: /how-it-work
-        destination: /process/
-      - type: redirect
-        source: /patent/
-        destination: /process/
-      - type: redirect
-        source: /patent
-        destination: /process/
-      - type: redirect
-        source: /story/
-        destination: /about/
-      - type: redirect
-        source: /story
-        destination: /about/
-      - type: redirect
-        source: /team/
-        destination: /about/
-      - type: redirect
-        source: /team
-        destination: /about/
-      - type: redirect
-        source: /media-kit/
-        destination: /about/
-      - type: redirect
-        source: /media-kit
-        destination: /about/
-      - type: redirect
-        source: /documentation/
-        destination: /blog/
-      - type: redirect
-        source: /documentation
-        destination: /blog/
-      - type: redirect
-        source: /blog-single/
-        destination: /blog/
-      - type: redirect
-        source: /blog-single
-        destination: /blog/
-      - type: redirect
-        source: /sign-in/
-        destination: /contact/
-      - type: redirect
-        source: /sign-in
-        destination: /contact/
-      - type: redirect
-        source: /sign-up/
-        destination: /contact/
-      - type: redirect
-        source: /sign-up
-        destination: /contact/
-      - type: redirect
-        source: /not-found/
-        destination: /
+      - { type: redirect, source: /solution/, destination: / }
+      - { type: redirect, source: /solution, destination: / }
+      - { type: redirect, source: /service/, destination: / }
+      - { type: redirect, source: /service, destination: / }
+      - { type: redirect, source: /case-studies-single/, destination: / }
+      - { type: redirect, source: /case-studies-single, destination: / }
+      - { type: redirect, source: /case-studies/, destination: / }
+      - { type: redirect, source: /case-studies, destination: / }
+      - { type: redirect, source: /how-it-work/, destination: / }
+      - { type: redirect, source: /how-it-work, destination: / }
+      - { type: redirect, source: /patent/, destination: / }
+      - { type: redirect, source: /patent, destination: / }
+      - { type: redirect, source: /story/, destination: / }
+      - { type: redirect, source: /story, destination: / }
+      - { type: redirect, source: /team/, destination: / }
+      - { type: redirect, source: /team, destination: / }
+      - { type: redirect, source: /media-kit/, destination: / }
+      - { type: redirect, source: /media-kit, destination: / }
+      - { type: redirect, source: /documentation/, destination: / }
+      - { type: redirect, source: /documentation, destination: / }
+      - { type: redirect, source: /blog-single/, destination: / }
+      - { type: redirect, source: /blog-single, destination: / }
+      - { type: redirect, source: /sign-in/, destination: /contact/ }
+      - { type: redirect, source: /sign-in, destination: /contact/ }
+      - { type: redirect, source: /sign-up/, destination: /contact/ }
+      - { type: redirect, source: /sign-up, destination: /contact/ }
+      - { type: redirect, source: /not-found/, destination: / }
+      - { type: redirect, source: /not-found, destination: / }
+      # Interim-site routes: the old redirect *destinations*, themselves dead.
+      # No /* catch-all on purpose — mass-redirecting unknown URLs to / reads
+      # as soft-404s and erases the real 404 page.
+      - { type: redirect, source: /services/, destination: / }
+      - { type: redirect, source: /services, destination: / }
+      - { type: redirect, source: /work/, destination: / }
+      - { type: redirect, source: /work, destination: / }
+      - { type: redirect, source: /process/, destination: / }
+      - { type: redirect, source: /process, destination: / }
+      - { type: redirect, source: /about/, destination: / }
+      - { type: redirect, source: /about, destination: / }
+      - { type: redirect, source: /blog/, destination: / }
+      - { type: redirect, source: /blog, destination: / }
     # Security + caching headers for a strong Lighthouse "Best Practices" score.
     headers:
       # Render already force-redirects http -> https on custom domains, so HSTS
@@ -139,10 +103,6 @@ services:
         value: camera=(), microphone=(), geolocation=()
       # Hashed build assets are immutable — cache them for a year.
       - path: /_next/static/*
-        name: Cache-Control
-        value: public, max-age=31536000, immutable
-      # Only safe to mark immutable for assets whose filename carries a version.
-      - path: /img/*
         name: Cache-Control
         value: public, max-age=31536000, immutable
       # Scroll-world camera clips (~110 MB across the chain). Repeat visitors

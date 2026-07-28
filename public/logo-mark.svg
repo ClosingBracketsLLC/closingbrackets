@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 28" role="img" aria-label="Closing Brackets">
+  <!-- Neon halo: same geometry duplicated with a wide low-opacity stroke.
+       No filters — survives rasterisation at any size, drop for <=16px. -->
+  <path d="M12 2h9v24h-9v-4h5V6h-5z" fill="none" stroke="#2EF2DC" stroke-width="3" opacity=".3"/>
+  <rect x="3" y="14" width="6" height="12" fill="none" stroke="#FF4E64" stroke-width="3" opacity=".3"/>
+  <!-- Crisp tube -->
+  <path d="M12 2h9v24h-9v-4h5V6h-5z" fill="#2EF2DC"/>
+  <rect x="3" y="14" width="6" height="12" fill="#FF4E64"/>
+</svg>

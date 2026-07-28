@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Favicon variant: ink tile so it reads on any tab colour, no glow
+       (a halo turns to mud at 16px). All coordinates are even numbers so
+       every edge lands on a whole pixel when rendered at 16x16. -->
+  <rect width="32" height="32" rx="7" fill="#060910"/>
+  <rect x="1" y="1" width="30" height="30" rx="6" fill="none" stroke="#1B2942" stroke-width="2"/>
+  <rect x="6" y="14" width="6" height="12" fill="#FF4E64"/>
+  <path d="M16 6h10v20H16v-4h6V10h-6z" fill="#2EF2DC"/>
+</svg>

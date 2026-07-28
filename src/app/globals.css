@@ -43,6 +43,112 @@
   --sw-font-body: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ------------------------------------------------------------------ */
+/* Engine chrome → Ink & Neon. The injected defaults assume a light    */
+/* page (white glass, ink pills, #fff text). Every rule here is colour */
+/* / border / shadow / type ONLY — the flight is pixel-QA'd, nothing   */
+/* below moves, resizes, or re-stacks anything. Unlayered on purpose:  */
+/* beats the engine's `@layer sw` regardless of injection order.       */
+/* ------------------------------------------------------------------ */
+
+/* Brand mark — the "]" neon sign. Engine ships a 24×28 gradient blob
+   placeholder; paint the master SVG into the same box. Two colours, so
+   background-image, not mask. The topbar only exists post-mount, so the
+   extra ~350 B request costs nothing paint-critical. */
+.sw-brand__mark {
+  border-radius: 0;
+  box-shadow: none;
+  background: url("/logo-mark.svg") center / contain no-repeat;
+}
+
+/* Topbar nav — dark glass, not white glass. Blur stays (engine's). */
+.sw-nav {
+  background: color-mix(in srgb, var(--panel) 66%, transparent);
+  border-color: var(--rain);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--ink) 50%, transparent);
+}
+.sw-nav__item:hover {
+  background: color-mix(in srgb, var(--bone) 8%, transparent);
+}
+.sw-nav__item.is-active {
+  color: var(--ink); /* engine's #fff-on-accent is unreadable on cyan; ink is ~14:1 */
+}
+
+/* CTAs — coral pill, ink text (~6.2:1 AA), same recipe as the contact
+   form's send button. Engine default is #fff on bone (invisible). */
+.sw-topcta,
+.sw-btn--primary {
+  color: var(--ink);
+  background: var(--coral);
+  font-family: var(--sw-font-display);
+  box-shadow: 0 4px 18px color-mix(in srgb, var(--coral) 35%, transparent);
+}
+.sw-topcta:hover,
+.sw-btn--primary:hover {
+  filter: brightness(1.1);
+}
+
+/* Ghost CTA — faint ink glass so it stays legible over bright video.
+   (Text and border colours already come out right via the --sw-ink token.) */
+.sw-btn--ghost {
+  background: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+.sw-btn--ghost:hover {
+  border-color: var(--sw-accent);
+}
+
+/* Route labels — dark glass instead of near-white. Blur is engine's. */
+.sw-route__label {
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  border-color: color-mix(in srgb, var(--sw-accent) 30%, transparent);
+}
+
+/* Sky — the engine's centre radial mixes 45% white into the night sky.
+   Same two-gradient structure, neon bloom instead of daylight haze. */
+.sw-sky__glow {
+  background: radial-gradient(
+      60% 42% at 74% 16%,
+      color-mix(in srgb, var(--sw-accent) 18%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      46% 34% at 50% 50%,
+      color-mix(in srgb, var(--cyan) 8%, transparent),
+      transparent 70%
+    );
+}
+
+/* Keyboard focus — engine ships none. Outline paints outside the box;
+   zero layout impact. */
+.sw-brand:focus-visible,
+.sw-nav__item:focus-visible,
+.sw-topcta:focus-visible,
+.sw-btn:focus-visible,
+.sw-route__dot:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+/* Page atmosphere for non-engine pages — the same brand tokens as the
+   engine sky, composed for a static page (cyan high right, coral low left).
+   Deliberately its own class, not .sw-sky__glow: that one is engine-owned. */
+.site-glow {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  background: radial-gradient(
+      60% 42% at 74% 16%,
+      color-mix(in srgb, var(--cyan) 9%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      46% 34% at 18% 88%,
+      color-mix(in srgb, var(--coral) 5%, transparent),
+      transparent 70%
+    );
+}
+
 html,
 body {
   background: var(--ink);

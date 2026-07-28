@@ -6,9 +6,11 @@ const ENDPOINT = "https://api.web3forms.com/submit";
 const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
 
 const field =
-  "w-full rounded-lg border border-rain bg-panel px-4 py-3 text-bone " +
+  "w-full rounded-lg border border-rain bg-ink/60 px-4 py-3 text-bone " +
   "placeholder:text-slate/70 outline-none transition " +
   "focus:border-cyan focus:ring-2 focus:ring-cyan/40";
+
+const label = "text-xs font-medium uppercase tracking-[0.14em] text-slate";
 
 export default function ContactForm() {
   const [status, setStatus] = useState("idle"); // idle | sending | ok | error
@@ -27,7 +29,7 @@ export default function ContactForm() {
     if (!ACCESS_KEY) {
       setStatus("error");
       setError(
-        "The form isn't configured yet. Email us directly and we'll pick it up.",
+        "The form isn't configured yet. Email robert@closingbrackets.com directly and we'll pick it up.",
       );
       return;
     }
@@ -68,13 +70,13 @@ export default function ContactForm() {
     return (
       <div
         role="status"
-        className="rounded-xl border border-cyan/40 bg-panel p-8 text-center"
+        className="rounded-xl border border-cyan/40 bg-panel p-8 text-center shadow-[0_0_40px_color-mix(in_srgb,var(--cyan)_12%,transparent)]"
       >
         <p className="font-[family-name:var(--font-display)] text-2xl text-bone">
-          Got it.
+          Message received
         </p>
         <p className="mt-3 text-slate">
-          We read every enquiry ourselves. You&apos;ll hear back within one
+          We read every enquiry ourselves. You will hear back within one
           business day.
         </p>
       </div>
@@ -82,7 +84,10 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-5">
+    <form
+      onSubmit={onSubmit}
+      className="grid gap-5 rounded-2xl border border-rain bg-panel/75 p-6 sm:p-8"
+    >
       {/* Honeypot — visually hidden, never announced, never tabbable. */}
       <input
         type="checkbox"
@@ -94,14 +99,14 @@ export default function ContactForm() {
       />
 
       <div className="grid gap-2">
-        <label htmlFor="name" className="text-sm text-slate">
+        <label htmlFor="name" className={label}>
           Name
         </label>
         <input id="name" name="name" required className={field} />
       </div>
 
       <div className="grid gap-2">
-        <label htmlFor="email" className="text-sm text-slate">
+        <label htmlFor="email" className={label}>
           Email
         </label>
         <input
@@ -114,15 +119,18 @@ export default function ContactForm() {
       </div>
 
       <div className="grid gap-2">
-        <label htmlFor="company" className="text-sm text-slate">
-          Company <span className="text-slate/60">(optional)</span>
+        <label htmlFor="company" className={label}>
+          Company{" "}
+          <span className="font-normal normal-case tracking-normal text-slate/60">
+            (optional)
+          </span>
         </label>
         <input id="company" name="company" className={field} />
       </div>
 
       <div className="grid gap-2">
-        <label htmlFor="message" className="text-sm text-slate">
-          What are you building?
+        <label htmlFor="message" className={label}>
+          Your project
         </label>
         <textarea
           id="message"
@@ -130,16 +138,16 @@ export default function ContactForm() {
           rows={6}
           required
           className={field}
-          placeholder="A sentence or two is plenty. What it is, who it's for, and any deadline you're working against."
+          placeholder="What do you want built, roughly when you need it, and anything already in place."
         />
       </div>
 
       <button
         type="submit"
         disabled={status === "sending"}
-        className="mt-2 justify-self-start rounded-full bg-coral px-8 py-4 font-[family-name:var(--font-display)] font-medium text-ink transition hover:brightness-110 disabled:opacity-60"
+        className="mt-2 w-full rounded-full bg-coral px-8 py-4 font-[family-name:var(--font-display)] font-medium text-ink transition hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan disabled:opacity-60 sm:w-auto sm:justify-self-start"
       >
-        {status === "sending" ? "Sending…" : "Send it"}
+        {status === "sending" ? "Sending…" : "Send enquiry"}
       </button>
 
       <p aria-live="polite" className="min-h-6 text-sm text-coral">
