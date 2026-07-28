@@ -50,7 +50,10 @@ export default function ScrollWorld({ children }) {
   }, []);
 
   return (
-    <div id="world" ref={ref}>
+    // role="main": the engine hides the static <main data-sw-seo> on mount,
+    // which would leave the visible page without a main landmark. The hidden
+    // element's landmark is ignored by the a11y tree, so these don't conflict.
+    <div id="world" role="main" ref={ref}>
       {children}
     </div>
   );

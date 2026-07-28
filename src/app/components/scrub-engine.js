@@ -216,6 +216,10 @@ function mountScrollWorld(container, config) {
     copylayer.appendChild(c); copies.push(c);
 
     const dot = el('button', 'sw-route__dot'); dot.style.setProperty('--sw-accent', s.accent || '');
+    // Mobile CSS hides the label span (display:none removes it from the a11y
+    // tree), so the button needs an explicit name. Attribute-only; no visual
+    // or flight impact.
+    dot.setAttribute('aria-label', s.label || 'Scene ' + (i + 1));
     dot.innerHTML = `<span class="sw-route__label">${esc(s.label || '')}</span><i></i>`;
     dot.addEventListener('click', () => jumpTo(i)); route.appendChild(dot); dots.push(dot);
 

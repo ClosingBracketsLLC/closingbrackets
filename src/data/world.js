@@ -25,7 +25,7 @@ export const cta = {
 export const sections = [
   {
     id: "signal",
-    label: "Overview",
+    label: "The Signal",
     still: "/assets/signal.webp",
     poster: "/assets/signal-poster.webp",
     posterMobile: "/assets/signal-poster-m.webp",
@@ -34,13 +34,13 @@ export const sections = [
     accent: "#2EF2DC",
     scroll: 1.7,
     linger: 0.45,
-    eyebrow: "An AI-native agency",
-    title: "Custom software, built AI-native",
-    body: "AI consulting, AI integration, and growth marketing from the small senior team that builds your software.",
+    eyebrow: "AI-native agency",
+    title: "Custom solutions for your business",
+    body: "AI Integration, Custom Software, and Growth Strategy. Tailored to your business, with no compromises",
   },
   {
     id: "blueprint",
-    label: "Plan",
+    label: "The Blueprint",
     still: "/assets/blueprint.webp",
     poster: "/assets/blueprint-poster.webp",
     posterMobile: "/assets/blueprint-poster-m.webp",
@@ -49,11 +49,11 @@ export const sections = [
     accent: "#2EF2DC",
     eyebrow: "AI consulting",
     title: "Where AI pays off, drawn to scale",
-    body: "Strategy and roadmap first, then a fixed plan: exact scope, a timeline with real dates, one price. No hourly billing.",
+    body: "Built from the ground up, your AI strategy is a blueprint for growth. We show you where to invest, and how to get the most out of it.",
   },
   {
     id: "forge",
-    label: "Build",
+    label: "The Forge",
     still: "/assets/forge.webp",
     poster: "/assets/forge-poster.webp",
     posterMobile: "/assets/forge-poster-m.webp",
@@ -66,7 +66,7 @@ export const sections = [
   },
   {
     id: "swarm",
-    label: "Automate",
+    label: "The Swarm",
     still: "/assets/swarm.webp",
     poster: "/assets/swarm-poster.webp",
     posterMobile: "/assets/swarm-poster-m.webp",
@@ -77,11 +77,11 @@ export const sections = [
     linger: 0.35,
     eyebrow: "AI automation",
     title: "Agents grounded in your data",
-    body: "We integrate AI into your existing systems, from pilot to production: lead intake, back-office workflows, around the clock.",
+    body: "We integrate AI into your existing systems, from pilot to production: your data, your workflows, your business rules. The result is a swarm of agents that work for you.",
   },
   {
     id: "engine",
-    label: "Grow",
+    label: "Growth Engine",
     still: "/assets/engine.webp",
     poster: "/assets/engine-poster.webp",
     posterMobile: "/assets/engine-poster-m.webp",
@@ -90,7 +90,7 @@ export const sections = [
     accent: "#FF4E64",
     eyebrow: "Growth marketing that runs",
     title: "An engine for new customers",
-    body: "Your marketing becomes a machine we keep running. It brings in customers every month, and we tune whatever performs best.",
+    body: "Your marketing becomes a machine that never turns off. The result is organic growth, powered by AI, and optimized for your business.",
   },
   {
     id: "launch",
@@ -104,8 +104,8 @@ export const sections = [
     scroll: 1.8,
     linger: 0.5,
     eyebrow: "To the Moon!",
-    title: "Prepare for Lift Off",
-    body: "Tell us your idea and you'll know the exact scope, real dates, and one fixed price before anything starts.",
+    title: "Prepare for Lift Off!",
+    body: "We are ready to launch your project into the world. Our team will ensure a smooth and successful launch, with all systems go.",
     // Single CTA on purpose: the only other route that exists is /contact/, and
     // pointing the page's most prominent action at a 404 is worse than one button.
     cta: { primary: { label: "Get Started", href: "/contact/" } },

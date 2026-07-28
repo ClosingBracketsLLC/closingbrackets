@@ -64,6 +64,22 @@ const jsonLd = {
       logo: `${SITE_URL}/icon.svg`,
       email: "robert@closingbrackets.com",
       description: DESCRIPTION,
+      // The visible h1 says "custom solutions" by design; the service-line
+      // keywords live here (and in the title tag / h2s) instead.
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Services",
+        itemListElement: [
+          "Custom software development",
+          "AI consulting",
+          "AI integration",
+          "AI automation",
+          "Growth marketing",
+        ].map((name) => ({
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name },
+        })),
+      },
     },
     {
       "@type": "WebSite",
