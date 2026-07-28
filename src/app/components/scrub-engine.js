@@ -97,9 +97,13 @@ function mountScrollWorld(container, config) {
   const isMobile = () => coarse || smallMQ.matches;
   // CLIP TIER keys off device class, NOT input type: an iPad Pro is coarse-pointer but
   // has a desktop-class screen and decoder — it gets the 1080p master, with the touch
-  // hardening above still on. screen.* is stable across rotation and window resizes;
-  // a phone's short side is ≤ ~500 CSS px, tablets start at 744.
-  const phoneClass = Math.min(screen.width, screen.height) <= 600;
+  // hardening above still on. Captured ONCE from the viewport short side (a phone
+  // viewport is ≤600 CSS px in one dimension in either orientation; iPad viewports
+  // start at 744) so the tier can't flip mid-session. Viewport, not screen.*, so the
+  // pick agrees with the poster <link rel=preload> media queries in page.js (and with
+  // emulated environments like Lighthouse, where screen.* stays at host size) — those
+  // preload media queries MUST stay in lockstep with this expression.
+  const phoneClass = window.matchMedia('(max-width: 600px), (max-height: 600px)').matches;
   // Network signals are Chromium-only (iOS/Safari/Firefox expose nothing) — treat them
   // strictly as a *downgrade* signal on top of a conservative default, never as a gate
   // for the good experience.
@@ -187,9 +191,13 @@ function mountScrollWorld(container, config) {
   [sky, scrollbar, topbar, stage, copylayer, route, hint, track].forEach(n => container.appendChild(n));
 
   // segment scenes
-  SEGMENTS.forEach(s => {
+  SEGMENTS.forEach((s, i) => {
     const scene = el('div', 'sw-scene'); scene.style.setProperty('--sw-accent', s.accent || '');
-    const img = el('img', 'sw-scene__still'); img.alt = ''; img.decoding = 'async'; img.loading = 'lazy';
+    const img = el('img', 'sw-scene__still'); img.alt = ''; img.decoding = 'async';
+    // Scene 0 fills the viewport at load — it IS the LCP element, so it must fetch
+    // eagerly at high priority (its URL is also preloaded from page.js).
+    if (i === 0) { img.loading = 'eager'; img.fetchPriority = 'high'; }
+    else img.loading = 'lazy';
     // Prefer the extracted-frame poster (pixel-identical to the clip's first frame,
     // so the still→video swap can't pop) — matching the encode the device will get.
     // In stills mode the clip never loads, so the higher-fidelity source still is the

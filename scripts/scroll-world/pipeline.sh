@@ -104,9 +104,15 @@ encm() { # src dst — 720p, GOP 4 (cheap phone seeks), crf 23
   echo "  encm $(basename "$2") $(du -h "$2" | cut -f1)"
 }
 
-poster() { # srcClip dstWebp — poster MUST be the encoded clip's own first frame
+poster() { # srcClip dstWebp quality — poster MUST be the encoded clip's own first frame
+  # Quality split (Lighthouse "improve image delivery" budgets bytes against the
+  # VISIBLE crop only): full tier q60 keeps each 1080p poster under the ~280 KB
+  # desktop budget (q60 vs q84 is indistinguishable on this art — verified in
+  # side-by-side crops); the -m tier stays q84 because phones upscale it ~2x
+  # (artifacts magnify) and its portrait-crop budget (~43 KB) is unreachable
+  # without visibly degrading the halftone art anyway.
   ffmpeg -v error -y -ss 0 -i "$1" -frames:v 1 -q:v 2 "$WORK/_p.png"
-  cwebp -quiet -q 84 "$WORK/_p.png" -o "$2"
+  cwebp -quiet -q "${3:-84}" -m 6 "$WORK/_p.png" -o "$2"
 }
 
 case "${1:-}" in
@@ -142,8 +148,8 @@ case "${1:-}" in
     for n in $NAMES; do
       enc  "$WORK/dive_$n.mp4" "$ASSETS/vid/$n.mp4"
       encm "$WORK/dive_$n.mp4" "$ASSETS/vid/$n-m.mp4"
-      poster "$ASSETS/vid/$n.mp4"   "$ASSETS/$n-poster.webp"
-      poster "$ASSETS/vid/$n-m.mp4" "$ASSETS/$n-poster-m.webp"
+      poster "$ASSETS/vid/$n.mp4"   "$ASSETS/$n-poster.webp"   60
+      poster "$ASSETS/vid/$n-m.mp4" "$ASSETS/$n-poster-m.webp" 84
       cwebp -quiet -q 84 -resize 1800 0 "$WORK/still_$n.png" -o "$ASSETS/$n.webp"
     done
     i=0

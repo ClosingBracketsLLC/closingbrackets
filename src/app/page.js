@@ -16,13 +16,13 @@ export default function Home() {
       {/*
         The engine builds its DOM client-side, so the hero image (the LCP
         element) is otherwise discovered only after hydration. React hoists
-        these into <head>. The media split mirrors the engine's pick:
-        phoneClass (screen short side ≤600px) chooses posterMobile —
-        approximated here with viewport width AND height so landscape
-        phones still get the mobile tier. Reduced-motion visitors get the
-        full still (the engine's stills mode). Data-saver also forces
-        stills mode but has no media query; those users may fetch one
-        unused poster.
+        these into <head>. The media split is an EXACT mirror of the
+        engine's phoneClass pick (viewport short side ≤600px — see
+        scrub-engine.js): change one and the other must follow, or the
+        preloaded tier and the fetched tier diverge. Reduced-motion
+        visitors get the full still (the engine's stills mode). Data-saver
+        also forces stills mode but has no media query; those users may
+        fetch one unused poster.
       */}
       <link
         rel="preload"

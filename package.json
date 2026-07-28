@@ -7,9 +7,15 @@
   "engines": {
     "node": ">=20.9.0"
   },
+  "browserslist": [
+    "chrome >= 111",
+    "edge >= 111",
+    "firefox >= 128",
+    "safari >= 16.4"
+  ],
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/strip-legacy-polyfills.mjs",
     "lint": "eslint",
     "serve": "npx --yes serve@latest out"
   },

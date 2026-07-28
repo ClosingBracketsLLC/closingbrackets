@@ -118,3 +118,12 @@ services:
       - path: /assets/*
         name: Cache-Control
         value: public, max-age=2592000
+      # The topbar logo is referenced by URL from CSS (not content-hashed). Same
+      # 30-day / not-immutable reasoning as /assets/* — rename the file if it
+      # ever needs to change instantly.
+      - path: /logo-mark.svg
+        name: Cache-Control
+        value: public, max-age=2592000
+      # NOTE: public/serve.json mirrors these Cache-Control rules for the local
+      # `pnpm serve` preview so local Lighthouse runs match production headers.
+      # Keep the two in sync when editing cache lifetimes.
