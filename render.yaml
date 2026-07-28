@@ -145,3 +145,16 @@ services:
       - path: /img/*
         name: Cache-Control
         value: public, max-age=31536000, immutable
+      # Scroll-world camera clips (~110 MB across the chain). Repeat visitors
+      # should never re-download these, but the filenames carry no content hash
+      # and any clip can be re-rendered, so this is deliberately NOT immutable —
+      # a year-long immutable cache would pin a stale clip in every browser that
+      # ever loaded it. 30 days covers realistic repeat visits and still lets a
+      # re-render propagate. If these ever need `immutable`, move them under a
+      # versioned path (/assets/v2/...) rather than lengthening this.
+      - path: /assets/vid/*
+        name: Cache-Control
+        value: public, max-age=2592000
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=2592000
