@@ -121,7 +121,10 @@ export default function ContactForm() {
       <div className="grid gap-2">
         <label htmlFor="company" className={label}>
           Company{" "}
-          <span className="font-normal normal-case tracking-normal text-slate/60">
+          {/* Full-strength slate: at 60% this hit 2.66:1 on 12px text (WCAG AA
+              wants 4.5). It still reads as secondary via the case/tracking
+              contrast with the label, not via a dimmer colour. */}
+          <span className="font-normal normal-case tracking-normal text-slate">
             (optional)
           </span>
         </label>
@@ -145,7 +148,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === "sending"}
-        className="mt-2 w-full rounded-full bg-coral px-8 py-4 font-[family-name:var(--font-display)] font-medium text-ink transition hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan disabled:opacity-60 sm:w-auto sm:justify-self-start"
+        className="cb-halftone mt-2 w-full rounded-full bg-coral px-8 py-4 font-[family-name:var(--font-display)] text-ink transition hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan disabled:opacity-60 sm:w-auto sm:justify-self-start"
       >
         {status === "sending" ? "Sending…" : "Send enquiry"}
       </button>

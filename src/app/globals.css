@@ -13,6 +13,12 @@
   --coral: #ff4e64; /* accent · CTA */
   --bone: #f4f7ff; /* ink highlights · primary text */
   --slate: #7c89a6; /* secondary text */
+
+  /* Nav bar height, and with it the height the ECG trace sits at — the trace
+     is anchored to the header's bottom edge, so raising this lowers the line.
+     PageLayout's top padding has to stay clear of nav-h plus the trace's
+     17px overhang. */
+  --nav-h: clamp(68px, 9vh, 88px);
 }
 
 /* Expose the brand to Tailwind utilities (v4 is CSS-first — no config file). */
@@ -41,6 +47,12 @@
   --sw-accent: var(--cyan); /* per-section `accent` overrides this at runtime */
   --sw-font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
   --sw-font-body: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  /* Header/menu link colour, kept identical to the scroll world's body copy
+     (.sw-copy__body in scrub-engine.js) so the chrome reads at the same weight
+     as the words underneath it. Written out rather than pointed at the engine's
+     class because that file is portable and must not learn site tokens: if the
+     mix there changes, change it here too. */
+  --nav-ink: color-mix(in srgb, var(--sw-ink) 78%, var(--sw-ink-soft));
 }
 
 /* ------------------------------------------------------------------ */
@@ -51,56 +63,392 @@
 /* beats the engine's `@layer sw` regardless of injection order.       */
 /* ------------------------------------------------------------------ */
 
-/* Brand mark — the "]" neon sign. Engine ships a 24×28 gradient blob
-   placeholder; paint the master SVG into the same box. Two colours, so
-   background-image, not mask. The topbar only exists post-mount, so the
-   extra ~350 B request costs nothing paint-critical. */
-.sw-brand__mark {
-  border-radius: 0;
-  box-shadow: none;
-  background: url("/logo-mark.svg") center / contain no-repeat;
+/* ------------------------------------------------------------------ */
+/* Comic halftone — the print texture the whole button system shares.   */
+/* Two identical dot grids offset by half a cell make a staggered 45°   */
+/* screen (a single grid reads as graph paper, not newsprint). Sizes    */
+/* are deliberately small and low-contrast: at button scale this should */
+/* register as printed ink, never as a pattern competing with the label.*/
+/* Applies to `background-image`, so every consumer must set its fill   */
+/* with `background-color` — a `background:` shorthand would erase it.  */
+/* ------------------------------------------------------------------ */
+.cb-halftone,
+.sw-btn {
+  --cb-cell: 6px;
+  --cb-r: 1px;
+  /* Default screen: dark ink dots, correct for the coral/bone fills that
+     carry most buttons. Dark-filled buttons override it with a light dot. */
+  --cb-dot: color-mix(in srgb, var(--ink) 26%, transparent);
+  background-image: radial-gradient(
+      circle at center,
+      var(--cb-dot) var(--cb-r),
+      transparent calc(var(--cb-r) + 0.6px)
+    ),
+    radial-gradient(
+      circle at center,
+      var(--cb-dot) var(--cb-r),
+      transparent calc(var(--cb-r) + 0.6px)
+    );
+  background-size: var(--cb-cell) var(--cb-cell);
+  background-position: 0 0, calc(var(--cb-cell) / 2) calc(var(--cb-cell) / 2);
+  transition: background-position 0.3s ease, transform 0.2s, filter 0.2s;
+}
+/* Hover nudges the screen half a cell — a misregistered print pass.
+   (The reduced-motion block at the bottom of this file neutralises it.) */
+.cb-halftone:hover,
+.sw-btn:hover {
+  background-position: calc(var(--cb-cell) / 2) 0, 0 calc(var(--cb-cell) / 2);
 }
 
-/* Topbar nav — dark glass, not white glass. Blur stays (engine's). */
-.sw-nav {
-  background: color-mix(in srgb, var(--panel) 66%, transparent);
-  border-color: var(--rain);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--ink) 50%, transparent);
+/* ------------------------------------------------------------------ */
+/* Site header — one fixed bar on every page (SiteHeader.js). Owned     */
+/* outright rather than overridden onto engine chrome: the scroll       */
+/* engine no longer renders a topbar at all.                            */
+/* ------------------------------------------------------------------ */
+.site-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: var(--nav-h);
+  padding-inline: clamp(18px, 5vw, 64px);
+  /* Transparent on every page and at every scroll position: the bar sits over
+     full-bleed video on the homepage and over scrolling content elsewhere, and
+     in both cases each child carries its own ink halo instead of the bar
+     carrying a scrim. */
+  background: transparent;
 }
-.sw-nav__item:hover {
-  background: color-mix(in srgb, var(--bone) 8%, transparent);
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--bone);
 }
-.sw-nav__item.is-active {
-  color: var(--ink); /* engine's #fff-on-accent is unreadable on cyan; ink is ~14:1 */
+.site-brand img {
+  width: 24px;
+  height: 28px;
 }
-
-/* CTAs — coral pill, ink text (~6.2:1 AA), same recipe as the contact
-   form's send button. Engine default is #fff on bone (invisible). */
-.sw-topcta,
-.sw-btn--primary {
+.site-brand__name {
+  font-family: var(--font-display);
+  /* Nothing in a fixed-height row may wrap — a wrapped brand name bursts out
+     of the bar rather than merely looking cramped. */
+  white-space: nowrap;
+  font-size: clamp(0.95rem, 2.6vw, 1.1rem);
+  text-shadow: 0 1px 10px var(--ink), 0 0 20px var(--ink);
+}
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.6vw, 38px);
+}
+/* Chrome micro-labels ride the display face, uppercase and tracked — the
+   comic-caption register. Page titles stay sentence case (that's the copy). */
+.site-nav__link {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--nav-ink);
+  text-shadow: 0 1px 10px var(--ink), 0 0 20px var(--ink);
+  transition: color 0.25s;
+}
+.site-nav__link:hover {
+  color: var(--bone);
+}
+.site-nav__link[aria-current="page"] {
+  color: var(--cyan);
+}
+.site-cta {
+  --cb-dot: color-mix(in srgb, var(--ink) 26%, transparent);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
   color: var(--ink);
-  background: var(--coral);
-  font-family: var(--sw-font-display);
+  background-color: var(--coral);
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 10px 20px;
+  border-radius: 999px;
   box-shadow: 0 4px 18px color-mix(in srgb, var(--coral) 35%, transparent);
 }
-.sw-topcta:hover,
+.site-cta:hover {
+  filter: brightness(1.1);
+}
+.site-header__end {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Small-screen menu ------------------------------------------------- */
+/* The three links do not fit beside brand + CTA below ~720px, and the
+   homepage has no footer to fall back on (it is a fixed scroll world), so
+   without this there is no route to the other pages on a phone at all. */
+.site-burger {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  place-items: center;
+}
+.site-burger span,
+.site-burger span::before,
+.site-burger span::after {
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--bone);
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+.site-burger span::before,
+.site-burger span::after {
+  content: "";
+  position: relative;
+}
+.site-burger span::before {
+  top: -6px;
+}
+.site-burger span::after {
+  top: 4px;
+}
+/* Collapse the bars into a cross while open. */
+.site-burger span.is-open {
+  background: transparent;
+}
+.site-burger span.is-open::before {
+  transform: translateY(7px) rotate(45deg);
+}
+.site-burger span.is-open::after {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+.site-menu {
+  position: absolute;
+  inset: 100% 0 auto;
+  display: grid;
+  gap: 2px;
+  padding: 10px clamp(18px, 5vw, 64px) 18px;
+  /* No panel behind the links, matching the bar itself. What carries them over
+     full-bleed video is the per-link ink halo below, the same device the brand
+     and desktop nav already use. The rule stays: it is the only thing marking
+     where the open menu ends. */
+  background: transparent;
+}
+.site-menu[hidden] {
+  display: none;
+}
+.site-menu__link {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--nav-ink);
+  text-shadow: 0 1px 10px var(--ink), 0 0 20px var(--ink);
+  padding: 13px 0;
+}
+.site-menu__link[aria-current="page"] {
+  color: var(--cyan);
+}
+
+/* The burger breakpoint. SiteHeader mirrors this width as BURGER_UNDER and
+   watches it with matchMedia to close an open menu on the way back up to the
+   inline nav — change one and change the other. */
+@media (max-width: 720px) {
+  .site-nav {
+    display: none;
+  }
+  .site-burger {
+    display: grid;
+  }
+}
+@media (max-width: 600px) {
+  .site-cta {
+    font-size: 0.76rem;
+    padding: 9px 15px;
+  }
+}
+/* Narrow phones: the wordmark is the first thing that can go — the logo mark
+   still carries the brand, and losing it keeps brand + CTA + menu on one row. */
+@media (max-width: 400px) {
+  .site-brand__name {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Heart-rhythm border — the header's bottom edge drawn as an ECG trace */
+/* scrolling right to left, like a bedside monitor.                     */
+/*                                                                      */
+/* The waveform is a repeating MASK (pure geometry, no colour) over a    */
+/* solid accent fill, so the colour stays on the brand token instead of  */
+/* being baked as a hex into a data URI. The strip is one tile wider     */
+/* than the viewport and animates by exactly one tile, so the loop is    */
+/* seamless, and it animates `transform` only — no per-frame layout or   */
+/* paint, which matters because this runs forever on every page.         */
+/* ------------------------------------------------------------------ */
+.site-ecg {
+  position: absolute;
+  inset: auto 0 0;
+  height: 34px;
+  /* Sits astride the bar's bottom edge so the trace reads as the border. */
+  margin-bottom: -17px;
+  overflow: hidden;
+}
+/* Both layers draw the same waveform in the same place; only the colour and
+   the clip differ. The track is the unread remainder, the fill is progress. */
+.site-ecg__track,
+.site-ecg__fill {
+  position: absolute;
+  inset: 0;
+  mask-image: var(--ecg-wave);
+  mask-size: 200px 100%;
+  mask-repeat: repeat-x;
+  mask-position: left center;
+}
+.site-ecg__track {
+  /* Transparent by design: only the distance travelled is drawn, so the trace
+     appears to be written out ahead of you rather than filling in a visible
+     rail. The element stays because this is the one knob to turn if the
+     unread remainder should ever show again. */
+  background-color: transparent;
+}
+.site-ecg__fill {
+  background-color: var(--cyan);
+  opacity: 0.75;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--cyan) 55%, transparent));
+  /* A second mask layer fades the trace out behind you, so the drawn line reads
+     as a comet: solid at the leading edge, trailing off to nothing back at the
+     top of the page. Both stops are scaled by --progress, which keeps the fade
+     proportional to the length actually drawn — a fixed-length tail would swamp
+     the whole trace early on and then look like a stray highlight late. Alpha
+     is all a mask samples, so the colour is arbitrary. */
+  mask-image: var(--ecg-wave),
+    linear-gradient(
+      to right,
+      rgb(0 0 0 / 0) 0,
+      rgb(0 0 0 / 0.35) calc(var(--progress, 0) * 55%),
+      rgb(0 0 0 / 1) calc(var(--progress, 0) * 100%)
+    );
+  mask-size: 200px 100%, 100% 100%;
+  mask-repeat: repeat-x, no-repeat;
+  mask-position: left center, left center;
+  /* Keep only what both layers agree on: waveform geometry AND the fade. */
+  mask-composite: intersect;
+  /* --progress (0..1) is published by SiteHeader on scroll. Clipping rather
+     than scaling matters: scaleX would stretch the waveform instead of
+     revealing more of it. The gradient above is solid from the leading edge on,
+     so this is still what ends the trace. */
+  clip-path: inset(0 calc(100% - (var(--progress, 0) * 100%)) 0 0);
+}
+/* One beat: flat baseline, small P bump, a tall QRS spike, T bump, flat.
+   The spike deliberately swings most of the box height — at 34px tall and one
+   beat per 200px it should read as a monitor across the room, not as a
+   decorative squiggle. `stroke` colour is irrelevant: a mask samples alpha. */
+:root {
+  --ecg-wave: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 34' preserveAspectRatio='none'><path d='M0 17 H56 l5 -4 l5 4 H84 l4 5 l5 -20 l5 27 l4 -12 H132 l7 -6 l7 6 H200' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linejoin='round' stroke-linecap='round'/></svg>");
+}
+
+/* CTAs inside the scroll world. Both variants below are driven by --sw-accent,
+   which the engine sets per section from that slide's `accent` — the SAME
+   inline value it sets on the slide's route dot. So a button is always exactly
+   the colour of its own active dot on the rail, and a slide re-accented in
+   world.js re-colours its button and its dot together with no CSS edit.
+   Engine defaults assume a light page (#fff on bone — invisible here). */
+
+/* Primary — filled accent pill, ink text (coral/ink is ~6.2:1 AA).
+   `background-color`, not the shorthand: the halftone owns background-image. */
+.sw-btn--primary {
+  --cb-dot: color-mix(in srgb, var(--ink) 26%, transparent);
+  color: var(--ink);
+  background-color: var(--sw-accent);
+  font-family: var(--sw-font-display);
+  box-shadow: 0 4px 18px color-mix(in srgb, var(--sw-accent) 35%, transparent);
+}
 .sw-btn--primary:hover {
   filter: brightness(1.1);
 }
 
-/* Ghost CTA — faint ink glass so it stays legible over bright video.
-   (Text and border colours already come out right via the --sw-ink token.) */
+/* Ghost — accent text and rule on ink glass. The fill is heavier than the
+   accent-less version it replaces (62% vs 45%): bone stayed readable over a
+   bright frame on its own, but a mid-tone accent needs reliable dark backing
+   under it, and this pill sits over full-bleed video. */
 .sw-btn--ghost {
-  background: color-mix(in srgb, var(--ink) 45%, transparent);
+  --cb-dot: color-mix(in srgb, var(--bone) 14%, transparent);
+  color: var(--sw-accent);
+  border-color: color-mix(in srgb, var(--sw-accent) 55%, transparent);
+  background-color: color-mix(in srgb, var(--ink) 62%, transparent);
 }
 .sw-btn--ghost:hover {
   border-color: var(--sw-accent);
 }
 
-/* Route labels — dark glass instead of near-white. Blur is engine's. */
+/* Server-rendered first frame (see page.js). Sits one layer below the engine's
+   stage (z-10) so scene 0 paints over it once mounted. Every value here mirrors
+   the engine's .sw-scene__still at scroll position 0 — including its initial
+   `translateX(stageX - 2vw) scale(1.03)`, where stageX is 4 above 860px and 0
+   below — so the handoff cannot shift the framing. */
+.sw-preboot {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 42%;
+  transform: translateX(2vw) scale(1.03);
+  pointer-events: none;
+}
+@media (max-width: 860px) {
+  .sw-preboot {
+    object-position: center 46%;
+    transform: translateX(-2vw) scale(1.03);
+  }
+}
+@media (max-width: 860px) and (orientation: portrait) {
+  .sw-preboot {
+    object-position: center 44%;
+  }
+}
+/* Reduced motion drops the engine's 1.03 zoom but keeps its horizontal offset,
+   so this has to do exactly the same or the framing jumps at handoff. */
+@media (prefers-reduced-motion: reduce) {
+  .sw-preboot {
+    transform: translateX(2vw);
+  }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 860px) {
+  .sw-preboot {
+    transform: translateX(-2vw);
+  }
+}
+
+/* Route labels — no pill. Transparent, with the text carrying its own dot's
+   accent (each dot sets --sw-accent inline, so cyan scenes read cyan and
+   coral scenes read coral). The pill was also the legibility device, so an
+   ink halo replaces it against bright frames. */
 .sw-route__label {
-  background: color-mix(in srgb, var(--panel) 82%, transparent);
-  border-color: color-mix(in srgb, var(--sw-accent) 30%, transparent);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  right: 22px;
+  backdrop-filter: none;
+  color: var(--sw-accent);
+  font-family: var(--sw-font-display);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 3px var(--ink), 0 0 16px var(--ink), 0 0 28px var(--ink);
 }
 
 /* Sky — the engine's centre radial mixes 45% white into the night sky.
@@ -120,9 +468,9 @@
 
 /* Keyboard focus — engine ships none. Outline paints outside the box;
    zero layout impact. */
-.sw-brand:focus-visible,
-.sw-nav__item:focus-visible,
-.sw-topcta:focus-visible,
+.site-brand:focus-visible,
+.site-nav__link:focus-visible,
+.site-cta:focus-visible,
 .sw-btn:focus-visible,
 .sw-route__dot:focus-visible {
   outline: 2px solid var(--cyan);
@@ -147,6 +495,568 @@
       color-mix(in srgb, var(--coral) 5%, transparent),
       transparent 70%
     );
+}
+
+/* ================================================================== */
+/* Swarm field — the procedural 3D artwork behind the page headers      */
+/* (SwarmField.js). The canvas draws the geometry; everything here is   */
+/* the print treatment that lands it in the same world as the scroll    */
+/* world's generated frames.                                            */
+/* ================================================================== */
+.swarm-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* Dissolve at the edges instead of ending on a hard rectangle — the field
+     should read as a window onto something larger than the band. */
+  mask-image: radial-gradient(
+    120% 100% at 50% 42%,
+    #000 30%,
+    color-mix(in srgb, #000 45%, transparent) 62%,
+    transparent 88%
+  );
+}
+.swarm-field__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+/* ================================================================== */
+/* Page hero — full-bleed swarm band with the header copy over it.      */
+/* ================================================================== */
+.cb-hero {
+  position: relative;
+  isolation: isolate;
+  padding-top: calc(var(--nav-h) + clamp(48px, 9vh, 96px));
+  padding-bottom: clamp(40px, 7vh, 88px);
+  overflow: hidden;
+}
+/* Ink gradient under the copy column only, so the headline always clears the
+   swarm behind it without dimming the whole band. */
+.cb-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 55%;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--ink), transparent);
+}
+/* Halftone screen over the band's lower edge, fading out upward. The swarm is
+   drawn too fine to take the dot grid itself (see SwarmField.js), so the print
+   texture is laid over the band instead — it lands the generated-looking field
+   in the same world as the panels below it. */
+.cb-hero::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 180px;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle at center,
+    color-mix(in srgb, var(--bone) 9%, transparent) 1px,
+    transparent 1.7px
+  );
+  background-size: 7px 7px;
+  mask-image: linear-gradient(to top, #000 10%, transparent);
+}
+.cb-hero__swarm {
+  z-index: -2;
+}
+/* Breadcrumb trail — the visible counterpart to the BreadcrumbList JSON-LD
+   every second-level page emits. */
+.cb-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--slate);
+  text-shadow: 0 1px 10px var(--ink), 0 0 20px var(--ink);
+}
+.cb-crumbs a:hover {
+  color: var(--bone);
+}
+.cb-crumbs li:not(:last-child)::after {
+  content: "/";
+  margin-left: 10px;
+  color: color-mix(in srgb, var(--slate) 55%, transparent);
+}
+.cb-hero__title {
+  text-shadow: 0 2px 24px var(--ink), 0 0 60px var(--ink);
+}
+
+/* ================================================================== */
+/* Comic panel system — the shared surface for every card on the site.  */
+/* A hard 1.5px rule plus an UNBLURRED offset shadow is the printed     */
+/* sticker look; hovering slides the panel into its own shadow.         */
+/* Each consumer sets --cb-accent to tint the rule, shadow and glyphs.  */
+/* ================================================================== */
+.cb-panel {
+  --cb-accent: var(--cyan);
+  position: relative;
+  border: 1.5px solid var(--rain);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel) 80%, transparent);
+  transition: transform 0.22s ease, border-color 0.22s ease,
+    box-shadow 0.22s ease, background-color 0.22s ease;
+}
+.cb-panel--lift:hover,
+.cb-panel--lift:focus-within {
+  transform: translate(-3px, -3px);
+  border-color: color-mix(in srgb, var(--cb-accent) 60%, transparent);
+  background-color: color-mix(in srgb, var(--panel) 95%, transparent);
+  box-shadow: 5px 5px 0 0 color-mix(in srgb, var(--cb-accent) 32%, transparent);
+}
+/* Corner tick — the registration mark in a panel's top-left, drawn only on
+   the accent side so it reads as a printing crop mark. */
+.cb-panel--marked::before {
+  content: "";
+  position: absolute;
+  top: -1.5px;
+  left: -1.5px;
+  width: 34px;
+  height: 34px;
+  border-top: 3px solid var(--cb-accent);
+  border-left: 3px solid var(--cb-accent);
+  border-top-left-radius: 14px;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+/* Caption box — the boxed narration a comic runs in the corner of a panel. */
+.cb-caption {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background-color: var(--cb-accent, var(--cyan));
+  padding: 5px 11px;
+  border-radius: 3px;
+  --cb-cell: 5px;
+  --cb-r: 0.9px;
+}
+/* Ghost variant — same box, ink fill and an accent rule, for labels that must
+   not compete with the panel's own accent (e.g. the "concept build" tag). */
+.cb-caption--ghost {
+  color: var(--cb-accent, var(--cyan));
+  background-color: color-mix(in srgb, var(--ink) 70%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--cb-accent) 55%, transparent);
+}
+
+/* Outlined display numeral — the big ghosted figure behind a stage or step.
+   -webkit-text-stroke is the only cross-browser way to get a hollow face. */
+.cb-numeral {
+  font-family: var(--font-display);
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--cb-accent) 55%, transparent);
+  user-select: none;
+}
+
+/* Speed lines — the radial burst a comic uses for emphasis. Pure gradient, so
+   it costs one paint and no markup. */
+.cb-speedlines {
+  position: absolute;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    color-mix(in srgb, var(--cb-accent) 18%, transparent) 0deg 0.7deg,
+    transparent 0.7deg 6deg
+  );
+  mask-image: radial-gradient(closest-side, transparent 34%, #000 70%, transparent 100%);
+}
+
+/* ------------------------------------------------------------------ */
+/* Comic strip — the gutter grid.                                       */
+/*                                                                      */
+/* A comic page is not a set of floating cards; it is panels sharing a   */
+/* hard ink gutter inside one heavy frame. That is the whole trick here: */
+/* the grid's own background IS the gutter, `gap` is its width, and the  */
+/* border is the outer frame. Cells stay square-cornered inside a        */
+/* rounded frame, which is what keeps it reading as print rather than as */
+/* another card deck.                                                    */
+/*                                                                      */
+/* Cells never lift on hover — a panel that leaves the page would show   */
+/* the gutter through it. They ink instead: the fill firms up and an     */
+/* accent rule wipes in across the top edge.                             */
+/* ------------------------------------------------------------------ */
+.cb-strip {
+  --cb-accent: var(--cyan);
+  display: grid;
+  gap: 3px;
+  overflow: hidden;
+  border: 3px solid var(--rain);
+  border-radius: 14px;
+  background: var(--rain);
+}
+.cb-cell {
+  position: relative;
+  /* Opaque, unlike .cb-panel: the gutter must not read through the panels. */
+  background: color-mix(in srgb, var(--panel) 88%, var(--ink));
+  transition: background-color 0.22s ease;
+}
+.cb-cell:hover,
+.cb-cell:focus-within {
+  background-color: var(--panel);
+}
+.cb-cell::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--cb-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.32s ease;
+}
+.cb-cell:hover::after,
+.cb-cell:focus-within::after {
+  transform: scaleX(1);
+}
+
+/* Narration box — the squared-off caption a comic runs its narrator in.
+   Used for the asides that speak in the site's own voice rather than the
+   page's (the concept-build disclosure, chiefly). */
+.cb-narration {
+  border: 2px solid color-mix(in srgb, var(--cb-accent, var(--cyan)) 45%, transparent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--ink) 86%, var(--panel));
+}
+
+/* Speech balloon — one per page at most, for the line the page would say
+   out loud. The tail is two stacked triangles: the accent one is the
+   border, the fill one sits 2px inside it and masks the balloon's edge. */
+.cb-balloon {
+  position: relative;
+  border: 2px solid color-mix(in srgb, var(--cb-accent, var(--cyan)) 55%, transparent);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--ink) 86%, var(--panel));
+}
+.cb-balloon::before,
+.cb-balloon::after {
+  content: "";
+  position: absolute;
+  left: 44px;
+  width: 26px;
+  height: 20px;
+  clip-path: polygon(0 0, 100% 0, 16% 100%);
+}
+.cb-balloon::before {
+  bottom: -20px;
+  background: color-mix(in srgb, var(--cb-accent, var(--cyan)) 55%, transparent);
+}
+.cb-balloon::after {
+  bottom: -16px;
+  background: color-mix(in srgb, var(--ink) 86%, var(--panel));
+}
+
+/* Starburst — the printed sticker slapped on the panel. Exactly one on the
+   site, on the catalogue count: two would make it a motif and a motif would
+   make it a cartoon. Ten spikes, alternating radius 50%/37% from centre. */
+.cb-burst {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  width: 112px;
+  rotate: -8deg;
+  color: var(--ink);
+  background-color: var(--cb-accent, var(--coral));
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+  clip-path: polygon(
+    50% 0%, 61.4% 14.8%, 79.4% 9.5%, 79.9% 28.2%, 97.6% 34.5%,
+    87% 50%, 97.6% 65.5%, 79.9% 71.8%, 79.4% 90.5%, 61.4% 85.2%,
+    50% 100%, 38.6% 85.2%, 20.6% 90.5%, 20.1% 71.8%, 2.4% 65.5%,
+    13% 50%, 2.4% 34.5%, 20.1% 28.2%, 20.6% 9.5%, 38.6% 14.8%
+  );
+  --cb-cell: 5px;
+}
+
+/* Hand-drawn tick — the box a checklist item gets crossed off in. */
+.cb-tick {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: 2px solid color-mix(in srgb, var(--cb-accent, var(--cyan)) 70%, transparent);
+  border-radius: 3px;
+}
+.cb-tick::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0;
+  width: 5px;
+  height: 10px;
+  border: solid var(--cb-accent, var(--cyan));
+  border-width: 0 2px 2px 0;
+  transform: rotate(42deg);
+}
+
+/* ------------------------------------------------------------------ */
+/* Small repeated pieces. Each of these was the same 6-utility class     */
+/* string copy-pasted across every page; as tokens they change once.     */
+/* ------------------------------------------------------------------ */
+
+/* Micro-label above a block — the comic-caption register in plain type. */
+.cb-eyebrow {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
+/* Anchor chip — jump navigation and filter rows. */
+.cb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border: 1.5px solid var(--rain);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel) 60%, transparent);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate);
+  transition: color 0.22s, border-color 0.22s, background-color 0.22s;
+}
+.cb-chip:hover {
+  color: var(--bone);
+  border-color: color-mix(in srgb, var(--cb-accent, var(--cyan)) 55%, transparent);
+}
+
+/* Static tag — a term in a list (a stack entry, a service example). Not a
+   link, so it gets no hover state and no pointer affordance. */
+.cb-tag {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid var(--rain);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 40%, transparent);
+  font-size: 0.75rem;
+  color: var(--slate);
+}
+
+/* Forward link — the arrow that opens on hover. */
+.cb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cb-accent, var(--cyan));
+  transition: gap 0.22s ease, color 0.22s ease;
+}
+.cb-link:hover {
+  gap: 14px;
+}
+
+/* Button. Pairs with .cb-halftone, which owns background-image — so the
+   fill here has to be background-COLOR or the print screen is erased. */
+.cb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 28px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background-color: var(--coral);
+  box-shadow: 0 4px 18px color-mix(in srgb, var(--coral) 32%, transparent);
+  transition: background-position 0.3s ease, transform 0.2s, filter 0.2s,
+    border-color 0.2s;
+}
+.cb-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+.cb-btn--ghost {
+  color: var(--bone);
+  background-color: transparent;
+  border: 1.5px solid var(--rain);
+  box-shadow: none;
+}
+.cb-btn--ghost:hover {
+  border-color: color-mix(in srgb, var(--cb-accent, var(--cyan)) 70%, transparent);
+  filter: none;
+}
+.cb-btn:focus-visible,
+.cb-chip:focus-visible,
+.cb-link:focus-visible,
+.cb-tag:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+/* Clip frame — poster with a looping clip fading in over it (ClipFrame.js). */
+.cb-clip {
+  position: relative;
+  overflow: hidden;
+  background: var(--panel);
+}
+.cb-clip__poster,
+.cb-clip__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cb-clip__video {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  /* Held at zero until the first frame has actually decoded, so the swap can
+     never flash the black poster frame browsers paint before playback. */
+  transition: opacity 0.6s ease;
+}
+.cb-clip__video[data-ready="true"] {
+  opacity: 1;
+}
+/* Grade the footage into the night palette so it sits in the same world as the
+   generated frames rather than reading as stock dropped onto the page. */
+.cb-clip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--ink) 88%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      120% 80% at 50% 40%,
+      transparent 40%,
+      color-mix(in srgb, var(--ink) 45%, transparent) 100%
+    );
+}
+
+/* Article prose. Scoped rather than a global reset: only the long-form body
+   inside /content/[slug]/ opts in. */
+.cb-prose p {
+  margin-top: 1.35em;
+  line-height: 1.75;
+  color: var(--slate);
+}
+.cb-prose p:first-child {
+  margin-top: 0;
+}
+/* Opening paragraph runs larger and lighter — the drop-in a printed feature
+   uses to pull you past the headline. */
+.cb-prose > p:first-child {
+  font-size: 1.2rem;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--bone) 78%, var(--slate));
+}
+.cb-prose h2 {
+  margin-top: 2.6em;
+  margin-bottom: -0.4em;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.25;
+  color: var(--bone);
+}
+.cb-prose ul,
+.cb-prose ol {
+  margin-top: 1.35em;
+  display: grid;
+  gap: 0.7em;
+  color: var(--slate);
+  line-height: 1.65;
+}
+.cb-prose li {
+  position: relative;
+  padding-left: 1.6em;
+}
+.cb-prose ul li::before {
+  content: "";
+  position: absolute;
+  left: 0.25em;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--cb-accent, var(--cyan));
+}
+.cb-prose ol {
+  counter-reset: cb-ol;
+}
+.cb-prose ol li {
+  counter-increment: cb-ol;
+}
+.cb-prose ol li::before {
+  content: counter(cb-ol, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  color: var(--cb-accent, var(--cyan));
+}
+.cb-prose blockquote {
+  margin-top: 2em;
+  padding: 4px 0 4px 26px;
+  border-left: 3px solid var(--cb-accent, var(--cyan));
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  line-height: 1.45;
+  color: var(--bone);
+  text-wrap: balance;
+}
+.cb-prose pre {
+  margin-top: 2em;
+  padding: 22px 24px;
+  overflow-x: auto;
+  border: 1.5px solid var(--rain);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ink) 70%, var(--panel));
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--bone) 82%, var(--slate));
+  -webkit-overflow-scrolling: touch;
+}
+.cb-prose pre code {
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas,
+    monospace;
+}
+
+/* Section rule — a title with the hairline running out to the page edge. */
+.cb-rule {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.cb-rule::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--rain),
+    color-mix(in srgb, var(--rain) 20%, transparent)
+  );
 }
 
 html,

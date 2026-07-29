@@ -9,18 +9,22 @@
 // Asset paths are absolute (`/assets/...`). They must be: `trailingSlash: true`
 // means a page like /contact/ would resolve relative paths one level too deep.
 
-export const brand = {
-  name: "Closing Brackets",
-  href: "#top",
-};
-
-/** Persistent CTA in the engine chrome. Deliberately generic vs the finale's
-    button: an early clicker has only seen the hero; by the finale the visitor
-    knows what the fixed-scope plan is, so that button names the deliverable. */
-export const cta = {
-  label: "Start a project",
-  href: "/contact/",
-};
+// Brand and the persistent header CTA now live in data/site.js — they frame
+// every page, not just this one. The finale's own button stays here: it is part
+// of the scene copy, and deliberately differs from the header CTA because by
+// that point the visitor knows what the fixed-scope plan is.
+//
+// Section CTAs: two in the whole flight. The Forge carries a `secondary`
+// (ghost) button and the finale the only `primary`, so there is one obvious
+// action on the page and one quiet sidetrack — not a button per scene competing
+// with the flight itself. The other four scenes are deliberately bare: the hero
+// because its call to action is the scroll hint (and the header's "Start a
+// project" is already on screen above it), the rest because a claim you can
+// keep flying past does not need a door next to it.
+//
+// Buttons take their slide's `accent` at runtime, so a CTA always matches the
+// colour of its own dot on the route rail. Adding one back = a `cta` key here;
+// nothing in the CSS needs to know about it.
 
 export const sections = [
   {
@@ -63,6 +67,9 @@ export const sections = [
     eyebrow: "Custom software development",
     title: "Working software at every milestone",
     body: "Each stage comes off the floor as software you can use, not a status report. When we hand it over, you own all of the code.",
+    // Claims about how a build runs should be checkable in one click. /work/
+    // carries both the concept-build disclosure and the stage-by-stage process.
+    cta: { secondary: { label: "See the work", href: "/work/" } },
   },
   {
     id: "swarm",
@@ -106,8 +113,8 @@ export const sections = [
     eyebrow: "To the Moon!",
     title: "Prepare for Lift Off!",
     body: "We are ready to launch your project into the world. Our team will ensure a smooth and successful launch, with all systems go.",
-    // Single CTA on purpose: the only other route that exists is /contact/, and
-    // pointing the page's most prominent action at a 404 is worse than one button.
+    // The flight's only primary, and the only coral pill in it. Every earlier
+    // scene offers a ghost sidetrack; this one is the ask.
     cta: { primary: { label: "Get Started", href: "/contact/" } },
   },
 ];

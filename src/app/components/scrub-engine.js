@@ -29,10 +29,10 @@
            scroll: 1.6,   // optional per-section override of diveScroll — more scroll
                           // distance = a slower, longer dwell in this scene
            linger: 0.5,   // optional 0..1 — remaps time so the camera settles mid-scene
-                          // (exactly where the copy peaks) and moves quicker at the
+                          // (exactly where the copy holds) and moves quicker at the
                           // edges. 0 = linear (default). Keep ≤ 0.6; 1 = full pause.
            eyebrow, title, body, tags:[…],
-           cta:{ primary:{label,href}, secondary:{label,href} } }, // last section only
+           cta:{ primary:{label,href}, secondary:{label,href} } }, // any section
          …
        ],
        connectors: [clipUrl, …],          // length = sections.length - 1 (nulls allowed)
@@ -120,6 +120,17 @@ function mountScrollWorld(container, config) {
   const DIVE_W = config.diveScroll || 1.3;
   const CONN_W = config.connScroll || 0.9;
   const CROSSFADE = (config.crossfade != null) ? config.crossfade : 0.12;  // seam dissolve width (vh)
+  // Copy dwell, as a fraction of a section's own scroll length. The words ramp
+  // in over the first COPY_RAMP, hold at full opacity across the middle, then
+  // ramp out over the last COPY_RAMP — a trapezoid, not the triangle this used
+  // to be. A triangle is only fully opaque for an instant at mid-section and
+  // spends the rest of the scene in a wash, which reads as permanently
+  // half-arrived and gives a section CTA almost no window to be clicked in.
+  const COPY_RAMP = (config.copyRamp != null) ? config.copyRamp : 0.24;
+  // The first section is already at full opacity when the page lands, so it has
+  // no in-ramp — this is where its out-ramp ENDS, clearing the view for the
+  // dive. It holds solid until COPY_RAMP before this.
+  const HERO_COPY_OUT = (config.heroCopyOut != null) ? config.heroCopyOut : 0.68;
   // Scrub inertia: the whole page (video time, crossfades, copy) is driven from a
   // SMOOTHED scroll value that lerps toward the real one at this per-frame factor.
   // This bounds the camera's effective velocity, so a fast flick becomes a rapid
@@ -164,9 +175,15 @@ function mountScrollWorld(container, config) {
   }
   const particles = el('div', 'sw-particles'); sky.appendChild(particles);
 
-  const scrollbar = el('div', 'sw-scrollbar');
-  const scrollbarFill = el('span'); scrollbar.appendChild(scrollbarFill);
+  // `progress: false` omits the scroll-progress bar entirely (not just hides
+  // it) — no element, and read() skips the per-frame transform write.
+  const scrollbar = config.progress === false ? null : el('div', 'sw-scrollbar');
+  const scrollbarFill = scrollbar ? el('span') : null;
+  if (scrollbar) scrollbar.appendChild(scrollbarFill);
 
+  // The topbar is only mounted if something actually goes in it. A host page
+  // that renders its own header passes no brand/cta and `nav: false`, and gets
+  // no engine chrome at all rather than an empty fixed div over its own.
   const topbar = el('div', 'sw-topbar');
   if (config.brand) {
     const brand = el('a', 'sw-brand'); brand.href = (config.brand.href || '#');
@@ -188,7 +205,8 @@ function mountScrollWorld(container, config) {
   hint.appendChild(el('i'));
   const track = el('div', 'sw-track');
 
-  [sky, scrollbar, topbar, stage, copylayer, route, hint, track].forEach(n => container.appendChild(n));
+  [sky, scrollbar, topbar.childNodes.length ? topbar : null, stage, copylayer, route, hint, track]
+    .filter(Boolean).forEach(n => container.appendChild(n));
 
   // segment scenes
   SEGMENTS.forEach((s, i) => {
@@ -241,7 +259,7 @@ function mountScrollWorld(container, config) {
   const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
   const smooth = x => { x = clamp(x); return x * x * (3 - 2 * x); };
   // Per-section dwell: monotone remap of scroll→time so the camera settles mid-scene
-  // (where the copy peaks) and moves quicker near the seams. L=0 linear, L=1 full
+  // (where the copy holds) and moves quicker near the seams. L=0 linear, L=1 full
   // mid-scene pause. f(0)=0, f(1)=1 always, so seam frames are untouched.
   const lingerEase = (x, L) => { L = clamp(L); const c = x - 0.5; return (1 - L) * x + L * (4 * c * c * c + 0.5); };
   let vh = window.innerHeight, stageX = 0, totalW = 0, activeIndex = -1, ticking = false;
@@ -265,9 +283,25 @@ function mountScrollWorld(container, config) {
     read(ySmooth);
   }
 
+  // Jump to a section (nav item / route dot). ONE scroll write, then the flight
+  // is handed to the engine's own scrub inertia: ySmooth lerps toward the new
+  // position and read() plays every intermediate segment and seam crossfade in
+  // order — the same path a fast flick already takes, so a jump reads as the
+  // camera flying there rather than cutting.
+  //
+  // Two approaches were tried and rejected, both of which left the nav and the
+  // dots visibly dead or worse:
+  //   - `scrollTo({behavior:'smooth'})` (what this used to be) is silently a
+  //     no-op wherever the browser or OS has smooth scrolling disabled — it does
+  //     nothing rather than falling back to an instant scroll, so every nav item
+  //     and every route dot did nothing at all.
+  //   - A hand-rolled per-frame scrollTo tween works in a vacuum but storms the
+  //     scroll → seek pipeline on this page (one scroll write per frame, each
+  //     re-seeking several 1080p clips) and froze the renderer outright.
   function jumpTo(i) {
     const seg = SECTIONS[i]._seg;
-    window.scrollTo({ top: seg.start + (seg.end - seg.start) * 0.5, behavior: reduce ? 'auto' : 'smooth' });
+    const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    window.scrollTo(0, clamp(seg.start + (seg.end - seg.start) * 0.5, 0, max));
   }
 
   function enterStillsMode() {
@@ -340,10 +374,12 @@ function mountScrollWorld(container, config) {
       const seg = SECTIONS[i]._seg;
       const pr = clamp((y - seg.start) / (seg.end - seg.start), 0, 1);
       const before = y < seg.start, after = y > seg.end;
+      // smooth() clamps its input, so each ramp below is written as a bare
+      // fraction of COPY_RAMP and saturates at 1 across the hold.
       let cop;
-      if (i === 0) cop = after ? 0 : smooth(1 - pr / 0.62);            // greets on landing
-      else if (i === N - 1) cop = before ? 0 : smooth(pr / 0.4);       // holds CTA at the end
-      else cop = (before || after) ? 0 : smooth(1 - Math.abs(pr - 0.5) / 0.5);
+      if (i === 0) cop = after ? 0 : smooth((HERO_COPY_OUT - pr) / COPY_RAMP);  // greets on landing
+      else if (i === N - 1) cop = before ? 0 : smooth(pr / COPY_RAMP);          // holds CTA at the end
+      else cop = (before || after) ? 0 : smooth(Math.min(pr, 1 - pr) / COPY_RAMP);
       const c = copies[i];
       c.style.opacity = cop;
       c.style.transform = reduce ? 'none' : `translateY(${(0.5 - pr) * 4}vh)`;
@@ -359,7 +395,7 @@ function mountScrollWorld(container, config) {
       nav.querySelectorAll('.sw-nav__item').forEach((n, k) => n.classList.toggle('is-active', k === near));
       container.style.setProperty('--sw-accent', SECTIONS[near].accent || '');
     }
-    scrollbarFill.style.transform = `scaleX(${clamp(y / (totalW * vh))})`;
+    if (scrollbarFill) scrollbarFill.style.transform = `scaleX(${clamp(y / (totalW * vh))})`;
     hint.style.opacity = clamp(1 - y / (0.5 * vh));
     if (particles) particles.style.transform = `translate3d(0, ${-y * 0.05}px, 0)`;
     ticking = false;
@@ -510,7 +546,7 @@ function injectCSS() {
   .sw-scene__still{will-change:transform;} .sw-scene.has-clip .sw-scene__still{opacity:0;} .sw-scene__video{z-index:1;}
   .sw-copylayer{position:fixed;inset:0;z-index:20;pointer-events:none;}
   .sw-copylayer::before{content:"";position:absolute;inset:0;width:min(58vw,780px);background:linear-gradient(90deg,var(--sw-bg) 0%,color-mix(in srgb,var(--sw-bg) 82%,transparent) 34%,color-mix(in srgb,var(--sw-bg) 40%,transparent) 62%,transparent 100%);}
-  .sw-copy{position:absolute;left:clamp(18px,5vw,64px);top:50%;transform:translateY(-50%);width:min(42vw,460px);opacity:0;will-change:opacity,transform;}
+  .sw-copy{position:absolute;left:clamp(18px,5vw,64px);top:50%;transform:translateY(-50%);width:min(42vw,620px);opacity:0;will-change:opacity,transform;}
   .sw-copy__num{font-family:ui-monospace,Menlo,monospace;font-size:.74rem;letter-spacing:.12em;color:var(--sw-ink-soft);}
   .sw-copy__eyebrow{display:block;margin-top:18px;font-family:var(--sw-font-display);font-weight:700;font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sw-accent);}
   .sw-copy__title{font-family:var(--sw-font-display);font-weight:700;color:var(--sw-ink);font-size:clamp(2rem,4.4vw,3.5rem);line-height:1.03;margin:12px 0 0;letter-spacing:-.01em;text-shadow:0 2px 20px color-mix(in srgb,var(--sw-bg) 70%,transparent);}
@@ -527,7 +563,7 @@ function injectCSS() {
   .sw-route__dot i{width:9px;height:9px;border-radius:50%;background:color-mix(in srgb,var(--sw-accent) 40%,transparent);transition:transform .3s,background .3s,box-shadow .3s;}
   .sw-route__dot:hover i{transform:scale(1.25);background:var(--sw-accent);}
   .sw-route__dot.is-active i{background:var(--sw-accent);transform:scale(1.4);box-shadow:0 0 0 5px color-mix(in srgb,var(--sw-accent) 22%,transparent);}
-  .sw-route__label{position:absolute;right:24px;top:50%;transform:translateY(-50%) translateX(6px);white-space:nowrap;font-size:.78rem;font-weight:600;color:var(--sw-ink);background:color-mix(in srgb,#fff 85%,transparent);backdrop-filter:blur(6px);padding:5px 11px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;border:1px solid color-mix(in srgb,var(--sw-accent) 14%,transparent);}
+  .sw-route__label{position:absolute;right:24px;top:50%;transform:translateY(-50%) translateX(6px);white-space:nowrap;font-size:.78rem;font-weight:500;color:var(--sw-ink);background:color-mix(in srgb,#fff 85%,transparent);backdrop-filter:blur(6px);padding:5px 11px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;border:1px solid color-mix(in srgb,var(--sw-accent) 14%,transparent);}
   .sw-route__dot:hover .sw-route__label,.sw-route__dot.is-active .sw-route__label{opacity:1;transform:translateY(-50%) translateX(0);}
   .sw-hint{position:fixed;left:50%;bottom:26px;z-index:30;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sw-ink-soft);transition:opacity .3s;}
   .sw-hint i{width:22px;height:34px;border-radius:12px;border:2px solid color-mix(in srgb,var(--sw-ink) 28%,transparent);position:relative;}

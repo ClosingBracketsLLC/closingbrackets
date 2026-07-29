@@ -34,29 +34,39 @@ def data_uri(path, mime):
     return f"data:{mime};base64," + base64.b64encode(path.read_bytes()).decode()
 
 
-def find_space_grotesk():
-    """The latin (U+??) Space Grotesk subset from the built CSS."""
+DISPLAY_FAMILY = "Archivo Black"  # must track --font-display in layout.js
+
+
+def find_display_font():
+    """The latin (U+??) subset of the display face from the built CSS.
+
+    next/font has emitted the src url as both `../media/x.woff2` and
+    `/_next/static/media/x.woff2` across versions, so match either and keep
+    only the basename.
+    """
     for css in (REPO / "out/_next/static/chunks").glob("*.css"):
         for m in re.finditer(
-            r"font-family:Space Grotesk;[^}]*?url\(\.\./media/([^)]+\.woff2)\)"
+            rf"font-family:{DISPLAY_FAMILY};[^}}]*?url\(([^)]+\.woff2)\)"
             r"[^}]*?unicode-range:U\+\?\?,",
             css.read_text(),
         ):
-            return REPO / "out/_next/static/media" / m.group(1)
-    sys.exit("Space Grotesk woff2 not found — run `pnpm build` first.")
+            return REPO / "out/_next/static/media" / Path(m.group(1)).name
+    sys.exit(f"{DISPLAY_FAMILY} woff2 not found — run `pnpm build` first.")
 
 
 def main():
-    font = data_uri(find_space_grotesk(), "font/woff2")
+    font = data_uri(find_display_font(), "font/woff2")
     poster = data_uri(REPO / "public/assets/signal-poster.webp", "image/webp")
     logo = data_uri(REPO / "public/logo-mark.svg", "image/svg+xml")
 
     html = f"""<!doctype html><meta charset="utf-8"><style>
-      @font-face {{ font-family: "Space Grotesk"; font-weight: 300 700;
+      /* Archivo Black ships one weight; declaring 400 keeps the browser from
+         synthesising a fake bold on top of an already-black face. */
+      @font-face {{ font-family: "{DISPLAY_FAMILY}"; font-weight: 400;
                     src: url({font}) format("woff2"); }}
       * {{ margin: 0; }}
       body {{ width: 1200px; height: 630px; overflow: hidden; position: relative;
-              background: #060910; font-family: "Space Grotesk", sans-serif; }}
+              background: #060910; font-family: "{DISPLAY_FAMILY}", sans-serif; }}
       .poster {{ position: absolute; inset: 0; width: 100%; height: 100%;
                  object-fit: cover; }}
       .scrim {{ position: absolute; inset: 0; background:
@@ -66,13 +76,16 @@ def main():
       .col {{ position: absolute; left: 72px; top: 168px; }}
       .lockup {{ display: flex; align-items: center; gap: 16px; }}
       .lockup img {{ height: 56px; width: auto; }}
-      .lockup b {{ font-size: 36px; font-weight: 700; color: #F4F7FF;
+      /* Everything sits at 400 — see the @font-face note above. Sizes are a
+         notch below the old display face's: Archivo Black sets much wider, so
+         the h1 needs the room to stay on three lines inside the column. */
+      .lockup b {{ font-size: 34px; font-weight: 400; color: #F4F7FF;
                    letter-spacing: -0.01em; }}
-      .eyebrow {{ margin-top: 52px; font-size: 21px; font-weight: 500;
-                  letter-spacing: 0.24em; text-transform: uppercase;
+      .eyebrow {{ margin-top: 52px; font-size: 19px; font-weight: 400;
+                  letter-spacing: 0.22em; text-transform: uppercase;
                   color: #2EF2DC; }}
-      h1 {{ margin-top: 26px; width: 680px; font-size: 67px; font-weight: 700;
-            line-height: 1.16; letter-spacing: -0.01em; color: #F4F7FF; }}
+      h1 {{ margin-top: 26px; width: 700px; font-size: 58px; font-weight: 400;
+            line-height: 1.14; letter-spacing: -0.015em; color: #F4F7FF; }}
     </style>
     <img class="poster" src="{poster}"><div class="scrim"></div>
     <div class="col">

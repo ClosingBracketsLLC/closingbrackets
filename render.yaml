@@ -34,20 +34,45 @@ services:
     # so every rule fires. Both bare and trailing-slash sources are listed
     # because the old site was indexed with trailingSlash: true.
     #
-    # Only / and /contact/ exist today. A redirect that lands on a 404 throws
-    # away the old URL's link equity, so every content-ish source goes to /
-    # for now; retarget to /services/, /work/, /about/ etc. when those ship.
+    # Each source points at the CLOSEST real page rather than dumping every
+    # legacy URL on / — a redirect to a page that answers the original intent
+    # keeps that URL's link equity working. Real routes today: /, /services/,
+    # /work/, /content/, /contact/.
+    #
+    # IMPORTANT: never add a rule whose source is a real route. /services/ and
+    # /work/ used to redirect here and would now shadow the actual pages
+    # (Render only skips a rule when a file exists, and that is not a
+    # guarantee worth relying on).
     routes:
-      - { type: redirect, source: /solution/, destination: / }
-      - { type: redirect, source: /solution, destination: / }
-      - { type: redirect, source: /service/, destination: / }
-      - { type: redirect, source: /service, destination: / }
-      - { type: redirect, source: /case-studies-single/, destination: / }
-      - { type: redirect, source: /case-studies-single, destination: / }
-      - { type: redirect, source: /case-studies/, destination: / }
-      - { type: redirect, source: /case-studies, destination: / }
-      - { type: redirect, source: /how-it-work/, destination: / }
-      - { type: redirect, source: /how-it-work, destination: / }
+      # Service-shaped sources → /services/
+      - { type: redirect, source: /solution/, destination: /services/ }
+      - { type: redirect, source: /solution, destination: /services/ }
+      - { type: redirect, source: /service/, destination: /services/ }
+      - { type: redirect, source: /service, destination: /services/ }
+      # Case studies were the old site's portfolio → /work/
+      - { type: redirect, source: /case-studies-single/, destination: /work/ }
+      - { type: redirect, source: /case-studies-single, destination: /work/ }
+      - { type: redirect, source: /case-studies/, destination: /work/ }
+      - { type: redirect, source: /case-studies, destination: /work/ }
+      - { type: redirect, source: /how-it-work/, destination: /work/ }
+      - { type: redirect, source: /how-it-work, destination: /work/ }
+      - { type: redirect, source: /process/, destination: /work/ }
+      - { type: redirect, source: /process, destination: /work/ }
+      # Editorial sources → /content/
+      - { type: redirect, source: /blog/, destination: /content/ }
+      - { type: redirect, source: /blog, destination: /content/ }
+      - { type: redirect, source: /blog-single/, destination: /content/ }
+      - { type: redirect, source: /blog-single, destination: /content/ }
+      - { type: redirect, source: /documentation/, destination: /content/ }
+      - { type: redirect, source: /documentation, destination: /content/ }
+      # Conversion-intent sources → /contact/
+      - { type: redirect, source: /sign-in/, destination: /contact/ }
+      - { type: redirect, source: /sign-in, destination: /contact/ }
+      - { type: redirect, source: /sign-up/, destination: /contact/ }
+      - { type: redirect, source: /sign-up, destination: /contact/ }
+      # No page answers these yet, so they go home. Retarget if /about/ ships.
+      # No /* catch-all on purpose — mass-redirecting unknown URLs to / reads
+      # as soft-404s and erases the real 404 page.
       - { type: redirect, source: /patent/, destination: / }
       - { type: redirect, source: /patent, destination: / }
       - { type: redirect, source: /story/, destination: / }
@@ -56,29 +81,10 @@ services:
       - { type: redirect, source: /team, destination: / }
       - { type: redirect, source: /media-kit/, destination: / }
       - { type: redirect, source: /media-kit, destination: / }
-      - { type: redirect, source: /documentation/, destination: / }
-      - { type: redirect, source: /documentation, destination: / }
-      - { type: redirect, source: /blog-single/, destination: / }
-      - { type: redirect, source: /blog-single, destination: / }
-      - { type: redirect, source: /sign-in/, destination: /contact/ }
-      - { type: redirect, source: /sign-in, destination: /contact/ }
-      - { type: redirect, source: /sign-up/, destination: /contact/ }
-      - { type: redirect, source: /sign-up, destination: /contact/ }
-      - { type: redirect, source: /not-found/, destination: / }
-      - { type: redirect, source: /not-found, destination: / }
-      # Interim-site routes: the old redirect *destinations*, themselves dead.
-      # No /* catch-all on purpose — mass-redirecting unknown URLs to / reads
-      # as soft-404s and erases the real 404 page.
-      - { type: redirect, source: /services/, destination: / }
-      - { type: redirect, source: /services, destination: / }
-      - { type: redirect, source: /work/, destination: / }
-      - { type: redirect, source: /work, destination: / }
-      - { type: redirect, source: /process/, destination: / }
-      - { type: redirect, source: /process, destination: / }
       - { type: redirect, source: /about/, destination: / }
       - { type: redirect, source: /about, destination: / }
-      - { type: redirect, source: /blog/, destination: / }
-      - { type: redirect, source: /blog, destination: / }
+      - { type: redirect, source: /not-found/, destination: / }
+      - { type: redirect, source: /not-found, destination: / }
     # Security + caching headers for a strong Lighthouse "Best Practices" score.
     headers:
       # Render already force-redirects http -> https on custom domains, so HSTS

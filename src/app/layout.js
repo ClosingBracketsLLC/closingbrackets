@@ -1,22 +1,30 @@
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Archivo, Archivo_Black } from "next/font/google";
 import Script from "next/script";
+import SiteHeader from "./components/SiteHeader";
+import { SITE_URL, navLinks, ogImage, url } from "@/data/site";
 import "./globals.css";
 
 // Self-hosted at build time by next/font, so the static export makes no
 // third-party font requests at runtime.
-const body = Inter({
+//
+// The pair is one superfamily on purpose: Archivo Black is the comic-poster
+// display weight (heavy grotesque — the register of graphic-novel titling, and
+// what the halftone button texture is drawn to sit next to), and Archivo is its
+// text companion, so headline and body share skeletons instead of merely
+// coexisting. Micro-labels (section numbers) stay on the system mono stack —
+// a code register that fits the name, at zero download cost.
+const body = Archivo({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-body",
 });
 
-const display = Space_Grotesk({
+const display = Archivo_Black({
   subsets: ["latin"],
+  weight: "400", // the family IS the black weight; it ships no other
   display: "swap",
   variable: "--font-display",
 });
-
-const SITE_URL = "https://closingbrackets.com";
 
 // The site's one canonical description — meta tag and JSON-LD both read it.
 const DESCRIPTION =
@@ -35,15 +43,11 @@ export const metadata = {
     locale: "en_US",
     // No `url` here: metadata shallow-merges, so a layout-level og:url leaks
     // the homepage URL onto every page. Scrapers fall back to the fetched URL.
-    images: [
-      {
-        url: "/og.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Closing Brackets — custom software, growth marketing, and AI automation",
-        type: "image/jpeg",
-      },
-    ],
+    //
+    // That same shallow merge means any page declaring its own `openGraph`
+    // replaces this whole block — which is why pages build theirs with
+    // pageOg() in data/site.js rather than by hand.
+    images: [ogImage],
   },
   // twitter:title/description/image all resolve from openGraph when unset.
   twitter: { card: "summary_large_image" },
@@ -88,6 +92,14 @@ const jsonLd = {
       name: "Closing Brackets",
       publisher: { "@id": `${SITE_URL}/#organization` },
     },
+    // Declares the header nav to crawlers, which helps them treat these as the
+    // site's primary sections rather than incidental links.
+    {
+      "@type": "SiteNavigationElement",
+      "@id": `${SITE_URL}/#nav`,
+      name: navLinks.map((l) => l.label),
+      url: navLinks.map((l) => url(l.href)),
+    },
   ],
 };
 
@@ -115,6 +127,7 @@ export default function RootLayout({ children }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <SiteHeader />
         {children}
         {clarityId ? (
           <Script id="clarity" strategy="lazyOnload">

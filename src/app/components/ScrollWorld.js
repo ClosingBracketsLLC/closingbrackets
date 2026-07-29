@@ -2,13 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { mountScrollWorld } from "./scrub-engine";
-import {
-  brand,
-  cta,
-  sections,
-  connectors,
-  connectorsMobile,
-} from "@/data/world";
+import { sections, connectors, connectorsMobile } from "@/data/world";
 
 /**
  * Mounts the vanilla scrub engine into a container React owns but never
@@ -29,10 +23,12 @@ export default function ScrollWorld({ children }) {
     mounted.current = true;
 
     mountScrollWorld(ref.current, {
-      brand,
-      cta,
+      // No brand/cta/nav and no progress bar: SiteHeader renders the site's one
+      // header (with the real page links), so the engine mounts no chrome of
+      // its own — see the empty-topbar guard in scrub-engine.js.
+      nav: false,
+      progress: false,
       hint: "scroll to fly in",
-      nav: true,
       atmosphere: true,
       diveScroll: 1.4,
       connScroll: 0.9,
