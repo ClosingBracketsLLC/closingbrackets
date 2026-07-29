@@ -185,10 +185,10 @@ export default function Contact() {
         <p className="cb-balloon max-w-2xl p-7 text-lg leading-relaxed text-bone">
           Would rather just email? Write to{" "}
           <a
-            href="mailto:admin@closingbrackets.com"
+            href="mailto:letswork@closingbrackets.com"
             className="text-cyan underline decoration-cyan/40 underline-offset-4 transition hover:decoration-cyan"
           >
-            admin@closingbrackets.com
+            letswork@closingbrackets.com
           </a>{" "}
           and say what you are trying to build. It reaches {author.name} directly
           and gets the same answer in the same day.

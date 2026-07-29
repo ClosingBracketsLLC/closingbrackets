@@ -23,10 +23,10 @@ export default function SiteFooter() {
           </Link>
         </nav>
         <a
-          href="mailto:robert@closingbrackets.com"
+          href="mailto:inquire@closingbrackets.com"
           className="transition hover:text-cyan"
         >
-          robert@closingbrackets.com
+          inquire@closingbrackets.com
         </a>
       </div>
       {/* Full-strength slate: at 80% this was 3.95:1 on the ink background,
