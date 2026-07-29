@@ -2,14 +2,9 @@ import Link from "next/link";
 import PageLayout from "../components/PageLayout";
 import ContentsBanner from "../components/ContentsBanner";
 import CtaPanel from "../components/CtaPanel";
-import {
-  AccentList,
-  FrameList,
-  Numeral,
-  SectionHeading,
-} from "../components/primitives";
-import { breadcrumbLd, faqLd, graphLd, itemListLd, pageOg, url } from "@/data/site";
-import { faqs, hireABot, services } from "@/data/services";
+import { AccentList, FrameList, Numeral } from "../components/primitives";
+import { breadcrumbLd, graphLd, itemListLd, pageOg, url } from "@/data/site";
+import { hireABot, services } from "@/data/services";
 
 const TITLE = "Services";
 const PATH = "/services/";
@@ -27,9 +22,8 @@ export const metadata = {
   }),
 };
 
-/* Structured data. One graph, three nodes: where the page sits, what it lists,
-   and the questions it answers — the FAQ node is worth the most here, and only
-   stays valid because every answer is rendered visibly further down. */
+/* Structured data. One graph, two nodes: where the page sits, and what it
+   lists. */
 const jsonLd = graphLd(
   breadcrumbLd(TITLE, PATH),
   itemListLd(
@@ -40,7 +34,6 @@ const jsonLd = graphLd(
       description: service.summary,
     })),
   ),
-  faqLd(faqs),
 );
 
 /*
@@ -226,31 +219,6 @@ export default function Services() {
             <h3 className="cb-subhead">Jobs people hire one for</h3>
             <FrameList items={hireABot.roles} label="Agent roles" className="mt-4" />
           </div>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* Rendered in full, not behind disclosure toggles: these answers are
-          the FAQPage structured data above, and hidden text that does not
-          match what a visitor reads is the fastest way to lose the rich
-          result entirely. */}
-      <section className="mt-24">
-        <SectionHeading title="Questions we get every week" />
-        <div className="cb-strip mt-9 lg:grid-cols-2">
-          {faqs.map((item, i) => (
-            <div
-              key={item.q}
-              style={{ "--cb-accent": i % 2 ? "#ff4e64" : "#2ef2dc" }}
-              className={`cb-cell cb-tone ${
-                i % 2 ? "cb-tone--bl" : "cb-tone--tr"
-              } p-7 sm:p-8`}
-            >
-              <h3 className="font-[family-name:var(--font-display)] text-lg leading-snug text-bone">
-                {item.q}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-slate">{item.a}</p>
-            </div>
-          ))}
         </div>
       </section>
 
