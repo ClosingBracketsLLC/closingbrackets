@@ -1,7 +1,9 @@
 import Link from "next/link";
 import PageLayout from "../../components/PageLayout";
-import { SITE_URL, url } from "@/data/site";
+import ContentsBanner from "../../components/ContentsBanner";
+import { SITE_URL, graphLd, itemListLd, pageOg, url } from "@/data/site";
 import { assurances, catalog, hybrids, tiers } from "@/data/services";
+import { Numeral } from "../../components/primitives";
 
 const TITLE = "Service catalogue";
 const PATH = "/services/catalog/";
@@ -11,7 +13,52 @@ export const metadata = {
   description:
     "Every service Closing Brackets offers, described in full: project builds, ongoing retainers, AI audits, agent swarms, automation, growth marketing, and the bundled web and AI tiers.",
   alternates: { canonical: url(PATH) },
+  /* Built with pageOg, never by hand: Next shallow-merges metadata, so a page
+     declaring `openGraph` REPLACES the layout's object rather than merging
+     into it. This page had none at all, which meant it inherited the layout's
+     card but advertised the site's generic title on every share. */
+  openGraph: pageOg({
+    title: "The full service catalogue — every service, in full",
+    description:
+      "Project work, ongoing retainers, AI builds and bundled tiers. Each one says what is actually in it, and each is priced on the scope you agree.",
+    path: PATH,
+  }),
 };
+
+/*
+ * The page's own contents, in reading order. ONE list drives three things: the
+ * banner links, the numeral on each section heading, and the ItemList
+ * structured data — so a section cannot be numbered 04 in the banner and 05 on
+ * the page, and cannot appear in the markup but go missing from the schema.
+ *
+ * `Web + AI bundles` had no id at all before this, so it was the one block of
+ * real catalogue content with no anchor to link at.
+ */
+const SECTIONS = [
+  ...catalog.map((group) => ({
+    id: group.id,
+    title: group.title,
+    accent: group.accent,
+    description: group.blurb,
+  })),
+  {
+    id: "tiers",
+    title: "Bundled tiers",
+    accent: "#2ef2dc",
+    description:
+      "The à la carte services above, packaged. Each tier is everything in the one before it plus what is named.",
+  },
+  {
+    id: "bundles",
+    title: "Web + AI bundles",
+    accent: "#ff4e64",
+    description:
+      "Where the two halves of the business are bought together. Every one starts with the AI maturity audit.",
+  },
+];
+
+/** 1-based position of a section, so its numeral matches its banner entry. */
+const sectionNo = (id) => SECTIONS.findIndex((s) => s.id === id) + 1;
 
 /* Three levels deep, so the breadcrumb helper in data/site.js (which only
    models two) does not fit — this one is built out here. */
@@ -24,6 +71,22 @@ const breadcrumb = {
     { "@type": "ListItem", position: 3, name: TITLE, item: url(PATH) },
   ],
 };
+
+/* The page is a listing, so it says so. Sections rather than all ~50 services:
+   an ItemList entry wants a URL, the sections have anchors and the individual
+   services do not, and fifty entries all pointing at the same page URL is the
+   kind of padding that earns a manual action rather than a rich result. */
+const jsonLd = graphLd(
+  breadcrumb,
+  itemListLd(
+    "Service catalogue",
+    SECTIONS.map((section) => ({
+      name: section.title,
+      url: url(`${PATH}#${section.id}`),
+      description: section.description,
+    })),
+  ),
+);
 
 export default function Catalog() {
   const count = catalog.reduce((n, group) => n + group.items.length, 0);
@@ -42,25 +105,21 @@ export default function Catalog() {
     >
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Jump bar. Four groups plus the two bundle sections — enough page here
-          that landing at the top with no map is a bad experience. */}
-      <nav
-        aria-label="Catalogue sections"
-        className="flex flex-wrap gap-2 border-y border-rain py-4"
-      >
-        {catalog.map((group) => (
-          <a key={group.id} href={`#${group.id}`} className="cb-chip">
-            {group.title}
-            <span className="text-slate/70">{group.items.length}</span>
-          </a>
-        ))}
-        <a href="#tiers" className="cb-chip">
-          Bundled tiers
-        </a>
-      </nav>
+      {/* The contents banner — the same panel /services/ opens with, because
+          this is the same move: there is enough page here that landing at the
+          top with no map is a bad experience. */}
+      <ContentsBanner
+        label="Catalogue sections"
+        items={SECTIONS.map((section) => ({
+          href: `#${section.id}`,
+          title: section.title,
+          accent: section.accent,
+        }))}
+        className="mt-8"
+      />
 
       {catalog.map((group) => (
         <section
@@ -69,11 +128,16 @@ export default function Catalog() {
           style={{ "--cb-accent": group.accent }}
           className="mt-20 scroll-mt-28"
         >
-          <p className="cb-halftone cb-caption">{group.kind}</p>
-          <h2 className="mt-5 font-[family-name:var(--font-display)] text-3xl text-bone sm:text-4xl">
-            {group.title}
-          </h2>
-          <p className="mt-4 max-w-2xl leading-relaxed text-slate">{group.blurb}</p>
+          <div className="flex items-baseline gap-4">
+            <Numeral value={sectionNo(group.id)} className="text-5xl" />
+            <h2 className="font-[family-name:var(--font-display)] text-3xl text-bone sm:text-4xl">
+              {group.title}
+            </h2>
+          </div>
+          <p className="mt-4 text-sm" style={{ color: group.accent }}>
+            {group.kind}
+          </p>
+          <p className="mt-3 max-w-2xl leading-relaxed text-slate">{group.blurb}</p>
 
           <div className="mt-9 grid gap-4 md:grid-cols-2">
             {group.items.map((item) => (
@@ -90,7 +154,7 @@ export default function Catalog() {
                 <p className="mt-4 flex-1 text-sm leading-relaxed text-slate">
                   {item.detail}
                 </p>
-                <p className="mt-5 border-t border-rain/70 pt-4 text-xs text-slate/90">
+                <p className="mt-5 border-t border-rain/70 pt-4 text-xs text-slate">
                   <span className="font-[family-name:var(--font-display)] tracking-[0.14em] uppercase">
                     Goes with
                   </span>
@@ -104,21 +168,24 @@ export default function Catalog() {
 
       {/* ---------------------------------------------------------------- */}
       <section id="tiers" className="mt-24 scroll-mt-28">
-        <p className="cb-halftone cb-caption">Monthly · bundled</p>
-        <h2 className="mt-5 font-[family-name:var(--font-display)] text-3xl text-bone sm:text-4xl">
-          Bundled tiers
-        </h2>
-        <p className="mt-4 max-w-2xl leading-relaxed text-slate">
+        <div className="flex items-baseline gap-4">
+          <Numeral value={sectionNo("tiers")} className="text-5xl" />
+          <h2 className="font-[family-name:var(--font-display)] text-3xl text-bone sm:text-4xl">
+            Bundled tiers
+          </h2>
+        </div>
+        <p className="mt-4 text-sm text-cyan">Monthly · bundled</p>
+        <p className="mt-3 max-w-2xl leading-relaxed text-slate">
           The à la carte services above, packaged. Each tier is everything in
           the one before it plus what is named — so moving up never means
           giving anything up.
         </p>
 
-        <ol className="mt-9 grid gap-px overflow-hidden rounded-2xl border border-rain bg-rain">
+        <ol className="mt-9 grid gap-px border border-rain bg-rain">
           {tiers.map((tier) => (
             <li key={tier.name} className="bg-panel/75 p-6 sm:flex sm:gap-7 sm:p-7">
               <div className="flex items-baseline gap-4 sm:w-56 sm:shrink-0 sm:flex-col sm:items-start sm:gap-1">
-                <span className="cb-numeral text-3xl">{tier.n}</span>
+                <Numeral value={tier.n} className="text-3xl" />
                 <h3 className="font-[family-name:var(--font-display)] text-lg text-bone">
                   {tier.name}
                 </h3>
@@ -132,11 +199,15 @@ export default function Catalog() {
         </ol>
       </section>
 
-      <section className="mt-20">
-        <h2 className="cb-rule font-[family-name:var(--font-display)] text-2xl text-bone">
-          Web + AI bundles
-        </h2>
-        <p className="mt-4 max-w-2xl leading-relaxed text-slate">
+      <section id="bundles" className="mt-24 scroll-mt-28">
+        <div className="flex items-baseline gap-4">
+          <Numeral value={sectionNo("bundles")} className="text-5xl" />
+          <h2 className="font-[family-name:var(--font-display)] text-3xl text-bone sm:text-4xl">
+            Web + AI bundles
+          </h2>
+        </div>
+        <p className="mt-4 text-sm text-coral">Monthly · bundled</p>
+        <p className="mt-3 max-w-2xl leading-relaxed text-slate">
           Where the two halves of the business are bought together. Every one of
           these starts with the AI maturity audit, and the audit is what locks
           the final scope.
@@ -162,13 +233,13 @@ export default function Catalog() {
               <p className="mt-4 text-sm leading-relaxed text-slate">{h.body}</p>
               <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-2 border-t border-rain/70 pt-4 text-xs">
                 <div>
-                  <dt className="font-[family-name:var(--font-display)] tracking-[0.14em] text-slate/80 uppercase">
+                  <dt className="font-[family-name:var(--font-display)] tracking-[0.14em] text-slate uppercase">
                     Minimum term
                   </dt>
                   <dd className="mt-1 text-slate">{h.term}</dd>
                 </div>
                 <div>
-                  <dt className="font-[family-name:var(--font-display)] tracking-[0.14em] text-slate/80 uppercase">
+                  <dt className="font-[family-name:var(--font-display)] tracking-[0.14em] text-slate uppercase">
                     Best fit
                   </dt>
                   <dd className="mt-1 text-slate">{h.fit}</dd>
@@ -212,13 +283,13 @@ export default function Catalog() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/contact/"
-            className="cb-halftone inline-block rounded-full bg-coral px-7 py-3.5 font-[family-name:var(--font-display)] text-ink transition hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan"
+            className="cb-halftone cb-btn"
           >
             Start a conversation
           </Link>
           <Link
             href="/services/"
-            className="inline-block rounded-full border border-rain px-7 py-3.5 font-[family-name:var(--font-display)] text-slate transition hover:border-cyan/50 hover:text-bone focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan"
+            className="cb-btn cb-btn--ghost"
           >
             Back to services
           </Link>

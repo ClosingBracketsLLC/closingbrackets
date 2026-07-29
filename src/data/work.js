@@ -152,11 +152,3 @@ export const stages = [
     body: "If you want the marketing side too, it becomes a machine we keep running, bringing in customers every month while we tune what performs best.",
   },
 ];
-
-/** What a client is left holding at the end. */
-export const deliverables = [
-  "Working software, running in production",
-  "All of the source code, owned by you",
-  "The AI integrations wired into the systems you already run",
-  "A record of what was built and why",
-];

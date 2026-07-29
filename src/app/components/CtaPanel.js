@@ -24,7 +24,7 @@ export default function CtaPanel({
       className={`cb-panel cb-panel--marked relative isolate overflow-hidden p-8 sm:p-11 ${className}`}
     >
       <span aria-hidden className="cb-speedlines" />
-      {caption && <p className="cb-halftone cb-caption">{caption}</p>}
+      {caption && <p className="cb-eyebrow">{caption}</p>}
       <h2
         className={`max-w-xl font-[family-name:var(--font-display)] text-2xl leading-tight text-balance text-bone sm:text-3xl ${
           caption ? "mt-5" : ""

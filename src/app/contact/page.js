@@ -25,7 +25,7 @@ export default function Contact() {
           __html: JSON.stringify(breadcrumbLd(TITLE, PATH)),
         }}
       />
-      <div className="mt-12 max-w-2xl">
+      <div className="mt-12">
         <ContactForm />
       </div>
     </PageLayout>

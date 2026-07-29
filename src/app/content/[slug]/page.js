@@ -143,7 +143,7 @@ export default async function Post({ params }) {
             clip={post.media.clip}
             clipMobile={post.media.clipMobile}
             alt={`${post.title} — still`}
-            className="aspect-[16/9] w-full rounded-xl border border-rain"
+            className="aspect-[16/9] w-full border border-rain"
           />
           <figcaption className="mt-3 text-xs text-slate">
             {post.media.caption}
@@ -202,13 +202,13 @@ export default async function Post({ params }) {
         <div className="mt-7 flex flex-wrap gap-3">
           <Link
             href="/contact/"
-            className="cb-halftone inline-block rounded-full bg-coral px-6 py-3 font-[family-name:var(--font-display)] text-ink transition hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan"
+            className="cb-halftone cb-btn"
           >
             Start a conversation
           </Link>
           <Link
             href="/content/"
-            className="inline-block rounded-full border border-rain px-6 py-3 font-[family-name:var(--font-display)] text-slate transition hover:border-cyan/50 hover:text-bone focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan"
+            className="cb-btn cb-btn--ghost"
           >
             All writing
           </Link>

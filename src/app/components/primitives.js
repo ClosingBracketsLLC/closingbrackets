@@ -32,23 +32,16 @@ export function SectionHeading({ eyebrow, title, id, children }) {
   );
 }
 
-/**
- * Bulleted list with an accent dot. `marker="tick"` swaps the dot for a
- * checkbox, for lists of things you end up owning rather than things we do.
- */
-export function AccentList({ items, marker = "dot", className = "" }) {
+/** Bulleted list with a square accent marker. */
+export function AccentList({ items, className = "" }) {
   return (
     <ul className={`grid gap-2.5 ${className}`}>
       {items.map((item) => (
         <li key={item} className="flex gap-3 text-sm leading-relaxed text-slate">
-          {marker === "tick" ? (
-            <span aria-hidden className="cb-tick mt-0.5" />
-          ) : (
-            <span
-              aria-hidden
-              className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--cb-accent)]"
-            />
-          )}
+          <span
+            aria-hidden
+            className="mt-2 h-1.5 w-1.5 shrink-0 bg-[var(--cb-accent)]"
+          />
           {item}
         </li>
       ))}
@@ -64,6 +57,22 @@ export function TagRow({ items, label, className = "" }) {
         <li key={item} className="cb-tag">
           {item}
         </li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * Inset frame list — a panel within a panel, for the named things inside a
+ * block of work. The pill row it replaces read as a filter bar; none of these
+ * lists are filterable, and square corners keep the comic frame reading as
+ * print rather than as a second deck of cards.
+ */
+export function FrameList({ items, label, className = "" }) {
+  return (
+    <ul className={`cb-inset ${className}`} aria-label={label}>
+      {items.map((item) => (
+        <li key={item}>{item}</li>
       ))}
     </ul>
   );

@@ -5,12 +5,11 @@ import { useState } from "react";
 const ENDPOINT = "https://api.web3forms.com/submit";
 const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
 
-const field =
-  "w-full rounded-lg border border-rain bg-ink/60 px-4 py-3 text-bone " +
-  "placeholder:text-slate/70 outline-none transition " +
-  "focus:border-cyan focus:ring-2 focus:ring-cyan/40";
-
-const label = "text-xs font-medium uppercase tracking-[0.14em] text-slate";
+/* Field and label styling live in globals.css as .cb-field / .cb-label. An
+   input's border is a CONTROL boundary rather than decoration, so it answers
+   to WCAG 1.4.11 instead of to the panel ink, and that rule belongs beside the
+   rest of the system rather than in a hand-built utility string here. */
+const label = "cb-label";
 
 export default function ContactForm() {
   const [status, setStatus] = useState("idle"); // idle | sending | ok | error
@@ -70,7 +69,7 @@ export default function ContactForm() {
     return (
       <div
         role="status"
-        className="rounded-xl border border-cyan/40 bg-panel p-8 text-center shadow-[0_0_40px_color-mix(in_srgb,var(--cyan)_12%,transparent)]"
+        className="cb-panel cb-tone cb-tone--tr p-8 text-center"
       >
         <p className="font-[family-name:var(--font-display)] text-2xl text-bone">
           Message received
@@ -86,8 +85,12 @@ export default function ContactForm() {
   return (
     <form
       onSubmit={onSubmit}
-      className="grid gap-5 rounded-2xl border border-rain bg-panel/75 p-6 sm:p-8"
+      className="cb-panel cb-tone cb-tone--br grid gap-5 p-6 sm:p-8 md:grid-cols-3 md:gap-x-6"
     >
+      {/* The panel's caption box. Labels the form rather than repeating the
+          page title, which is the job a caption does in a comic. */}
+      <p className="cb-eyebrow justify-self-start md:col-span-3">Project enquiry</p>
+
       {/* Honeypot — visually hidden, never announced, never tabbable. */}
       <input
         type="checkbox"
@@ -102,7 +105,7 @@ export default function ContactForm() {
         <label htmlFor="name" className={label}>
           Name
         </label>
-        <input id="name" name="name" required className={field} />
+        <input id="name" name="name" required className="cb-field" />
       </div>
 
       <div className="grid gap-2">
@@ -114,7 +117,7 @@ export default function ContactForm() {
           name="email"
           type="email"
           required
-          className={field}
+          className="cb-field"
         />
       </div>
 
@@ -128,10 +131,10 @@ export default function ContactForm() {
             (optional)
           </span>
         </label>
-        <input id="company" name="company" className={field} />
+        <input id="company" name="company" className="cb-field" />
       </div>
 
-      <div className="grid gap-2">
+      <div className="grid gap-2 md:col-span-3">
         <label htmlFor="message" className={label}>
           Your project
         </label>
@@ -140,7 +143,7 @@ export default function ContactForm() {
           name="message"
           rows={6}
           required
-          className={field}
+          className="cb-field"
           placeholder="What do you want built, roughly when you need it, and anything already in place."
         />
       </div>
@@ -148,12 +151,12 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === "sending"}
-        className="cb-halftone mt-2 w-full rounded-full bg-coral px-8 py-4 font-[family-name:var(--font-display)] text-ink transition hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan disabled:opacity-60 sm:w-auto sm:justify-self-start"
+        className="cb-halftone cb-btn mt-2 w-full disabled:opacity-60 sm:w-auto sm:justify-self-start md:col-span-3"
       >
         {status === "sending" ? "Sending…" : "Send enquiry"}
       </button>
 
-      <p aria-live="polite" className="min-h-6 text-sm text-coral">
+      <p aria-live="polite" className="min-h-6 text-sm text-coral md:col-span-3">
         {status === "error" ? error : ""}
       </p>
     </form>

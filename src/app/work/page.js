@@ -5,7 +5,7 @@ import CtaPanel from "../components/CtaPanel";
 import { AccentList, Numeral, SectionHeading, TagRow } from "../components/primitives";
 import { breadcrumbLd, graphLd, itemListLd, pageOg, url } from "@/data/site";
 import { services } from "@/data/services";
-import { builds, deliverables, stages } from "@/data/work";
+import { builds, stages } from "@/data/work";
 
 const TITLE = "Work";
 const PATH = "/work/";
@@ -22,6 +22,22 @@ export const metadata = {
     path: PATH,
   }),
 };
+
+/*
+ * The builds run as a comic page: the featured build is the splash across the
+ * top, and the rest fall into tiers split 7/5 → 5/7. Equal columns read as a
+ * grid; unequal ones read as a page someone laid out. Each panel is handed its
+ * span and its dot-screen corner here rather than at the call site, and no two
+ * panels in a tier take their screen from the same side — a page of identically
+ * screened boxes reads as wallpaper. Cycles, so adding a sixth build needs no
+ * edit here.
+ */
+const TIERS = [
+  { span: "lg:col-span-7", tone: "cb-tone--tl" },
+  { span: "lg:col-span-5", tone: "cb-tone--br" },
+  { span: "lg:col-span-5", tone: "cb-tone--bl" },
+  { span: "lg:col-span-7", tone: "cb-tone--tr" },
+];
 
 /* Real client work sorts above concept builds automatically, so the first
    confirmed case study takes the top slot without touching this file. */
@@ -120,29 +136,13 @@ export default function Work() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Said once, up front, in plain words. The per-card tags repeat it, but
-          nobody should have to infer this from a badge. */}
-      {allConcept && (
-        <aside
-          style={{ "--cb-accent": "#ff4e64" }}
-          className="cb-narration flex flex-col gap-5 p-6 sm:flex-row sm:items-start sm:gap-7 sm:p-7"
-        >
-          <span className="cb-caption cb-caption--ghost self-start">Read this first</span>
-          <p className="max-w-3xl text-sm leading-relaxed text-slate">
-            <span className="text-bone">These are concept builds.</span> Each one
-            was designed and built by us to show what an engagement produces end
-            to end — the companies are invented, and nothing below is a client, a
-            testimonial, or a measured result. Real case studies go up here when
-            clients confirm them in writing, and not before.
-          </p>
-        </aside>
-      )}
-
-      {/* Featured build — the only moving thing on the page. */}
+      {/* Featured build — the splash panel, and the only moving thing on the
+          page. Screened bottom-right, where the copy is: a dot tone laid over
+          the film frame would fight the footage. */}
       <article
         id={featured.id}
         style={{ "--cb-accent": featured.accent }}
-        className="cb-panel cb-panel--marked mt-5 scroll-mt-28 overflow-hidden"
+        className="cb-panel cb-splash cb-tone cb-tone--br mt-5 scroll-mt-28 overflow-hidden"
       >
         {featured.clip && (
           <ClipFrame
@@ -157,7 +157,7 @@ export default function Work() {
         <div className="p-7 sm:p-10">
           <div className="flex flex-wrap items-center gap-3">
             {featured.concept && (
-              <span className="cb-caption cb-caption--ghost">Concept build</span>
+              <span className="cb-eyebrow text-[var(--cb-accent)]">Concept build</span>
             )}
             <span className="text-xs text-slate">{featured.sector}</span>
           </div>
@@ -173,17 +173,19 @@ export default function Work() {
         </div>
       </article>
 
-      <div className="cb-strip mt-5 lg:grid-cols-2">
-        {others.map((build) => (
+      <div className="cb-strip mt-3 lg:grid-cols-12">
+        {others.map((build, i) => (
           <article
             key={build.id}
             id={build.id}
             style={{ "--cb-accent": build.accent }}
-            className="cb-cell flex scroll-mt-28 flex-col p-7 sm:p-9"
+            className={`cb-cell cb-tone ${TIERS[i % TIERS.length].tone} ${
+              TIERS[i % TIERS.length].span
+            } flex scroll-mt-28 flex-col p-7 sm:p-9`}
           >
             <div className="flex flex-wrap items-center gap-3">
               {build.concept && (
-                <span className="cb-caption cb-caption--ghost">Concept build</span>
+                <span className="cb-eyebrow text-[var(--cb-accent)]">Concept build</span>
               )}
               <span className="text-xs text-slate">{build.sector}</span>
             </div>
@@ -210,7 +212,9 @@ export default function Work() {
             <li
               key={stage.step}
               style={{ "--cb-accent": i % 2 ? "#ff4e64" : "#2ef2dc" }}
-              className="cb-cell p-6 sm:p-7"
+              className={`cb-cell cb-tone ${
+                i % 2 ? "cb-tone--bl" : "cb-tone--tr"
+              } p-6 sm:p-7`}
             >
               <Numeral value={stage.step} className="text-4xl" />
               <h3 className="mt-4 font-[family-name:var(--font-display)] text-xl text-bone">
@@ -220,22 +224,6 @@ export default function Work() {
             </li>
           ))}
         </ol>
-      </section>
-
-      <section className="mt-20">
-        <SectionHeading eyebrow="At handover" title="What you are left holding" />
-        <ul className="cb-strip mt-9 sm:grid-cols-2 lg:grid-cols-4">
-          {deliverables.map((item, i) => (
-            <li
-              key={item}
-              style={{ "--cb-accent": i % 2 ? "#ff4e64" : "#2ef2dc" }}
-              className="cb-cell flex gap-4 p-6 text-sm leading-relaxed text-slate"
-            >
-              <span aria-hidden className="cb-tick mt-0.5" />
-              {item}
-            </li>
-          ))}
-        </ul>
       </section>
 
       <CtaPanel

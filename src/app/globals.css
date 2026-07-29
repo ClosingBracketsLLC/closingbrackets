@@ -58,10 +58,33 @@
 /* ------------------------------------------------------------------ */
 /* Engine chrome → Ink & Neon. The injected defaults assume a light    */
 /* page (white glass, ink pills, #fff text). Every rule here is colour */
-/* / border / shadow / type ONLY — the flight is pixel-QA'd, nothing   */
-/* below moves, resizes, or re-stacks anything. Unlayered on purpose:  */
-/* beats the engine's `@layer sw` regardless of injection order.       */
+/* / border / radius / shadow / type ONLY — the flight is pixel-QA'd,  */
+/* nothing below moves, resizes, or re-stacks anything, and a radius   */
+/* is paint rather than layout. Unlayered on purpose: beats the        */
+/* engine's `@layer sw` regardless of injection order.                 */
 /* ------------------------------------------------------------------ */
+
+/* Square corners, same as the rest of the site. Enumerated rather than
+   blanketed over `.sw-root *` so it stays greppable against the engine's own
+   sheet — every selector here has a matching `border-radius` in
+   scrub-engine.js, and a version bump that adds one will show up as a pill on
+   the homepage. .sw-route__label is squared where it is themed further down.
+
+   NOT listed, deliberately: `.sw-route__dot i` (the route rail down the right
+   edge) and `.sw-pt::before` (the drifting motes in the scene). Those are
+   round OBJECTS, not boxes that happen to have rounded corners — a squared
+   route dot reads as a glitch and the ring mote becomes a square outline. The
+   rule this file is applying is "no rounded rectangles", not "no circles". */
+.sw-brand__mark,
+.sw-nav,
+.sw-nav__item,
+.sw-topcta,
+.sw-copy__tags li,
+.sw-btn,
+.sw-hint i,
+.sw-hint i::after {
+  border-radius: 0;
+}
 
 /* ------------------------------------------------------------------ */
 /* Comic halftone — the print texture the whole button system shares.   */
@@ -145,8 +168,9 @@
   align-items: center;
   gap: clamp(16px, 2.6vw, 38px);
 }
-/* Chrome micro-labels ride the display face, uppercase and tracked — the
-   comic-caption register. Page titles stay sentence case (that's the copy). */
+/* Chrome micro-labels ride the display face, uppercase and tracked — the same
+   register as .cb-eyebrow in the page body, restated here because the header
+   is styled standalone. Page titles stay sentence case (that's the copy). */
 .site-nav__link {
   font-family: var(--font-display);
   font-size: 0.72rem;
@@ -173,7 +197,6 @@
   text-decoration: none;
   white-space: nowrap;
   padding: 10px 20px;
-  border-radius: 999px;
   box-shadow: 0 4px 18px color-mix(in srgb, var(--coral) 35%, transparent);
 }
 .site-cta:hover {
@@ -205,7 +228,6 @@
   display: block;
   width: 20px;
   height: 2px;
-  border-radius: 2px;
   background: var(--bone);
   transition: transform 0.22s ease, opacity 0.22s ease;
 }
@@ -593,15 +615,41 @@
 
 /* ================================================================== */
 /* Comic panel system — the shared surface for every card on the site.  */
-/* A hard 1.5px rule plus an UNBLURRED offset shadow is the printed     */
-/* sticker look; hovering slides the panel into its own shadow.         */
-/* Each consumer sets --cb-accent to tint the rule, shadow and glyphs.  */
+/*                                                                      */
+/* THE BORDER IS DRAWN THE WAY A COMIC DRAWS IT. Researched, and the    */
+/* first pass had the anatomy inverted, so the rules below are load-    */
+/* bearing rather than taste:                                           */
+/*                                                                      */
+/*   · Every panel carries its OWN inked outline. The gutter between    */
+/*     panels is bare page showing through — not a coloured bar         */
+/*     standing in for a border, which is what .cb-strip used to be.    */
+/*     It follows that there is no outer page frame to draw: the edge   */
+/*     of a comic page is just the outer panels' own borders.           */
+/*                                                                      */
+/*   · Corners are square. Comic panels are rectangles; a rounded       */
+/*     corner is the flashback/memory signal, and a page of them reads  */
+/*     as the card deck this system exists not to be. Speech balloons   */
+/*     keep their radius — balloons ARE round.                          */
+/*                                                                      */
+/*   · The border weight is uneven on purpose. A ruled digital line     */
+/*     reads as lifelessly geometric; pros ink freehand over a ruled    */
+/*     guide for the unevenness, and a brush loaded down the shadow     */
+/*     side leaves the bottom and right heavier. One pixel is enough —  */
+/*     two starts to look like a mistake.                               */
+/*                                                                      */
+/* This page prints in negative: the stock is black, so the drawn line  */
+/* is a lifted rain rather than an ink black. Each consumer sets        */
+/* --cb-accent to tint the ink, the shadow and the glyphs.              */
 /* ================================================================== */
+:root {
+  --cb-ink: color-mix(in srgb, var(--rain) 86%, var(--bone));
+}
+
 .cb-panel {
   --cb-accent: var(--cyan);
   position: relative;
-  border: 1.5px solid var(--rain);
-  border-radius: 14px;
+  border: 2px solid var(--cb-ink);
+  border-width: 2px 3px 3px 2px;
   background: color-mix(in srgb, var(--panel) 80%, transparent);
   transition: transform 0.22s ease, border-color 0.22s ease,
     box-shadow 0.22s ease, background-color 0.22s ease;
@@ -618,37 +666,14 @@
 .cb-panel--marked::before {
   content: "";
   position: absolute;
-  top: -1.5px;
-  left: -1.5px;
+  top: -2px;
+  left: -2px;
   width: 34px;
   height: 34px;
   border-top: 3px solid var(--cb-accent);
   border-left: 3px solid var(--cb-accent);
-  border-top-left-radius: 14px;
   opacity: 0.75;
   pointer-events: none;
-}
-
-/* Caption box — the boxed narration a comic runs in the corner of a panel. */
-.cb-caption {
-  display: inline-block;
-  font-family: var(--font-display);
-  font-size: 0.68rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink);
-  background-color: var(--cb-accent, var(--cyan));
-  padding: 5px 11px;
-  border-radius: 3px;
-  --cb-cell: 5px;
-  --cb-r: 0.9px;
-}
-/* Ghost variant — same box, ink fill and an accent rule, for labels that must
-   not compete with the panel's own accent (e.g. the "concept build" tag). */
-.cb-caption--ghost {
-  color: var(--cb-accent, var(--cyan));
-  background-color: color-mix(in srgb, var(--ink) 70%, transparent);
-  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--cb-accent) 55%, transparent);
 }
 
 /* Outlined display numeral — the big ghosted figure behind a stage or step.
@@ -680,58 +705,149 @@
 /* ------------------------------------------------------------------ */
 /* Comic strip — the gutter grid.                                       */
 /*                                                                      */
-/* A comic page is not a set of floating cards; it is panels sharing a   */
-/* hard ink gutter inside one heavy frame. That is the whole trick here: */
-/* the grid's own background IS the gutter, `gap` is its width, and the  */
-/* border is the outer frame. Cells stay square-cornered inside a        */
-/* rounded frame, which is what keeps it reading as print rather than as */
-/* another card deck.                                                    */
+/* The grid contributes the gutter and NOTHING else: no frame, no fill, */
+/* no clipping. Each cell draws its own edge (see .cb-panel above for    */
+/* why), so all this element owns is the space between them.            */
 /*                                                                      */
-/* Cells never lift on hover — a panel that leaves the page would show   */
-/* the gutter through it. They ink instead: the fill firms up and an     */
-/* accent rule wipes in across the top edge.                             */
+/* A gutter is a channel, not a hairline — it is the width of it that    */
+/* reads as time passing between panels. Uniform on both axes, because   */
+/* nothing on this site skips time mid-row.                             */
+/*                                                                      */
+/* Cells never lift on hover — a panel that leaves the page would drag   */
+/* the gutter open behind it. They ink instead: the fill firms up and    */
+/* the panel's own border takes the accent. The border IS the panel, so  */
+/* the border is what answers the pointer.                              */
 /* ------------------------------------------------------------------ */
 .cb-strip {
   --cb-accent: var(--cyan);
   display: grid;
-  gap: 3px;
-  overflow: hidden;
-  border: 3px solid var(--rain);
-  border-radius: 14px;
-  background: var(--rain);
+  gap: 11px;
 }
 .cb-cell {
   position: relative;
-  /* Opaque, unlike .cb-panel: the gutter must not read through the panels. */
+  border: 2px solid var(--cb-ink);
+  border-width: 2px 3px 3px 2px;
+  /* Opaque, unlike .cb-panel: a page showing through a panel is a hole. */
   background: color-mix(in srgb, var(--panel) 88%, var(--ink));
-  transition: background-color 0.22s ease;
+  transition: background-color 0.22s ease, border-color 0.22s ease;
 }
 .cb-cell:hover,
 .cb-cell:focus-within {
   background-color: var(--panel);
+  border-color: color-mix(in srgb, var(--cb-accent) 62%, var(--cb-ink));
 }
-.cb-cell::after {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: 2px;
-  background: var(--cb-accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.32s ease;
-}
-.cb-cell:hover::after,
-.cb-cell:focus-within::after {
-  transform: scaleX(1);
+/* Heavier ink on a panel the page opens with. A thick border emphasises a
+   moment and slows the read, which is what a splash panel is for. */
+.cb-splash {
+  border-width: 3px 4px 4px 3px;
 }
 
-/* Narration box — the squared-off caption a comic runs its narrator in.
-   Used for the asides that speak in the site's own voice rather than the
-   page's (the concept-build disclosure, chiefly). */
-.cb-narration {
-  border: 2px solid color-mix(in srgb, var(--cb-accent, var(--cyan)) 45%, transparent);
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--ink) 86%, var(--panel));
+/* ------------------------------------------------------------------ */
+/* Ben-Day tone — the dot screen a comic lays over PART of a panel.     */
+/*                                                                      */
+/* Distinct from .cb-halftone, which is a uniform print texture sized   */
+/* for buttons and caption boxes. This one is panel-scale and masked to */
+/* one corner, so it reads as a screen the artist laid down rather than */
+/* as a background pattern. --cb-tone-at moves that corner: no two      */
+/* panels in a tier should be screened from the same side, which is     */
+/* what stops a grid of dotted boxes from looking like wallpaper.       */
+/*                                                                      */
+/* `isolation` is load-bearing. The tone paints at z-index -1 so page   */
+/* copy stays above it, and that only stays scoped to this panel if the */
+/* panel forms its own stacking context — without it the dots fall      */
+/* behind an ancestor's background and vanish.                          */
+/* ------------------------------------------------------------------ */
+.cb-tone {
+  isolation: isolate;
+}
+.cb-tone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle at center,
+    color-mix(in srgb, var(--cb-accent, var(--cyan)) 24%, transparent) 1.15px,
+    transparent 1.95px
+  );
+  background-size: 8px 8px;
+  mask-image: radial-gradient(
+    140% 115% at var(--cb-tone-at, 100% 0%),
+    #000 0%,
+    color-mix(in srgb, #000 32%, transparent) 44%,
+    transparent 74%
+  );
+}
+.cb-tone--tl {
+  --cb-tone-at: 0% 0%;
+}
+.cb-tone--bl {
+  --cb-tone-at: 0% 100%;
+}
+.cb-tone--br {
+  --cb-tone-at: 100% 100%;
+}
+
+/* Inset frame — the boxed roster a comic runs inside a panel, square-
+   cornered so it reads as a panel within a panel rather than as another
+   rounded card. This is what replaced the pill rows: a pill says "tag,
+   filter me", and none of these lists are filterable. */
+.cb-inset {
+  border: 1.5px solid color-mix(in srgb, var(--cb-accent, var(--cyan)) 30%, transparent);
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+.cb-inset > li {
+  position: relative;
+  padding: 9px 14px 9px 27px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--slate);
+}
+.cb-inset > li + li {
+  border-top: 1px solid color-mix(in srgb, var(--rain) 85%, transparent);
+}
+/* A bar, not a block. AccentList's bullet used to be the round one and this
+   the square one; now that nothing on the site is round, the two would be the
+   same 5px mark sitting side by side in every panel, so this one becomes a
+   short rule instead. Length, not shape, is what tells them apart. */
+.cb-inset > li::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 0.95em;
+  width: 2px;
+  height: 11px;
+  background: var(--cb-accent, var(--cyan));
+}
+
+/* Index entry — the contents line across the top of the comic page. Reads
+   as printed type with the panel number inked in accent; deliberately not a
+   pill, so the banner stays part of the page's frame rather than floating
+   a row of buttons above it. */
+.cb-index {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  padding-bottom: 2px;
+  border-bottom: 1.5px solid transparent;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--slate);
+  transition: color 0.22s, border-color 0.22s;
+}
+.cb-index__n {
+  color: var(--cb-accent, var(--cyan));
+}
+.cb-index:hover {
+  color: var(--bone);
+  border-bottom-color: var(--cb-accent, var(--cyan));
+}
+.cb-index:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
 }
 
 /* Speech balloon — one per page at most, for the line the page would say
@@ -740,7 +856,6 @@
 .cb-balloon {
   position: relative;
   border: 2px solid color-mix(in srgb, var(--cb-accent, var(--cyan)) 55%, transparent);
-  border-radius: 18px;
   background: color-mix(in srgb, var(--ink) 86%, var(--panel));
 }
 .cb-balloon::before,
@@ -787,33 +902,34 @@
   --cb-cell: 5px;
 }
 
-/* Hand-drawn tick — the box a checklist item gets crossed off in. */
-.cb-tick {
-  position: relative;
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  border: 2px solid color-mix(in srgb, var(--cb-accent, var(--cyan)) 70%, transparent);
-  border-radius: 3px;
-}
-.cb-tick::after {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 0;
-  width: 5px;
-  height: 10px;
-  border: solid var(--cb-accent, var(--cyan));
-  border-width: 0 2px 2px 0;
-  transform: rotate(42deg);
-}
-
 /* ------------------------------------------------------------------ */
 /* Small repeated pieces. Each of these was the same 6-utility class     */
 /* string copy-pasted across every page; as tokens they change once.     */
 /* ------------------------------------------------------------------ */
 
-/* Micro-label above a block — the comic-caption register in plain type. */
+/* Sub-heading inside a panel.
+ *
+ * This exists because a <p class="cb-eyebrow"> was doing the job of a heading
+ * in several places: it named the block of content under it, which is the
+ * definition of a heading, but contributed nothing to the document outline.
+ * Screen-reader users navigate by heading, and a label that is only a label by
+ * visual convention is invisible to that. So the labels that name a block are
+ * now real <h3>s wearing this, and .cb-eyebrow is left to the kickers that
+ * genuinely are decoration.
+ *
+ * Sized and coloured to read as a heading rather than as a kicker — sentence
+ * case, bone, no tracking — so the outline and the eye agree. */
+.cb-subhead {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  line-height: 1.3;
+  color: var(--bone);
+}
+
+/* Micro-label. The site's only micro-label register: the filled caption box
+   that used to outrank it is gone, so this now carries every kicker, kind
+   and tag on the site. Consumers that need one to stand out (the concept-
+   build disclosures) colour it with --cb-accent rather than boxing it. */
 .cb-eyebrow {
   font-family: var(--font-display);
   font-size: 0.62rem;
@@ -822,36 +938,57 @@
   color: var(--slate);
 }
 
-/* Anchor chip — jump navigation and filter rows. */
-.cb-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 18px;
-  border: 1.5px solid var(--rain);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--panel) 60%, transparent);
-  font-family: var(--font-display);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--slate);
-  transition: color 0.22s, border-color 0.22s, background-color 0.22s;
-}
-.cb-chip:hover {
-  color: var(--bone);
-  border-color: color-mix(in srgb, var(--cb-accent, var(--cyan)) 55%, transparent);
-}
-
-/* Static tag — a term in a list (a stack entry, a service example). Not a
-   link, so it gets no hover state and no pointer affordance. */
+/* Static tag — a term in a short row (a stack entry). Square: a credits box
+   in a comic, not a pill. Where a list is long enough to run vertically it
+   should be a .cb-inset frame instead; this is for rows of one or two words
+   where a stacked frame would be absurd. Not a link by default, so no hover
+   state and no pointer affordance. */
 .cb-tag {
   display: inline-block;
   padding: 6px 12px;
-  border: 1px solid var(--rain);
-  border-radius: 999px;
+  border: 1px solid var(--cb-ink);
   background: color-mix(in srgb, var(--ink) 40%, transparent);
   font-size: 0.75rem;
+  color: var(--slate);
+}
+
+/* Form field — the one place on the site where a border is a CONTROL rather
+   than decoration, which changes the rules: WCAG 1.4.11 wants 3:1 against
+   the adjacent ground for the boundary of an input, and the panel ink is
+   drawn for atmosphere rather than for that. So fields get their own,
+   brighter rule. Square, like every other box, and the focus ring is the
+   accent so it cannot be confused with the resting state. */
+.cb-field {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid color-mix(in srgb, var(--rain) 55%, var(--bone));
+  background: color-mix(in srgb, var(--ink) 60%, transparent);
+  color: var(--bone);
+  outline: none;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease;
+}
+/* Full-strength slate, not a dimmed one. At 85% this measured 4.30:1 against
+   the field, under the 4.5 AA wants, and the textarea's placeholder is real
+   guidance about what to write rather than a decorative repeat of the label.
+   It still reads as placeholder because entered text is bone, not because it
+   is faint. */
+.cb-field::placeholder {
+  color: var(--slate);
+}
+.cb-field:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cyan) 32%, transparent);
+}
+
+/* Field label. The caption register, but NOT .cb-eyebrow: that runs at
+   0.62rem, which is fine over a block of copy and too small to be the thing
+   telling someone what to type. Full-strength slate, not a dimmed one — at
+   60% this measured 2.66:1. */
+.cb-label {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--slate);
 }
 
@@ -879,7 +1016,6 @@
   justify-content: center;
   gap: 10px;
   padding: 15px 28px;
-  border-radius: 999px;
   font-family: var(--font-display);
   font-size: 0.95rem;
   color: var(--ink);
@@ -903,7 +1039,6 @@
   filter: none;
 }
 .cb-btn:focus-visible,
-.cb-chip:focus-visible,
 .cb-link:focus-visible,
 .cb-tag:focus-visible {
   outline: 2px solid var(--cyan);
@@ -997,7 +1132,6 @@
   top: 0.62em;
   width: 6px;
   height: 6px;
-  border-radius: 999px;
   background: var(--cb-accent, var(--cyan));
 }
 .cb-prose ol {
@@ -1030,7 +1164,6 @@
   padding: 22px 24px;
   overflow-x: auto;
   border: 1.5px solid var(--rain);
-  border-radius: 12px;
   background: color-mix(in srgb, var(--ink) 70%, var(--panel));
   font-size: 0.82rem;
   line-height: 1.65;

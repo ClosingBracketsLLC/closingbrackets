@@ -81,17 +81,23 @@ function PostMeta({ post }) {
   );
 }
 
-/** One essay as a numbered panel in its series' run. */
+/**
+ * One essay as a numbered panel in its series' run. The dot screen alternates
+ * corner by issue: a run of panels screened from the same side reads as
+ * wallpaper rather than as a page someone laid out.
+ */
 function PostCard({ post, issue }) {
   return (
     <article
       style={{ "--cb-accent": post.accent }}
-      className="cb-cell flex flex-col p-7"
+      className={`cb-cell cb-tone ${
+        issue % 2 ? "cb-tone--tr" : "cb-tone--bl"
+      } flex flex-col p-7`}
     >
       <div className="flex items-center gap-4">
         <Numeral value={issue} className="text-3xl" />
         {post.pillar && (
-          <span className="cb-caption cb-caption--ghost">Start here</span>
+          <span className="cb-eyebrow text-[var(--cb-accent)]">Start here</span>
         )}
       </div>
       <h3 className="mt-5 font-[family-name:var(--font-display)] text-xl leading-snug text-bone">
@@ -124,11 +130,13 @@ export default function Content() {
       />
 
       {/* The film leads: it is the one piece on this page you can understand
-          without reading anything. */}
+          without reading anything. The splash panel of the issue, so it takes
+          the heavier ink — screened bottom-right, where the copy is, because a
+          dot tone laid over the film frame would fight the footage. */}
       {film && (
         <article
           style={{ "--cb-accent": film.accent }}
-          className="cb-panel cb-panel--marked relative overflow-hidden lg:grid lg:grid-cols-2"
+          className="cb-panel cb-splash cb-tone cb-tone--br relative overflow-hidden lg:grid lg:grid-cols-2"
         >
           <ClipFrame
             poster={film.media.poster}
@@ -140,9 +148,9 @@ export default function Content() {
           />
           <div className="p-7 sm:p-9">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="cb-halftone cb-caption">Film</span>
+              <span className="cb-eyebrow">Film</span>
               {film.media.concept && (
-                <span className="cb-caption cb-caption--ghost">Concept piece</span>
+                <span className="cb-eyebrow text-[var(--cb-accent)]">Concept piece</span>
               )}
             </div>
             <h2 className="mt-5 font-[family-name:var(--font-display)] text-2xl leading-tight text-bone sm:text-3xl">
