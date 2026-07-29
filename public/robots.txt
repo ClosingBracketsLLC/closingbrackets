@@ -1,3 +1,15 @@
+# Everything is crawlable, and that is deliberate for the AI crawlers too.
+#
+# GPTBot and ChatGPT-User (OpenAI), ClaudeBot and anthropic-ai (Anthropic),
+# PerplexityBot, Google-Extended (Gemini and AI Overviews) and Bingbot
+# (Copilot) are all covered by the wildcard group below. Blocking any of them
+# does not keep the site private — it only makes that engine unable to cite it,
+# which for a company whose work is AI would be an odd thing to choose.
+#
+# Kept as a single wildcard group ON PURPOSE. A crawler that matches its own
+# named group ignores `User-agent: *` entirely, so per-bot Allow blocks would
+# silently exempt those bots from any future rule added here.
+
 User-agent: *
 Allow: /
 

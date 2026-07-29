@@ -1,7 +1,7 @@
 import Link from "next/link";
 import PageLayout from "../../components/PageLayout";
 import ClipFrame from "../../components/ClipFrame";
-import { SITE_URL, pageOg, url } from "@/data/site";
+import { SITE_URL, author, authorRef, pageOg, personLd, url } from "@/data/site";
 import { posts } from "@/data/content";
 
 /* Static export: every article URL has to be enumerable at build time. */
@@ -84,8 +84,19 @@ export default async function Post({ params }) {
     headline: post.title,
     description: post.summary,
     datePublished: post.date,
-    author: { "@type": "Organization", name: "Closing Brackets", url: SITE_URL },
-    publisher: { "@type": "Organization", name: "Closing Brackets", url: SITE_URL },
+    /* dateModified matters more than it looks: answer engines weight recency
+       heavily, and an undated revision reads as older than it is. Falls back to
+       the publication date, so a piece that has never been revised is not
+       claiming a freshness it does not have. */
+    dateModified: post.updated ?? post.date,
+    /* A Person, by reference to the node layout.js defines — not an inline
+       Organization. An article authored by a company is a weaker E-E-A-T signal
+       than one authored by a named human who works there, and inlining a second
+       Person object here would read as a different entity than the founder on
+       the Organization. */
+    author: authorRef,
+    publisher: { "@id": `${SITE_URL}/#organization` },
+    ...(post.series ? { articleSection: post.series } : {}),
     mainEntityOfPage: url(`/content/${post.slug}/`),
     ...(post.media
       ? {
@@ -126,13 +137,22 @@ export default async function Post({ params }) {
     >
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify([articleLd, breadcrumb]) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([articleLd, personLd(), breadcrumb]),
+        }}
       />
 
+      {/* The byline. It read "· Closing Brackets" — a company, which is the one
+          thing that cannot have written first-hand technical experience. Search
+          quality guidelines and every AI citation engine ask the same question
+          of a claim like "the failure we are called in to fix most often", and
+          a named author with a role is the answer to it. */}
       <p className="cb-eyebrow flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-rain py-4">
-        <time dateTime={post.date}>{dateFormat.format(new Date(post.date))}</time>
+        <span className="text-[var(--cb-accent)]">
+          By {author.name}, {author.role.toLowerCase()}
+        </span>
+        <time dateTime={post.date}>· {dateFormat.format(new Date(post.date))}</time>
         {post.readingMinutes ? <span>· {post.readingMinutes} min read</span> : null}
-        <span>· Closing Brackets</span>
       </p>
 
       {post.media && (
@@ -159,6 +179,25 @@ export default async function Post({ params }) {
           <Block key={i} block={block} />
         ))}
       </div>
+
+      {/* Author note. The visible half of the Person node above — structured
+          data claiming an author the page never shows is the kind of markup
+          that gets discounted, and a reader who has just finished nine minutes
+          on retry budgets has earned the answer to "who is telling me this".
+          Deliberately plain: the page spends its loud devices on the pull
+          quotes and the closing panel. */}
+      <aside className="mt-14 border-t border-rain pt-7">
+        <p className="cb-eyebrow text-[var(--cb-accent)]">About the author</p>
+        <p className="mt-4 leading-relaxed text-slate">
+          {author.bio}{" "}
+          <a
+            href={`mailto:${author.email}`}
+            className="text-[var(--cb-accent)] underline decoration-current/40 underline-offset-4 transition hover:decoration-current"
+          >
+            {author.email}
+          </a>
+        </p>
+      </aside>
 
       {related.length > 0 && (
         <section className="mt-20">

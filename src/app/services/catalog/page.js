@@ -1,6 +1,8 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import PageLayout from "../../components/PageLayout";
 import ContentsBanner from "../../components/ContentsBanner";
+import CtaPanel from "../../components/CtaPanel";
 import { SITE_URL, graphLd, itemListLd, pageOg, url } from "@/data/site";
 import { assurances, catalog, hybrids, tiers } from "@/data/services";
 import { Numeral } from "../../components/primitives";
@@ -10,8 +12,9 @@ const PATH = "/services/catalog/";
 
 export const metadata = {
   title: "Full Service Catalogue",
+  /* Trimmed to fit: at 181 characters this was cut off mid-list in results. */
   description:
-    "Every service Closing Brackets offers, described in full: project builds, ongoing retainers, AI audits, agent swarms, automation, growth marketing, and the bundled web and AI tiers.",
+    "Every service Closing Brackets offers, in full: project builds, monthly retainers, AI audits, agent swarms, automation, growth marketing, and bundled tiers.",
   alternates: { canonical: url(PATH) },
   /* Built with pageOg, never by hand: Next shallow-merges metadata, so a page
      declaring `openGraph` REPLACES the layout's object rather than merging
@@ -59,6 +62,30 @@ const SECTIONS = [
 
 /** 1-based position of a section, so its numeral matches its banner entry. */
 const sectionNo = (id) => SECTIONS.findIndex((s) => s.id === id) + 1;
+
+/*
+ * Dot-screen corners for a two-up run, cycled by position.
+ *
+ * This page was the last one still laid out as floating cards in a `gap` grid —
+ * the card deck the rest of the site was rebuilt to stop being — and at ~45
+ * entries it was the worst place for it: every card the same size, the same
+ * weight, the same screen, for six screens of scrolling. It is a comic page
+ * now, like /services/ and /work/: hard ink gutter, each cell drawing its own
+ * edge.
+ *
+ * The order is tl → br → tr → bl rather than a simple alternation because in a
+ * two-column grid a two-step cycle puts the same corner directly above itself
+ * every other row. Four steps means no cell is screened from the same side as
+ * the cell beside it OR the cell under it, which is the whole point of varying
+ * it — a page of identically screened boxes reads as wallpaper.
+ */
+const TONES = ["cb-tone--tl", "cb-tone--br", "cb-tone--tr", "cb-tone--bl"];
+const toneAt = (i) => TONES[i % TONES.length];
+
+/* The group the mid-page call to action follows. Chosen by entry count, not by
+   position: project work and AI projects are 22 of the 45 services between
+   them, so this is the halfway mark as a reader experiences it. */
+const MID_BREAK = "ai-projects";
 
 /* Three levels deep, so the breadcrumb helper in data/site.js (which only
    models two) does not fit — this one is built out here. */
@@ -122,13 +149,13 @@ export default function Catalog() {
       />
 
       {catalog.map((group) => (
+        <Fragment key={group.id}>
         <section
-          key={group.id}
           id={group.id}
           style={{ "--cb-accent": group.accent }}
           className="mt-20 scroll-mt-28"
         >
-          <div className="flex items-baseline gap-4">
+          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <Numeral value={sectionNo(group.id)} className="text-5xl" />
             <h2 className="font-[family-name:var(--font-display)] text-3xl text-bone sm:text-4xl">
               {group.title}
@@ -139,9 +166,16 @@ export default function Catalog() {
           </p>
           <p className="mt-3 max-w-2xl leading-relaxed text-slate">{group.blurb}</p>
 
-          <div className="mt-9 grid gap-4 md:grid-cols-2">
-            {group.items.map((item) => (
-              <article key={item.name} className="cb-panel cb-panel--lift flex flex-col p-6">
+          {/* No --lift here, unlike the old cards: nothing in this run is a
+              link, and a panel that rises and drops a shadow under the pointer
+              promises a click that never arrives. The cell's own ink response
+              (fill firms up, border takes the accent) is the honest version. */}
+          <div className="cb-strip mt-9 md:grid-cols-2">
+            {group.items.map((item, i) => (
+              <article
+                key={item.name}
+                className={`cb-cell cb-tone ${toneAt(i)} flex flex-col p-6 sm:p-7`}
+              >
                 <h3 className="font-[family-name:var(--font-display)] text-lg leading-snug text-bone">
                   {item.name}
                 </h3>
@@ -154,7 +188,7 @@ export default function Catalog() {
                 <p className="mt-4 flex-1 text-sm leading-relaxed text-slate">
                   {item.detail}
                 </p>
-                <p className="mt-5 border-t border-rain/70 pt-4 text-xs text-slate">
+                <p className="cb-footrule mt-6 pt-4 text-xs text-slate">
                   <span className="font-[family-name:var(--font-display)] tracking-[0.14em] uppercase">
                     Goes with
                   </span>
@@ -164,11 +198,40 @@ export default function Catalog() {
             ))}
           </div>
         </section>
+
+        {/* A way out, halfway down.
+
+            This page is six screens of scrolling and had exactly one call to
+            action, at the bottom of the sixth — so a reader who found what they
+            needed in the first group had to scroll past thirty services they
+            did not want in order to act on it. The break lands after AI
+            projects, which is the midpoint by entry count rather than by
+            section number.
+
+            Deliberately slimmer than CtaPanel: this is a door held open in
+            passing, and the same marked panel with speed lines twice on one
+            page turns the closing ask into a repeat. */}
+        {group.id === MID_BREAK && (
+          <aside
+            style={{ "--cb-accent": "#ff4e64" }}
+            className="cb-panel mt-16 flex flex-col gap-6 p-7 sm:flex-row sm:items-center sm:justify-between sm:p-8"
+          >
+            <p className="max-w-xl leading-relaxed text-slate">
+              <span className="text-bone">Seen the one you need?</span> You do not
+              have to read the rest. Name it and we will come back with the scope,
+              real dates, and one price for exactly that.
+            </p>
+            <Link href="/contact/" className="cb-halftone cb-btn shrink-0">
+              Get a fixed-scope plan
+            </Link>
+          </aside>
+        )}
+        </Fragment>
       ))}
 
       {/* ---------------------------------------------------------------- */}
       <section id="tiers" className="mt-24 scroll-mt-28">
-        <div className="flex items-baseline gap-4">
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <Numeral value={sectionNo("tiers")} className="text-5xl" />
           <h2 className="font-[family-name:var(--font-display)] text-3xl text-bone sm:text-4xl">
             Bundled tiers
@@ -181,10 +244,22 @@ export default function Catalog() {
           giving anything up.
         </p>
 
-        <ol className="mt-9 grid gap-px border border-rain bg-rain">
-          {tiers.map((tier) => (
-            <li key={tier.name} className="bg-panel/75 p-6 sm:flex sm:gap-7 sm:p-7">
-              <div className="flex items-baseline gap-4 sm:w-56 sm:shrink-0 sm:flex-col sm:items-start sm:gap-1">
+        {/* A ladder, run as a one-column comic page. It was a hairline table
+            built from raw utilities — the one block on the site drawing its own
+            borders instead of using the panel system — which is why it read as
+            a spec sheet dropped into a comic. Each rung alternates its screen
+            so the climb is visible as you scroll rather than seven identical
+            bars. Each tier is everything in the one before it, so the copy
+            column is left to breathe rather than stretched to the panel edge. */}
+        <ol className="cb-strip mt-9">
+          {tiers.map((tier, i) => (
+            <li
+              key={tier.name}
+              className={`cb-cell cb-tone ${
+                i % 2 ? "cb-tone--bl" : "cb-tone--tr"
+              } p-6 sm:flex sm:gap-9 sm:p-7`}
+            >
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 sm:w-56 sm:shrink-0 sm:flex-col sm:items-start sm:gap-1">
                 <Numeral value={tier.n} className="text-3xl" />
                 <h3 className="font-[family-name:var(--font-display)] text-lg text-bone">
                   {tier.name}
@@ -200,7 +275,7 @@ export default function Catalog() {
       </section>
 
       <section id="bundles" className="mt-24 scroll-mt-28">
-        <div className="flex items-baseline gap-4">
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <Numeral value={sectionNo("bundles")} className="text-5xl" />
           <h2 className="font-[family-name:var(--font-display)] text-3xl text-bone sm:text-4xl">
             Web + AI bundles
@@ -212,12 +287,12 @@ export default function Catalog() {
           these starts with the AI maturity audit, and the audit is what locks
           the final scope.
         </p>
-        <div className="mt-9 grid gap-4 md:grid-cols-2">
+        <div className="cb-strip mt-9 md:grid-cols-2">
           {hybrids.map((h, i) => (
             <article
               key={h.name}
               style={{ "--cb-accent": i % 2 ? "#ff4e64" : "#2ef2dc" }}
-              className="cb-panel cb-panel--lift cb-panel--marked p-7"
+              className={`cb-cell cb-tone ${toneAt(i)} flex flex-col p-7`}
             >
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <h3 className="font-[family-name:var(--font-display)] text-xl text-bone">
@@ -230,8 +305,8 @@ export default function Catalog() {
                   {h.tag}
                 </span>
               </div>
-              <p className="mt-4 text-sm leading-relaxed text-slate">{h.body}</p>
-              <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-2 border-t border-rain/70 pt-4 text-xs">
+              <p className="mt-4 flex-1 text-sm leading-relaxed text-slate">{h.body}</p>
+              <dl className="cb-footrule mt-6 flex flex-wrap gap-x-8 gap-y-2 pt-4 text-xs">
                 <div>
                   <dt className="font-[family-name:var(--font-display)] tracking-[0.14em] text-slate uppercase">
                     Minimum term
@@ -255,9 +330,14 @@ export default function Catalog() {
         <h2 className="cb-rule font-[family-name:var(--font-display)] text-2xl text-bone">
           How this is kept honest
         </h2>
-        <div className="mt-9 grid gap-4 sm:grid-cols-3">
-          {assurances.map((a) => (
-            <div key={a.title} className="cb-panel p-6">
+        <div className="cb-strip mt-9 sm:grid-cols-3">
+          {assurances.map((a, i) => (
+            <div
+              key={a.title}
+              className={`cb-cell cb-tone ${
+                i % 2 ? "cb-tone--bl" : "cb-tone--tr"
+              } p-6 sm:p-7`}
+            >
               <h3 className="font-[family-name:var(--font-display)] text-base leading-snug text-cyan">
                 {a.title}
               </h3>
@@ -267,34 +347,17 @@ export default function Catalog() {
         </div>
       </section>
 
-      <section
-        style={{ "--cb-accent": "#ff4e64" }}
-        className="cb-panel relative mt-20 isolate overflow-hidden p-8 sm:p-11"
-      >
-        <span aria-hidden className="cb-speedlines" />
-        <h2 className="max-w-xl font-[family-name:var(--font-display)] text-2xl leading-tight text-bone sm:text-3xl">
-          Not sure which of these you need?
-        </h2>
-        <p className="mt-4 max-w-xl leading-relaxed text-slate">
-          That is what the first conversation is for. Describe the problem
-          rather than the service, and we will tell you which of the above
-          actually applies — including when the answer is none of them.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link
-            href="/contact/"
-            className="cb-halftone cb-btn"
-          >
-            Start a conversation
-          </Link>
-          <Link
-            href="/services/"
-            className="cb-btn cb-btn--ghost"
-          >
-            Back to services
-          </Link>
-        </div>
-      </section>
+      {/* The shared closing panel rather than a hand-built copy of it. This was
+          the one page ending on its own near-identical section, which is how
+          the corner tick and the caption register had already drifted off it. */}
+      <CtaPanel
+        caption="Fifty services, one conversation"
+        title="Not sure which of these you need?"
+        body="That is what the first conversation is for. Describe the problem rather than the service, and we will tell you which of the above actually applies — including when the answer is none of them."
+        action={{ label: "Start a conversation", href: "/contact/" }}
+        secondary={{ label: "Back to services", href: "/services/" }}
+        className="mt-20"
+      />
     </PageLayout>
   );
 }

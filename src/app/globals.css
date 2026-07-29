@@ -144,6 +144,46 @@
      carrying a scrim. */
   background: transparent;
 }
+/* The bar's scrim.
+ *
+ * The header is transparent by design (see above) and each child carries an ink
+ * halo, which is enough over the homepage's full-bleed video — every frame
+ * there is dark, and nothing scrolls THROUGH the bar because the scroll world
+ * is fixed. On the standard pages neither holds: body copy, headings and panel
+ * borders all pass under the bar as you scroll, and a 20px text-shadow does not
+ * survive a bone headline sliding beneath it. The nav and the copy destroy each
+ * other.
+ *
+ * So the scrim is scoped exactly to the case that needs it — SiteHeader sets
+ * data-scrim="on" only on non-home routes and only once actually scrolled — and
+ * the homepage's transparent bar is left untouched.
+ *
+ * A plain ink gradient rather than a blur: the page background IS the night sky
+ * the artwork sits in, so more night is the on-brand way to lift the chrome off
+ * it, and glass would import a material this print-led system does not use.
+ * It runs past the bar's bottom edge to back the ECG trace's 17px overhang,
+ * then fades, so the trace reads as a drawn line on the sky instead of a cyan
+ * wire laid over a paragraph. */
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -38px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: linear-gradient(
+    to bottom,
+    var(--ink) 0%,
+    var(--ink) 58%,
+    color-mix(in srgb, var(--ink) 82%, transparent) 78%,
+    transparent 100%
+  );
+}
+.site-header[data-scrim="on"]::before {
+  opacity: 1;
+}
+
 .site-brand {
   display: flex;
   align-items: center;
@@ -723,6 +763,27 @@
   display: grid;
   gap: 11px;
 }
+/* A track may never be wider than the page.
+ *
+ * Grid items are `min-width: auto`, which floors a track at its content's
+ * min-content width — so ONE unbreakable thing inside ONE panel silently widens
+ * the column, and with it every panel sharing it, past the viewport. That is
+ * what it was doing on phones: the splash panel's numeral-beside-heading row
+ * measures ~369px min-content, so the single mobile column became 369px inside
+ * a 327px page and the whole strip hung off the right edge.
+ *
+ * `min-width: 0` on the items rather than `grid-template-columns` on the
+ * container, for two reasons: the column count is set per-page by Tailwind's
+ * responsive `grid-cols-*` utilities, and a `grid-template-columns` here would
+ * be UNLAYERED CSS beating those layered utilities — silently pinning every
+ * strip on the site to one column. This says the same thing without touching
+ * how many columns there are.
+ *
+ * Content that genuinely cannot fit now wraps or scrolls inside its own panel,
+ * which is the correct place to deal with it. */
+.cb-strip > * {
+  min-width: 0;
+}
 .cb-cell {
   position: relative;
   border: 2px solid var(--cb-ink);
@@ -874,6 +935,59 @@
 .cb-balloon::after {
   bottom: -16px;
   background: color-mix(in srgb, var(--ink) 86%, var(--panel));
+}
+
+/* Narration box — the caption a comic prints in the corner of a panel to say
+   something in the author's voice rather than a character's. Rationed to one
+   per page, like the balloon and the burst.
+
+   Its one job on this site is the concept-build disclosure on /work/: these are
+   demonstrations, not client engagements, and saying so plainly is the whole
+   policy. It is deliberately NOT a balloon — a balloon is someone speaking, and
+   this is the page itself being straight with you — and deliberately not styled
+   as a warning: an admission made confidently reads as confidence, whereas an
+   amber alert box reads as a disclaimer someone was forced to add.
+
+   Squared, ruled hard down the accent side, and set in the body face at reading
+   size rather than in the micro-label register, because it is a sentence people
+   are meant to actually read. */
+.cb-narration {
+  position: relative;
+  border: 2px solid var(--cb-ink);
+  border-width: 2px 3px 3px 2px;
+  border-left: 4px solid var(--cb-accent, var(--cyan));
+  background: color-mix(in srgb, var(--ink) 72%, var(--panel));
+}
+
+/* Panel footer rule — the hairline a bottom-anchored action sits on.
+ *
+ * Panels in a tier are the height of the tallest one, so the shorter panel's
+ * `mt-auto` link floats at the bottom of a void. The void is unavoidable in a
+ * grid row; what was wrong is that it read as unfinished. A rule turns it into
+ * a defined region — the panel's footer — and lines the actions across a tier
+ * up on a visible baseline instead of merely at the same y. */
+.cb-footrule {
+  border-top: 1px solid color-mix(in srgb, var(--rain) 90%, transparent);
+}
+
+/* Linked term — .cb-tag's interactive twin.
+ *
+ * /work/ was rendering both static stack entries ("Postgres") and real links to
+ * service lines ("AI automation") as identical .cb-tag boxes, so half the row
+ * was clickable with nothing to say which half. The tag stays inert; this one
+ * carries the accent edge and the pointer, which is the affordance the plain
+ * tag deliberately does not have. */
+.cb-tag--link {
+  border-left: 3px solid var(--cb-accent, var(--cyan));
+  color: color-mix(in srgb, var(--bone) 72%, var(--slate));
+  cursor: pointer;
+  transition: color 0.22s ease, border-color 0.22s ease,
+    background-color 0.22s ease;
+}
+.cb-tag--link:hover {
+  color: var(--bone);
+  border-color: var(--cb-accent, var(--cyan));
+  background-color: color-mix(in srgb, var(--panel) 90%, transparent);
 }
 
 /* Starburst — the printed sticker slapped on the panel. Exactly one on the

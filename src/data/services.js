@@ -130,6 +130,52 @@ export const engagement = [
   },
 ];
 
+/**
+ * The questions that actually decide whether someone gets in touch, answered
+ * before they have to ask.
+ *
+ * THESE RENDER ON /contact/, NOT ON /services/. They were on the services page
+ * and were removed from it deliberately — that page is the five-line pitch and
+ * was growing back into a FAQ appendix. These are buying objections rather than
+ * service descriptions, so they belong at the point the objection actually
+ * fires: the moment someone is looking at an empty textarea deciding whether
+ * to fill it in.
+ *
+ * Rendered visibly AND emitted as FAQPage structured data — so the answers here
+ * are the answers on the page, word for word. Changing one changes both; do not
+ * let them drift, and do not move these behind a disclosure toggle. Structured
+ * data that does not match what a visitor reads is a manual-action risk.
+ *
+ * Nothing here may claim more than the rest of the site does. The case-study
+ * answer in particular repeats the concept-build position from data/work.js.
+ */
+export const faqs = [
+  {
+    q: "How do you price a project?",
+    a: "One fixed price for one written scope, agreed before any work starts. There is no hourly billing and no time-and-materials. If something is not in the scope document, it is not in the price — and if you want it added, we re-price that change on its own rather than letting the total drift.",
+  },
+  {
+    q: "Who owns the code you write?",
+    a: "You do, all of it. The source is handed over at the end of the build and nothing is locked to us. You can take it to another team, keep it in-house, or leave it running untouched; none of that depends on keeping us on a retainer.",
+  },
+  {
+    q: "Do you have real client case studies?",
+    a: "Not published yet. The builds on our work page are concept builds — designed and built by us to show what an engagement produces end to end, with invented companies. Real case studies go up when clients confirm them in writing, and not before. We would rather show you work we can prove we made than results we cannot.",
+  },
+  {
+    q: "Will AI replace the systems we already run?",
+    a: "No. We sit beside your system of record rather than replacing it, working against your data, your workflows and your business rules. That means a pilot first, then production, and a two-way integration with whatever you already run — not a migration.",
+  },
+  {
+    q: "We only want to try one small thing. Is that possible?",
+    a: "Yes, and it is the usual way in. A single agent is scoped, built and running against your own data as its own piece of work, with no commitment to anything after it. Most larger engagements here started as one agent doing one job.",
+  },
+  {
+    q: "How quickly will we hear back?",
+    a: "Within one business day. We read every enquiry ourselves — there is no sales team in between — and the first answer costs nothing. What comes back is either a fixed-scope plan or a straight explanation of why we are not the right people for it.",
+  },
+];
+
 /* ------------------------------------------------------------------ */
 /* The full catalog. Four groups: what you buy once, what you keep     */
 /* running, and the same split again on the AI side.                   */

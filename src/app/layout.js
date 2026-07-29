@@ -1,7 +1,7 @@
 import { Archivo, Archivo_Black } from "next/font/google";
 import Script from "next/script";
 import SiteHeader from "./components/SiteHeader";
-import { SITE_URL, navLinks, ogImage, url } from "@/data/site";
+import { SITE_URL, author, navLinks, ogImage, personLd, url } from "@/data/site";
 import "./globals.css";
 
 // Self-hosted at build time by next/font, so the static export makes no
@@ -66,8 +66,33 @@ const jsonLd = {
       name: "Closing Brackets",
       url: `${SITE_URL}/`,
       logo: `${SITE_URL}/icon.svg`,
-      email: "robert@closingbrackets.com",
+      email: author.email,
       description: DESCRIPTION,
+      // Names the human behind the org. Search and AI answer engines both
+      // resolve entities before they trust claims, and an organisation with no
+      // person attached is a weaker entity than one with a founder.
+      founder: { "@id": `${SITE_URL}/#person` },
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "Sales",
+        email: author.email,
+        url: url("/contact/"),
+        availableLanguage: "English",
+      },
+      // Remote-first, so the service area is stated rather than an address.
+      areaServed: { "@type": "Country", name: "United States" },
+      // The topics this entity is actually about. Cheap, accurate, and it is
+      // what an answer engine matches against when deciding whether we are a
+      // relevant source for a question rather than merely a page about it.
+      knowsAbout: [
+        "Custom software development",
+        "AI agents",
+        "AI integration",
+        "Workflow automation",
+        "Loop engineering",
+        "Graph engineering",
+        "Growth marketing",
+      ],
       // The visible h1 says "custom solutions" by design; the service-line
       // keywords live here (and in the title tag / h2s) instead.
       hasOfferCatalog: {
@@ -85,6 +110,10 @@ const jsonLd = {
         })),
       },
     },
+    // Built from the shared definition in data/site.js — the essays emit the
+    // same node inside their own graph, and two hand-written copies would be
+    // two entities the moment one of them was edited.
+    personLd(),
     {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,

@@ -11,9 +11,9 @@ const TITLE = "Work";
 const PATH = "/work/";
 
 export const metadata = {
-  title: "Work & How We Build",
+  title: "Work & How a Project Runs",
   description:
-    "Concept builds showing what a Closing Brackets engagement produces end to end, and the five stages every project runs through: scope, build, integrate, hand over, grow.",
+    "Concept builds showing what a Closing Brackets engagement produces, and the five stages every project runs through: scope, build, integrate, hand over, grow.",
   alternates: { canonical: url(PATH) },
   openGraph: pageOg({
     title: "Work — what we build, and how a project runs",
@@ -62,6 +62,23 @@ const jsonLd = graphLd(
       description: build.summary,
     })),
   ),
+  /* The process, as an ordered list rather than as HowTo. HowTo describes steps
+     the reader performs; these are stages an engagement moves through, and the
+     reader does none of them. ItemList is the honest shape, and "how does a
+     project with you actually run" is a question worth being extractable for. */
+  {
+    "@type": "ItemList",
+    name: "How a Closing Brackets project runs",
+    description:
+      "The five stages every engagement moves through, in the same order every time.",
+    numberOfItems: stages.length,
+    itemListElement: stages.map((stage, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: stage.title,
+      description: stage.body,
+    })),
+  },
 );
 
 /** Service lines a build draws on — the route from proof back to the offer. */
@@ -76,7 +93,11 @@ function ServiceLines({ ids }) {
       <ul className="mt-3 flex flex-wrap gap-2">
         {lines.map((line) => (
           <li key={line.id}>
-            <Link href={`/services/#${line.id}`} className="cb-tag transition hover:text-bone">
+            {/* --link, not a bare .cb-tag: the stack row directly above this one
+                is inert terms in identical boxes, so without a distinct
+                affordance half the terms on the panel are clickable and nothing
+                says which half. */}
+            <Link href={`/services/#${line.id}`} className="cb-tag cb-tag--link">
               {line.title}
             </Link>
           </li>
@@ -136,13 +157,24 @@ export default function Work() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      {/* The "Read this first" narration box that used to sit here was removed
+          on request, ahead of real client work replacing these builds.
+
+          What still carries the disclosure until that lands: the per-card
+          "Concept build" eyebrow on every build below, the "What it shows"
+          label standing in for "Outcome", the FAQ answer on /contact/, and the
+          deliberate absence of Review/Rating/testimonial structured data (see
+          the note on jsonLd above). Do not remove those as well — a page of
+          invented companies with no disclosure at all is the one thing on this
+          site a prospect could catch us in. */}
+
       {/* Featured build — the splash panel, and the only moving thing on the
           page. Screened bottom-right, where the copy is: a dot tone laid over
           the film frame would fight the footage. */}
       <article
         id={featured.id}
         style={{ "--cb-accent": featured.accent }}
-        className="cb-panel cb-splash cb-tone cb-tone--br mt-5 scroll-mt-28 overflow-hidden"
+        className="cb-panel cb-splash cb-tone cb-tone--br mt-8 scroll-mt-28 overflow-hidden"
       >
         {featured.clip && (
           <ClipFrame
@@ -212,12 +244,18 @@ export default function Work() {
             <li
               key={stage.step}
               style={{ "--cb-accent": i % 2 ? "#ff4e64" : "#2ef2dc" }}
+              /* Padding tightens at the five-across breakpoint. The row is
+                 fixed at the content column's width, so each cell is ~215px
+                 there and generous padding was eating it: the copy fell to
+                 roughly twenty characters a line, which is below the point
+                 where a measure reads as a paragraph at all. Five in a row is
+                 the shape of the process and stays; the padding is what gives. */
               className={`cb-cell cb-tone ${
                 i % 2 ? "cb-tone--bl" : "cb-tone--tr"
-              } p-6 sm:p-7`}
+              } p-6 sm:p-7 lg:px-5 lg:py-6`}
             >
               <Numeral value={stage.step} className="text-4xl" />
-              <h3 className="mt-4 font-[family-name:var(--font-display)] text-xl text-bone">
+              <h3 className="mt-4 font-[family-name:var(--font-display)] text-xl leading-snug text-bone">
                 {stage.title}
               </h3>
               <p className="mt-3 text-sm leading-relaxed text-slate">{stage.body}</p>

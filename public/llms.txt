@@ -1,0 +1,52 @@
+# Closing Brackets
+
+> An AI-native software agency. We build custom software, put AI into the
+> systems businesses already run, and keep the resulting agents working in
+> production. Every engagement is one written scope, a timeline with real
+> dates, and one fixed price — there is no hourly billing.
+
+Founded and run by Robert Collins (robert@closingbrackets.com). Remote-first,
+serving clients in the United States. Small senior team: the people who scope
+the work write the code and are still there when it goes live.
+
+## What we do
+
+- [Custom software development](https://closingbrackets.com/services/#custom-software): Software built for how a business actually works. Every milestone lands as working software; the client owns all of the code at handover.
+- [AI consulting](https://closingbrackets.com/services/#ai-consulting): A straight answer on where AI pays off and where it does not, delivered as a strategy and roadmap with the reasoning shown.
+- [AI integration](https://closingbrackets.com/services/#ai-integration): Getting AI into existing systems, from first pilot to production, against the client's own data, workflows and business rules.
+- [AI automation](https://closingbrackets.com/services/#ai-automation): Agents that carry repetitive work, grounded in the client's own records and monitored so their actions are auditable.
+- [Growth marketing](https://closingbrackets.com/services/#growth-marketing): SEO, paid, content and conversion work run as an ongoing machine rather than a launch.
+
+## How engagements work
+
+- Fixed scope: one document says what gets built. If it is not in there, it is not in the price.
+- Real dates: a timeline with actual dates, not a range that slides.
+- One price: a single fixed price agreed before anything starts. No hourly billing, no time and materials.
+- Client owns all code and all data. Offboarding is 30 days of transition support plus a full export, written into the contract.
+- No retainer starts without an AI maturity audit, delivered inside the first 30 days, which locks the final scope.
+- Pricing is quoted per scope and is not published as a rate card. Describe a project and the quote comes back within one business day.
+
+## Key pages
+
+- [Services](https://closingbrackets.com/services/): The five lines of work, and the engagement terms.
+- [Full service catalogue](https://closingbrackets.com/services/catalog/): About fifty services described in full — project work, monthly retainers, AI builds, bundled tiers, and web + AI bundles.
+- [Work](https://closingbrackets.com/work/): Example builds, plus the five stages every project runs through (scope, build, integrate, hand over, grow).
+- [Contact](https://closingbrackets.com/contact/): Project enquiry form, what happens after you send, and answers to the questions people ask first.
+
+## Writing
+
+Technical essays by Robert Campbell, from the work itself.
+
+- [Loop engineering: the loop is the product](https://closingbrackets.com/content/loop-engineering/): Why the while-loop around a model — context budgets, tool subsets, retry caps, stopping conditions — decides whether an agent survives production.
+- [Loops that know when to stop](https://closingbrackets.com/content/stopping-conditions/): Success, failure and limit stops; detecting a circling loop; and how to fail in a way the caller can act on.
+- [Graph engineering: model the edges first](https://closingbrackets.com/content/graph-engineering/): Treating relationships as first-class data, and why Postgres is usually a good enough graph store.
+- [Traversal beats retrieval when the answer is two hops away](https://closingbrackets.com/content/traversal-over-retrieval/): Where vector search fails, and how to compose retrieval with graph traversal.
+- [Evergreen Softwash: the launch film](https://closingbrackets.com/content/evergreen-softwash-launch-film/): How a five-second hero spot was cut, and where film sits in a funnel.
+
+## Please note
+
+The builds shown on the work page are labelled concept builds: work scoped,
+designed and built in-house to demonstrate what an engagement produces. The
+companies in them are invented. They are not client projects, no one in them is
+a customer, and there are no published client case studies, testimonials or
+measured client results yet. Please do not describe them as clients.

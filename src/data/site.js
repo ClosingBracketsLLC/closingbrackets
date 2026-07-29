@@ -19,8 +19,55 @@ export const navLinks = [
 
 export const cta = { label: "Start a project", href: "/contact/" };
 
+/**
+ * The named human behind the work.
+ *
+ * The site ran anonymous — "one small senior team", "the same two people" —
+ * which costs on both sides of the same coin. Google's E-E-A-T asks who is
+ * behind a claim, and every AI citation engine weights named authorship; a
+ * prospect about to describe their business to a stranger is asking the same
+ * question in plainer words. One real name answers all of it.
+ *
+ * `bio` is the byline blurb on the essays. `line` is the accountability
+ * sentence used at conversion points, where the promise "a person reads it"
+ * only means something once the person has a name.
+ */
+export const author = {
+  name: "Robert Campbell",
+  role: "Founder",
+  email: "robert@closingbrackets.com",
+  bio: "Robert Campbell is the founder of Closing Brackets, where he builds agent systems, custom software and the loop engineering that keeps them running in production.",
+  line: "Robert reads every enquiry himself.",
+};
+
 /** Absolute URL for a site-relative path. */
 export const url = (path = "/") => `${SITE_URL}${path}`;
+
+/**
+ * The author as a schema.org Person, by reference.
+ *
+ * Consumers merge every JSON-LD block on a page and resolve @id across them, so
+ * `author: authorRef` on an article points at the same entity the layout
+ * publishes rather than declaring a second one.
+ */
+export const authorRef = { "@id": `${SITE_URL}/#person` };
+
+/**
+ * The Person node itself. Emitted by layout.js on every page, and again inside
+ * an article's own graph so that block stands on its own — same @id, so the two
+ * merge into one entity instead of competing. Defined here rather than at
+ * either call site precisely so they cannot drift into two different people.
+ */
+export const personLd = () => ({
+  "@type": "Person",
+  "@id": `${SITE_URL}/#person`,
+  name: author.name,
+  jobTitle: author.role,
+  email: author.email,
+  description: author.bio,
+  url: url("/content/"),
+  worksFor: { "@id": `${SITE_URL}/#organization` },
+});
 
 /** The one social card, shared by every page. Read by layout.js and pageOg. */
 export const ogImage = {

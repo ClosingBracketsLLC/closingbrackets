@@ -26,8 +26,14 @@ const BURGER_UNDER = 720;
  *    resizes, watched with a ResizeObserver on <body>. It must be <body>, not
  *    <html>: the root element is locked to viewport height here, so its own box
  *    never changes when the scroll world sets its track height.
+ *
+ * `scrim` opts the route into the bar's ink backing (see .site-header::before).
+ * It is written as an ATTRIBUTE from inside the same rAF rather than held as
+ * React state on purpose: this fires on every scroll frame, and a setState here
+ * would re-render the header — and on the homepage, contend with the engine's
+ * video scrubbing — to toggle one class.
  */
-function useScrollProgress(ref) {
+function useScrollProgress(ref, scrim) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -35,6 +41,7 @@ function useScrollProgress(ref) {
     let max = 0;
     let frame = 0;
     let last = -1;
+    let lastScrim = null;
 
     const measure = () => {
       max = Math.max(0, document.body.scrollHeight - window.innerHeight);
@@ -48,6 +55,15 @@ function useScrollProgress(ref) {
       if (value !== last) {
         last = value;
         el.style.setProperty("--progress", value);
+      }
+
+      // Off at the very top so the hero band still meets the bar with nothing
+      // between them; on as soon as anything is actually passing underneath.
+      const want = scrim && window.scrollY > 6 ? "on" : null;
+      if (want !== lastScrim) {
+        lastScrim = want;
+        if (want) el.setAttribute("data-scrim", want);
+        else el.removeAttribute("data-scrim");
       }
     };
     const schedule = () => {
@@ -68,8 +84,11 @@ function useScrollProgress(ref) {
       observer.disconnect();
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", remeasure);
+      // Navigating from a standard page to the homepage must not leave the ink
+      // backing behind on the transparent bar.
+      el.removeAttribute("data-scrim");
     };
-  }, [ref]);
+  }, [ref, scrim]);
 }
 
 /**
@@ -92,7 +111,10 @@ export default function SiteHeader() {
   // of either form so a link written without the slash still lights up.
   const here = pathname?.replace(/\/?$/, "/");
 
-  useScrollProgress(headerRef);
+  // The homepage is a fixed scroll world — nothing passes under the bar there,
+  // and the transparent-over-video look is the approved one. Every other route
+  // scrolls real copy beneath it and needs the ink backing.
+  useScrollProgress(headerRef, here !== "/");
 
   // Close on navigation. Without this the panel stays open over the page the
   // visitor just asked for. Adjusted during render against the previous path

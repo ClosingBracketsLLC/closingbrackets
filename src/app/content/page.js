@@ -3,16 +3,28 @@ import PageLayout from "../components/PageLayout";
 import ClipFrame from "../components/ClipFrame";
 import CtaPanel from "../components/CtaPanel";
 import { Numeral, SectionHeading } from "../components/primitives";
-import { SITE_URL, breadcrumbLd, graphLd, pageOg, url } from "@/data/site";
+import {
+  SITE_URL,
+  author,
+  authorRef,
+  breadcrumbLd,
+  graphLd,
+  pageOg,
+  url,
+} from "@/data/site";
 import { posts, topics } from "@/data/content";
 
 const TITLE = "Content";
 const PATH = "/content/";
 
+/* Title trimmed to fit: the old one ran to 72 characters once the brand
+   template was appended and lost "Production Notes" to truncation anyway. Both
+   series names survive intact, which is the point — they are terms we coined
+   and are the only ones here we can expect to own outright. */
 export const metadata = {
-  title: "Loop Engineering, Graph Engineering & Production Notes",
+  title: "Loop Engineering & Graph Engineering",
   description:
-    "Writing from Closing Brackets on loop engineering — context budgets, retries and stopping conditions — graph engineering, and what survives contact with production.",
+    "Essays by Robert Campbell on loop engineering — context budgets, retries, stopping conditions — graph engineering, and what survives contact with production.",
   alternates: { canonical: url(PATH) },
   openGraph: pageOg({
     title: "Content — loop engineering, graph engineering, production notes",
@@ -58,6 +70,10 @@ const jsonLd = graphLd(breadcrumbLd(TITLE, PATH), {
   description: metadata.description,
   url: url(PATH),
   publisher: { "@id": `${SITE_URL}/#organization` },
+  /* Authored by the named Person layout.js publishes, not by the company. The
+     same reference is repeated on each stub because a consumer reading only
+     one entry should still get the author with it. */
+  author: authorRef,
   blogPost: posts
     .slice()
     .sort(newest)
@@ -67,6 +83,8 @@ const jsonLd = graphLd(breadcrumbLd(TITLE, PATH), {
       description: post.summary,
       url: url(`${PATH}${post.slug}/`),
       datePublished: post.date,
+      dateModified: post.updated ?? post.date,
+      author: authorRef,
       ...(post.series ? { articleSection: post.series } : {}),
     })),
 });
@@ -121,7 +139,10 @@ export default function Content() {
     <PageLayout
       eyebrow={TITLE}
       title="What we have learned, written down"
-      intro="Notes from the work itself. Two running series — loop engineering and graph engineering — plus the occasional piece on what we made and why it was cut that way."
+      /* The byline is in the intro rather than repeated on all six cards: the
+         index needs the author visible once to match its schema, and printing
+         the same name six times down a page reads as a template. */
+      intro={`Notes from the work itself, written by ${author.name}. Two running series — loop engineering and graph engineering — plus the occasional piece on what we made and why it was cut that way.`}
       accent="#2ef2dc"
     >
       <script

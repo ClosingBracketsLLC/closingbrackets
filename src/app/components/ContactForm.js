@@ -28,7 +28,7 @@ export default function ContactForm() {
     if (!ACCESS_KEY) {
       setStatus("error");
       setError(
-        "The form isn't configured yet. Email robert@closingbrackets.com directly and we'll pick it up.",
+        "The form isn't configured yet. Email admin@closingbrackets.com directly and we'll pick it up.",
       );
       return;
     }

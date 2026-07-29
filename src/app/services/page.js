@@ -2,17 +2,34 @@ import Link from "next/link";
 import PageLayout from "../components/PageLayout";
 import ContentsBanner from "../components/ContentsBanner";
 import CtaPanel from "../components/CtaPanel";
-import { AccentList, FrameList, Numeral } from "../components/primitives";
-import { breadcrumbLd, graphLd, itemListLd, pageOg, url } from "@/data/site";
-import { hireABot, services } from "@/data/services";
+import {
+  AccentList,
+  FrameList,
+  Numeral,
+  SectionHeading,
+} from "../components/primitives";
+import {
+  SITE_URL,
+  breadcrumbLd,
+  graphLd,
+  itemListLd,
+  pageOg,
+  url,
+} from "@/data/site";
+import { engagement, hireABot, services } from "@/data/services";
 
 const TITLE = "Services";
 const PATH = "/services/";
 
+/* Title and description are both cut to fit rather than to fit everything in.
+   The old title ran to 70 characters with the brand template appended, which
+   truncates in results — and the words it lost were the ones at the end doing
+   the differentiating. Head terms here; the rest of the service vocabulary
+   lives in the h2s and the Service nodes below, where length costs nothing. */
 export const metadata = {
-  title: "Custom Software, AI Consulting, Integration & Growth",
+  title: "Custom Software Development & AI Services",
   description:
-    "The five things Closing Brackets does: custom software development, AI consulting, AI integration, AI automation, and growth marketing. Fixed scope, real dates, one price.",
+    "Custom software development, AI consulting, integration and automation, and growth marketing. Fixed scope, real dates, one price — never hourly billing.",
   alternates: { canonical: url(PATH) },
   openGraph: pageOg({
     title: "Services — custom software, AI, and growth marketing",
@@ -22,8 +39,34 @@ export const metadata = {
   }),
 };
 
-/* Structured data. One graph, two nodes: where the page sits, and what it
-   lists. */
+/*
+ * Structured data. One graph: where the page sits, what it lists, and then
+ * each line as a Service in its own right.
+ *
+ * The ItemList alone said "this page contains five things". The Service nodes
+ * say what each one IS, who provides it, and what is inside it — which is the
+ * difference between a page a crawler can enumerate and an entity an answer
+ * engine can match a question against. Every field is read from data/services.js
+ * so the markup cannot drift from the visible panel it describes.
+ */
+const serviceLd = services.map((service) => ({
+  "@type": "Service",
+  "@id": url(`${PATH}#${service.id}`),
+  name: service.title,
+  serviceType: service.title,
+  description: service.summary,
+  provider: { "@id": `${SITE_URL}/#organization` },
+  areaServed: { "@type": "Country", name: "United States" },
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: `${service.title} — examples`,
+    itemListElement: service.examples.map((name) => ({
+      "@type": "Offer",
+      itemOffered: { "@type": "Service", name },
+    })),
+  },
+}));
+
 const jsonLd = graphLd(
   breadcrumbLd(TITLE, PATH),
   itemListLd(
@@ -34,6 +77,7 @@ const jsonLd = graphLd(
       description: service.summary,
     })),
   ),
+  ...serviceLd,
 );
 
 /*
@@ -100,7 +144,12 @@ function ServicePanel({ service, index, span, tone, splash = false }) {
     >
       <div className={splash ? "lg:flex lg:items-start lg:gap-14" : ""}>
         <div className={splash ? "lg:w-[38%] lg:shrink-0" : ""}>
-          <div className="flex items-baseline gap-4">
+          {/* flex-wrap: a 60px numeral beside a 30px display heading is wider
+              than a phone once the heading's longest word cannot break, and a
+              nowrap row makes that width the panel's floor. Wrapping drops the
+              title under the numeral at the sizes where it will not sit beside
+              it, which is also the better reading order there. */}
+          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <Numeral
               value={index + 1}
               className={splash ? "text-6xl sm:text-7xl" : "text-5xl"}
@@ -136,14 +185,23 @@ function ServicePanel({ service, index, span, tone, splash = false }) {
       </div>
 
       {/* mt-auto: the catalogue links line up along the bottom edge of a tier
-          no matter how unevenly the copy above them fills each panel. */}
-      <Link
-        href={`/services/catalog/#${service.catalogAnchor}`}
-        className="cb-link mt-auto pt-7"
-      >
-        See everything in it
-        <span aria-hidden>→</span>
-      </Link>
+          no matter how unevenly the copy above them fills each panel.
+
+          The rule above it is what makes that gap read as intended. Panels in a
+          tier take the height of the taller one, so the shorter panel's link
+          floats at the bottom of open space — unavoidable in a grid row, and it
+          looked like the panel had simply run out. Ruled off, the same space
+          becomes the panel's footer, and the links across a tier sit on a
+          visible shared baseline instead of merely at a matching height. */}
+      <div className="cb-footrule mt-auto pt-6">
+        <Link
+          href={`/services/catalog/#${service.catalogAnchor}`}
+          className="cb-link"
+        >
+          See everything in it
+          <span aria-hidden>→</span>
+        </Link>
+      </div>
     </article>
   );
 }
@@ -194,6 +252,43 @@ export default function Services() {
       </section>
 
       {/* ---------------------------------------------------------------- */}
+      {/* The terms, stated on the page that sells the work.
+
+          `engagement` has been exported from data/services.js since it was
+          written and rendered nowhere — so the three commitments that are the
+          actual differentiator (fixed scope, real dates, one price, no hourly
+          billing) appeared only in a meta description and inside closing-panel
+          body copy nobody reads twice. They are what a prospect comparing
+          agencies is trying to establish, and they belong directly after "here
+          is what we do" and directly before the first ask.
+
+          It also answers the pricing question honestly on a page that carries
+          no prices: the model is public even though the numbers are not. */}
+      <section className="mt-24">
+        <SectionHeading eyebrow="How we work" title="The terms, before you ask">
+          The same three on every engagement, whichever of the five lines above
+          it comes from.
+        </SectionHeading>
+        <div className="cb-strip mt-9 sm:grid-cols-3">
+          {engagement.map((term, i) => (
+            <div
+              key={term.title}
+              style={{ "--cb-accent": i % 2 ? "#ff4e64" : "#2ef2dc" }}
+              className={`cb-cell cb-tone ${
+                i % 2 ? "cb-tone--bl" : "cb-tone--tr"
+              } p-6 sm:p-7`}
+            >
+              <Numeral value={i + 1} className="text-4xl" />
+              <h3 className="mt-4 font-[family-name:var(--font-display)] text-xl leading-snug text-bone">
+                {term.title}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-slate">{term.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
       {/* The value-menu entry point, given its own stage — it is the easiest
           thing on the page to say yes to, and the usual route into the rest.
           The page's one speech balloon lands here, on the loudest moment. */}
@@ -219,6 +314,19 @@ export default function Services() {
             <h3 className="cb-subhead">Jobs people hire one for</h3>
             <FrameList items={hireABot.roles} label="Agent roles" className="mt-4" />
           </div>
+        </div>
+
+        {/* The panel called this the easiest thing on the page to say yes to
+            and then gave nobody a way to say it. Everything above sells one
+            agent; the next section sold the catalogue instead, so the reader
+            most ready to act was handed a link to more reading. */}
+        <div className="mt-11 flex flex-wrap items-center gap-4">
+          <Link href="/contact/" className="cb-halftone cb-btn">
+            Hire one agent
+          </Link>
+          <Link href="/work/" className="cb-btn cb-btn--ghost">
+            See one running
+          </Link>
         </div>
       </section>
 
