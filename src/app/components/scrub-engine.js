@@ -48,14 +48,21 @@
      - BEHAVIOUR hardening (how it acts): on any coarse-pointer / ≤860px viewport the
        engine coalesces seeks (never issues a new currentTime while the decoder is
        still `seeking` — fast flicks can't pile up and freeze), takes a coarser seek
-       step, keeps the poster up until the clip actually paints, primes each video
-       (muted play→pause) on first touch (iOS blank-video fix), lengthens the scroll
-       run (`scrollMobileFactor`), drops the drifting particles, and ignores
-       URL-bar-only resizes (no scroll jump).
+       step, keeps the poster up (and still animating) until the clip actually paints,
+       primes each video (muted play→pause) on load AND on every touch until it takes
+       (iOS blank-video fix), lengthens the scroll run (`scrollMobileFactor`), drops
+       the drifting particles, and ignores URL-bar-only resizes (no scroll jump).
+     - MEMORY (`KEEP`): only the segments within ±2 of the current one hold a decoder
+       and a blob on touch devices; the rest are released back to their posters and
+       re-fetched from cache on the way back. iOS gives a tab a media budget in the
+       low hundreds of MB and this page's clips add up to more than that.
      STILLS MODE (automatic fallback, never configured): the page falls back to the
      stills cross-dissolving as you scroll — no video load or decode — when the user
-     asked for it (`prefers-reduced-motion`, data-saver) or the OS blocks video at
-     runtime (iOS Low Power Mode rejects even muted play(); detected on first touch).
+     asked for it (`prefers-reduced-motion`, data-saver) or video is provably blocked
+     at runtime: seeks have been issued against a loaded clip for six seconds and no
+     frame has ever reached the screen (iOS Low Power Mode). A rejected play() promise
+     is NOT that proof and must never trigger it — WebKit rejects plays for a dozen
+     transient reasons, and treating one as fatal killed video for whole sessions.
      Chromium-only network signals (`navigator.connection.saveData`/`effectiveType`)
      are used strictly as downgrade signals — saveData → stills mode, 2g/3g → shrink
      the clip prefetch window. iOS exposes none of these, so the baseline stays
@@ -112,8 +119,33 @@ function mountScrollWorld(container, config) {
   const slowNet = !!(conn && /^(slow-2g|2g|3g)$/.test(conn.effectiveType || ''));
   // Stills mode: the page becomes the stills cross-dissolving as you scroll — no video
   // load, no decode. Entered up-front for prefers-reduced-motion and data-saver, and at
-  // runtime when iOS Low Power Mode blocks video (see enterStillsMode/primeVideo).
+  // runtime when video is provably blocked (see the stills probe in tick()).
   let stillsOnly = reduce || dataSaver;
+  // Proof-of-paint. `seeked` only says the decoder moved the playhead; it says
+  // NOTHING about whether a frame reached the screen, and on iOS those two come
+  // apart constantly (a muted video that has never been played seeks fine and
+  // paints nothing). requestVideoFrameCallback fires on actual presentation, so
+  // where it exists it is the only trustworthy signal — and the only safe basis
+  // for deciding that video is blocked (see the stills probe in tick()).
+  const CAN_PROVE_PAINT = typeof HTMLVideoElement !== 'undefined'
+    && 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
+  let anyPainted = false, firstSeekAt = 0;
+  // How many segments either side of the current one keep a decoded clip. The
+  // mobile tier of a six-scene flight is ~76 MB of H.264; everything loaded used
+  // to stay resident for the whole session, so a phone that scrolled the flight
+  // end to end held eleven decoders and eleven blobs at once and WebKit started
+  // refusing to decode anything further. Wider than the ±2.2vh load window below,
+  // so a segment can never load and release on alternate frames. Keyed on `coarse`
+  // rather than `phoneClass`: an iPad is not phone-class, so it pulls the FULL
+  // masters (~25 MB each) and needs the cap more than a phone does, not less.
+  const KEEP = coarse ? 2 : 4;
+  // ?swdebug=1 — on-device diagnostics. A phone gives you no console worth
+  // reading, and every failure mode here (blocked decode, evicted decoder,
+  // stalled fetch, stills fallback) looks identical from the outside: "the video
+  // never played". Costs nothing when the flag is absent.
+  const DEBUG = /[?&]swdebug=1/.test(window.location.search);
+  const dbgLog = [];
+  function dbg(msg) { if (DEBUG) { dbgLog.push(msg); if (dbgLog.length > 6) dbgLog.shift(); } }
   const SECTIONS = config.sections || [];
   const CONNECTORS = config.connectors || [];
   const CONNECTORS_M = config.connectorsMobile || [];
@@ -224,8 +256,9 @@ function mountScrollWorld(container, config) {
     const posterSrc = (!stillsOnly && pref) ? pref : s.still;
     if (posterSrc) img.src = posterSrc;
     scene.appendChild(img); stage.appendChild(scene);
-    s.el = scene; s.img = img; s.video = null; s.hasClip = false;
-    s.loading = false; s.ready = false; s.cur = 0; s.target = 0; s.visible = false;
+    s.el = scene; s.img = img; s.video = null; s.hasClip = false; s.objectUrl = null;
+    s.loading = false; s.ready = false; s.painted = false; s.failed = false;
+    s.cur = 0; s.target = 0; s.visible = false;
   });
 
   // per-section copy / route / nav
@@ -307,37 +340,76 @@ function mountScrollWorld(container, config) {
   function enterStillsMode() {
     if (stillsOnly) return;
     stillsOnly = true;
-    SEGMENTS.forEach(s => {
-      if (s.video) {
-        try { s.video.pause(); } catch (e) {}
-        try { URL.revokeObjectURL(s.video.src); } catch (e) {}
-        s.video.remove();
-      }
-      s.el.classList.remove('has-clip');
-      s.video = null; s.hasClip = false; s.ready = false; s.loading = false;
-    });
+    dbg('stills mode');
+    SEGMENTS.forEach(releaseClip);
     read();
   }
 
+  // Drop one segment's decoder and its blob, back to the poster. Used both for
+  // memory eviction (see KEEP) and for a clip that errors out — either way the
+  // segment stays perfectly usable as a still and loadClip re-fetches it (from
+  // the HTTP cache) if the window reaches it again.
+  function releaseClip(s) {
+    const v = s.video;
+    s.video = null; s.hasClip = false; s.ready = false; s.loading = false;
+    s.painted = false; s.cur = 0;
+    s.el.classList.remove('has-clip');
+    if (!v) return;
+    try { v.pause(); } catch (e) {}
+    try { v.removeAttribute('src'); v.load(); } catch (e) {}   // free the decoder now
+    try { URL.revokeObjectURL(s.objectUrl); } catch (e) {}
+    s.objectUrl = null;
+    v.remove();
+  }
+
   function loadClip(s) {
-    if (stillsOnly || s.loading || !s.clip) return;
+    if (stillsOnly || s.loading || s.failed || !s.clip) return;
     s.loading = true;
     // Serve the lighter mobile encode on phone-class devices when one was provided
     // (tablets and desktops get the full master — see phoneClass above).
     const url = (phoneClass && s.clipM) ? s.clipM : s.clip;
     fetch(url).then(r => r.ok ? r.blob() : Promise.reject(new Error('404')))
       .then(blob => {
+        if (stillsOnly || !s.loading) return;   // released while the fetch was in flight
         const v = document.createElement('video');
         v.className = 'sw-scene__video';
         v.muted = true; v.playsInline = true; v.preload = 'auto';
         v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
-        v.src = URL.createObjectURL(blob);
-        v.addEventListener('loadedmetadata', () => { s.ready = true; read(); });
+        s.objectUrl = URL.createObjectURL(blob);
+        v.src = s.objectUrl;
+        v.addEventListener('loadedmetadata', () => {
+          s.ready = true;
+          // Force one seek the moment metadata lands, so a frame is guaranteed to
+          // be presented and the poster always has something to hand over to. The
+          // scrub loop only seeks when the playhead is off target, so a segment
+          // sitting at t=0 (the hero, every time the page loads) would otherwise
+          // never issue one — and never reveal its clip.
+          try { v.currentTime = Math.max(0.001, clamp(s.target, 0, 0.999) * (v.duration || 1)); }
+          catch (e) {}
+          read();
+        });
         // Reveal the video (hide the still poster) only once a real frame has
-        // painted — on iOS a seeked-but-never-played muted video stays blank, so
-        // hiding the still on metadata alone would flash an empty scene.
-        v.addEventListener('seeked', () => { s.el.classList.add('has-clip'); }, { once: true });
-        v.addEventListener('loadeddata', () => { try { v.pause(); } catch (e) {} if (userReady) primeVideo(v); });
+        // PAINTED. A <video> that has decoded nothing is transparent, not black,
+        // so revealing early doesn't show an empty scene — it shows the poster
+        // through a dead element, while read() stops animating that poster, and
+        // the page reads as frozen artwork.
+        //   rVFC fires on presentation; `seeked` only proves the playhead moved.
+        // On a mouse/desktop browser the two are equivalent and `seeked` is the
+        // older, safer path, so keep it there. On touch they are NOT equivalent:
+        // iOS seeks a never-played muted video happily and paints nothing, which
+        // is the entire bug this guards, so phones wait for presentation.
+        //   `anyPainted` is only ever set by rVFC — the stills probe in tick()
+        // needs proof of paint, not proof of seek.
+        const painted = () => { s.painted = true; s.el.classList.add('has-clip'); };
+        if (CAN_PROVE_PAINT) v.requestVideoFrameCallback(() => { anyPainted = true; painted(); });
+        if (!CAN_PROVE_PAINT || !isMobile()) v.addEventListener('seeked', painted, { once: true });
+        v.addEventListener('loadeddata', () => { try { v.pause(); } catch (e) {} primeVideo(v); });
+        // A decode or memory error on one clip must not take the flight with it:
+        // that segment falls back to its poster permanently, the rest still fly.
+        v.addEventListener('error', () => {
+          dbg('decode error ' + ((v.error && v.error.code) || '?') + ' ' + url);
+          s.failed = true; releaseClip(s);
+        });
         s.el.appendChild(v); s.video = v; s.hasClip = true;
       }).catch(() => { s.loading = false; });
   }
@@ -357,6 +429,7 @@ function mountScrollWorld(container, config) {
     for (let i = 0; i < NSEG; i++) {
       const s = SEGMENTS[i];
       if (y > s.start - lookahead * vh && y < s.end + lookahead * vh) loadClip(s);
+      else if (s.video && Math.abs(i - ci) > KEEP) releaseClip(s);
       const local = clamp((y - s.start) / (s.end - s.start), 0, 1);
       s.target = s.linger ? lingerEase(local, s.linger) : local;
       let outside = 0;
@@ -364,7 +437,10 @@ function mountScrollWorld(container, config) {
       const op = smooth(1 - outside / fade);
       s.el.style.opacity = op; s.visible = op > 0.001;
       s.el.style.zIndex = (i === ci) ? '120' : String(100 + Math.round(op * 10));
-      if (!s.hasClip || !s.ready) {
+      // Keyed on PAINTED, not on loaded: a clip that has arrived but is not yet
+      // (or never) putting frames on screen must keep its poster moving, or the
+      // scene freezes the moment the file lands.
+      if (!s.painted) {
         const sc = reduce ? 1 : 1.03 + local * 0.14;
         s.img.style.transform = `translateX(${stageX - 2}vw) scale(${sc.toFixed(3)})`;
       }
@@ -433,8 +509,21 @@ function mountScrollWorld(container, config) {
       s.cur = s.target;
       const dur = s.video.duration || 1;
       const t = clamp(s.cur, 0, 0.999) * dur;
-      if (Math.abs(s.video.currentTime - t) > eps) { try { s.video.currentTime = t; } catch (e) {} }
+      if (Math.abs(s.video.currentTime - t) > eps) {
+        try { s.video.currentTime = t; if (!firstSeekAt) firstSeekAt = ts; } catch (e) {}
+      }
     }
+
+    // Stills probe. A rejected play() promise is NOT proof that the OS blocks
+    // video: WebKit rejects a play interrupted by a concurrent seek or pause, and
+    // rejects extra plays under media-resource pressure. This engine used to treat
+    // any single rejection as fatal and drop the ENTIRE page to stills for the rest
+    // of the session — a phone hit that on its first touch and never showed a frame
+    // again. The honest test is paint: if we have been seeking ready clips for six
+    // seconds and nothing anywhere has presented a frame, video really is blocked
+    // (iOS Low Power Mode) and the stills flight is the better page.
+    if (!stillsOnly && !anyPainted && firstSeekAt && isMobile() && CAN_PROVE_PAINT
+        && ts - firstSeekAt > 6000) { firstSeekAt = 0; enterStillsMode(); }
   }
   function raf(ts) { tick(ts); requestAnimationFrame(raf); }
   // Degraded-mode fallback: browsers throttle or stop rAF (energy saver, occluded
@@ -443,27 +532,31 @@ function mountScrollWorld(container, config) {
   // guard makes a same-frame double tick a no-op.
   window.addEventListener('scroll', () => { tick(performance.now()); }, { passive: true });
 
-  // iOS needs a user gesture before a muted video will decode/paint reliably. On the
-  // first touch we prime every loaded clip (muted play→pause) so the first seek is
-  // instant instead of showing a blank frame. `userReady` also makes freshly-loaded
-  // clips prime themselves (see loadClip).
-  let userReady = false;
+  // iOS will not paint a frame of a muted video that has never played, however much
+  // you seek it — so every clip gets primed with a muted play()→pause() the moment
+  // it loads, and again on any touch.
+  //
+  // Priming RETRIES rather than firing once, because a one-shot gesture handler
+  // primes nothing at all in the common case: these clips are megabytes and the
+  // first touch lands within a second of the page, long before any of them has
+  // finished downloading. The old code took that touch, found `s.video === null`
+  // for every segment, marked itself done, and left each clip to prime itself from
+  // its own `loadeddata` — with no user activation left to spend.
+  let userReady = false, primeFails = 0;
   function primeVideo(v) {
-    if (!isMobile() || !v) return;
-    // A muted, playsinline play() that REJECTS on a user gesture means the OS is
-    // blocking video — in practice iOS Low Power Mode, where currentTime scrubbing
-    // doesn't work either. Fall back to stills for the whole page instead of showing
-    // frozen/blank scenes.
-    try { const p = v.play(); if (p && p.then) p.then(() => { try { v.pause(); } catch (e) {} }).catch(() => { enterStillsMode(); }); }
-    catch (e) {}
+    if (!isMobile() || !v || v.dataset.swPrimed) return;
+    try {
+      const p = v.play();
+      if (p && p.then) p.then(() => { v.dataset.swPrimed = '1'; try { v.pause(); } catch (e) {} })
+        .catch(err => { primeFails++; dbg('play rejected: ' + ((err && err.name) || '?')); });
+    } catch (e) {}
   }
-  function onFirstGesture() {
-    if (userReady) return;
+  function onGesture() {
     userReady = true;
     SEGMENTS.forEach(s => primeVideo(s.video));
   }
-  window.addEventListener('pointerdown', onFirstGesture, { once: true, passive: true });
-  window.addEventListener('touchstart', onFirstGesture, { once: true, passive: true });
+  window.addEventListener('pointerdown', onGesture, { passive: true });
+  window.addEventListener('touchstart', onGesture, { passive: true });
 
   // Particles are a per-frame cost we can't afford alongside video scrubbing on a phone.
   seedParticles(particles, reduce || coarse);
@@ -483,6 +576,31 @@ function mountScrollWorld(container, config) {
   window.addEventListener('load', layout);
   layout();
   requestAnimationFrame(raf);
+
+  // ---- ?swdebug=1 overlay ----
+  // Per segment: d/c = dive or connector, then L(oading) R(eady, metadata in)
+  // P(ainted, a frame reached the screen), the element's readyState, and its
+  // current playhead. "L-- rs0" for long stretches = the fetch is the bottleneck;
+  // "LR- rs4" that never becomes P = decode is being refused.
+  if (DEBUG) {
+    const panel = el('pre');
+    panel.style.cssText = 'position:fixed;left:6px;top:6px;z-index:9999;margin:0;padding:8px;'
+      + 'max-width:92vw;font:10px/1.35 ui-monospace,Menlo,monospace;white-space:pre-wrap;'
+      + 'background:rgba(0,0,0,.82);color:#3f6;border-radius:6px;pointer-events:none;';
+    document.body.appendChild(panel);
+    setInterval(() => {
+      panel.textContent =
+        `stills:${stillsOnly} reduce:${reduce} coarse:${coarse} phone:${phoneClass}\n`
+        + `touched:${userReady} anyPainted:${anyPainted} rVFC:${CAN_PROVE_PAINT} playFails:${primeFails}\n`
+        + `live:${SEGMENTS.filter(s => s.video).length}/${NSEG} y:${Math.round(window.scrollY)}\n`
+        + SEGMENTS.map((s, i) =>
+            `${String(i).padStart(2)}${s.kind === 'conn' ? 'c' : 'd'} `
+            + `${s.loading ? 'L' : '-'}${s.ready ? 'R' : '-'}${s.painted ? 'P' : '-'}`
+            + ` rs${s.video ? s.video.readyState : '-'}`
+            + ` t${s.video ? s.video.currentTime.toFixed(2) : '----'}`).join('\n')
+        + (dbgLog.length ? '\n! ' + dbgLog.join('\n! ') : '');
+    }, 400);
+  }
 
   // ---- helpers ----
   function el(tag, cls) { const n = document.createElement(tag); if (cls) n.className = cls; return n; }
