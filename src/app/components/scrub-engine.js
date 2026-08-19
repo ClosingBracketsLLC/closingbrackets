@@ -49,9 +49,12 @@
        engine coalesces seeks (never issues a new currentTime while the decoder is
        still `seeking` — fast flicks can't pile up and freeze), takes a coarser seek
        step, keeps the poster up (and still animating) until the clip actually paints,
-       primes each video (muted play→pause) on load AND on every touch until it takes
-       (iOS blank-video fix), lengthens the scroll run (`scrollMobileFactor`), drops
-       the drifting particles, and ignores URL-bar-only resizes (no scroll jump).
+       primes each video play-FIRST (muted play → first painted frame → pause → seek;
+       retried on load, on every touch, and from tick until it takes) because iOS
+       never decodes a paused seek-only video — and never scrubs a clip that hasn't
+       painted yet, since a seek racing the priming play() aborts it (see primeVideo),
+       lengthens the scroll run (`scrollMobileFactor`), drops the drifting particles,
+       and ignores URL-bar-only resizes (no scroll jump).
      - MEMORY (`KEEP`): only the segments within ±2 of the current one hold a decoder
        and a blob on touch devices; the rest are released back to their posters and
        re-fetched from cache on the way back. iOS gives a tab a media budget in the
@@ -258,7 +261,7 @@ function mountScrollWorld(container, config) {
     scene.appendChild(img); stage.appendChild(scene);
     s.el = scene; s.img = img; s.video = null; s.hasClip = false; s.objectUrl = null;
     s.loading = false; s.ready = false; s.painted = false; s.failed = false;
-    s.cur = 0; s.target = 0; s.visible = false;
+    s.cur = 0; s.target = 0; s.visible = false; s.lastPrimeAt = 0;
   });
 
   // per-section copy / route / nav
@@ -379,13 +382,25 @@ function mountScrollWorld(container, config) {
         v.src = s.objectUrl;
         v.addEventListener('loadedmetadata', () => {
           s.ready = true;
-          // Force one seek the moment metadata lands, so a frame is guaranteed to
-          // be presented and the poster always has something to hand over to. The
-          // scrub loop only seeks when the playhead is off target, so a segment
-          // sitting at t=0 (the hero, every time the page loads) would otherwise
-          // never issue one — and never reveal its clip.
-          try { v.currentTime = Math.max(0.001, clamp(s.target, 0, 0.999) * (v.duration || 1)); }
-          catch (e) {}
+          if (isMobile()) {
+            // iOS never starts decoding a PAUSED video, however much you seek
+            // it: readyState pins at HAVE_METADATA, no frame ever paints, and
+            // the scene stays a poster. Only play() spins the decoder up — so
+            // on touch the prime runs play-FIRST from the moment metadata
+            // lands (muted+playsinline needs no gesture), and the first seek
+            // happens inside primeVideo AFTER first paint. Seeking here
+            // instead is what used to abort that play (AbortError) whenever
+            // the user was mid-scroll — the "some scenes never play" bug.
+            primeVideo(v, s);
+          } else {
+            // Desktop decodes paused videos on seek. Force one the moment
+            // metadata lands, so a frame is guaranteed to be presented and the
+            // poster always has something to hand over to — a segment sitting
+            // at t=0 (the hero, every page load) would otherwise never issue
+            // one, and never reveal its clip.
+            try { v.currentTime = Math.max(0.001, clamp(s.target, 0, 0.999) * (v.duration || 1)); }
+            catch (e) {}
+          }
           read();
         });
         // Reveal the video (hide the still poster) only once a real frame has
@@ -403,7 +418,13 @@ function mountScrollWorld(container, config) {
         const painted = () => { s.painted = true; s.el.classList.add('has-clip'); };
         if (CAN_PROVE_PAINT) v.requestVideoFrameCallback(() => { anyPainted = true; painted(); });
         if (!CAN_PROVE_PAINT || !isMobile()) v.addEventListener('seeked', painted, { once: true });
-        v.addEventListener('loadeddata', () => { try { v.pause(); } catch (e) {} primeVideo(v); });
+        // Never pause() here while a prime is in flight: that pause is exactly
+        // what aborts the priming play() (AbortError) and leaves the clip in
+        // the decode-refused rs1 state the debug overlay shows.
+        v.addEventListener('loadeddata', () => {
+          if (!v.dataset.swPriming) { try { v.pause(); } catch (e) {} }
+          primeVideo(v, s);
+        });
         // A decode or memory error on one clip must not take the flight with it:
         // that segment falls back to its poster permanently, the rest still fly.
         v.addEventListener('error', () => {
@@ -499,6 +520,15 @@ function mountScrollWorld(container, config) {
     for (let i = 0; i < NSEG; i++) {
       const s = SEGMENTS[i];
       if (!s.hasClip || !s.ready || !s.video) continue;
+      // Until a clip has proven it can paint, never scrub it on a touch
+      // device: a currentTime write racing the priming play() aborts the
+      // prime, decode never starts, and the scene stays a poster forever.
+      // Keep (re)priming instead, rate-limited — the gesture handler and
+      // loadeddata retry too; this covers the gaps between touches.
+      if (isMobile() && !s.painted) {
+        if (ts - (s.lastPrimeAt || 0) > 700) { s.lastPrimeAt = ts; primeVideo(s.video, s); }
+        continue;
+      }
       // Never queue a seek while the decoder is still resolving the last one.
       // On phones a fast flick would otherwise pile up seeks and freeze the clip;
       // we snap to the latest target the moment it's free.
@@ -532,28 +562,72 @@ function mountScrollWorld(container, config) {
   // guard makes a same-frame double tick a no-op.
   window.addEventListener('scroll', () => { tick(performance.now()); }, { passive: true });
 
-  // iOS will not paint a frame of a muted video that has never played, however much
-  // you seek it — so every clip gets primed with a muted play()→pause() the moment
-  // it loads, and again on any touch.
+  // iOS will not DECODE a muted video that has never played, however much you
+  // seek it — readyState pins at HAVE_METADATA (rs1 in the overlay), no frame
+  // ever paints, and the scene stays a poster. Only a successful play() spins
+  // the decoder up, so every clip is primed the moment its metadata lands.
   //
-  // Priming RETRIES rather than firing once, because a one-shot gesture handler
-  // primes nothing at all in the common case: these clips are megabytes and the
-  // first touch lands within a second of the page, long before any of them has
-  // finished downloading. The old code took that touch, found `s.video === null`
-  // for every segment, marked itself done, and left each clip to prime itself from
-  // its own `loadeddata` — with no user activation left to spend.
+  // The prime is play-FIRST, and nothing may interrupt it:
+  //   play() → wait for the first PRESENTED frame (rVFC) → pause() → seek to
+  //   the live scroll target.
+  // Ordering is the entire fix. A currentTime write issued while the play()
+  // promise is pending rejects it with AbortError — and the scrub loop writes
+  // currentTime constantly while the user scrolls, so clips that arrived
+  // mid-scroll lost that race every time and never decoded (the field bug:
+  // scenes played only if their file happened to land while the page was
+  // idle). The scrub loop therefore never touches an unpainted clip on mobile
+  // (see tick), the loadeddata pause is gated on swPriming, and the first
+  // seek lives HERE, after paint. Pausing on play()-resolve is also too
+  // early — resolve can beat the first paint, and the decoder winds back
+  // down; pause only on presentation proof (or a timeout that leaves the
+  // prime un-done so it retries).
+  //
+  // Priming RETRIES rather than firing once (gesture, loadeddata, and a
+  // rate-limited path in tick): clips are megabytes, so any one-shot attempt
+  // lands before most of them exist. Retry is per-element — a released and
+  // re-fetched clip primes again from scratch.
   let userReady = false, primeFails = 0;
-  function primeVideo(v) {
-    if (!isMobile() || !v || v.dataset.swPrimed) return;
+  function primeVideo(v, s) {
+    if (!isMobile() || !v || v.dataset.swPrimed || v.dataset.swPriming) return;
+    v.dataset.swPriming = '1';
+    // Arms the stills probe: in Low Power Mode every one of these plays
+    // rejects and nothing ever paints — after six silent seconds the probe
+    // drops the page to the stills flight.
+    if (!firstSeekAt) firstSeekAt = performance.now();
+    const settle = () => { delete v.dataset.swPriming; };
     try {
       const p = v.play();
-      if (p && p.then) p.then(() => { v.dataset.swPrimed = '1'; try { v.pause(); } catch (e) {} })
-        .catch(err => { primeFails++; dbg('play rejected: ' + ((err && err.name) || '?')); });
-    } catch (e) {}
+      if (!p || !p.then) { settle(); return; }
+      p.then(() => {
+        let done = false;
+        const finish = (ok) => {
+          if (done) return; done = true;
+          try { v.pause(); } catch (e) {}
+          settle();
+          if (!ok) return;   // no proof a frame presented — leave un-primed so retries continue
+          v.dataset.swPrimed = '1';
+          // Decoder is warm and a frame is on screen; snap to wherever the
+          // scroll actually is. From here the scrub loop owns the playhead.
+          s.cur = clamp(s.target, 0, 1);
+          try { v.currentTime = clamp(s.target, 0, 0.999) * (v.duration || 1); } catch (e) {}
+        };
+        if (CAN_PROVE_PAINT) {
+          v.requestVideoFrameCallback(() => finish(true));
+          setTimeout(() => finish(false), 1500);
+        } else {
+          // No rVFC on this WebKit: play + a beat is the best signal there is;
+          // the `seeked` fallback listener supplies the painted flag.
+          setTimeout(() => finish(true), 120);
+        }
+      }).catch(err => {
+        settle(); primeFails++;
+        dbg('play rejected: ' + ((err && err.name) || '?'));
+      });
+    } catch (e) { settle(); }
   }
   function onGesture() {
     userReady = true;
-    SEGMENTS.forEach(s => primeVideo(s.video));
+    SEGMENTS.forEach(s => primeVideo(s.video, s));
   }
   window.addEventListener('pointerdown', onGesture, { passive: true });
   window.addEventListener('touchstart', onGesture, { passive: true });
