@@ -69,7 +69,9 @@
      Chromium-only network signals (`navigator.connection.saveData`/`effectiveType`)
      are used strictly as downgrade signals — saveData → stills mode, 2g/3g → shrink
      the clip prefetch window. iOS exposes none of these, so the baseline stays
-     conservative (posters first, lazy blob fetch near the viewport) for everyone.
+     conservative for everyone: posters first, lazy blob fetch near the viewport,
+     and a serial cache-warming look-ahead (PREFETCH_AHEAD segments, forward-only)
+     that only starts once the visitor actually scrolls or touches.
      Nothing here is required — a config with only `clip`/`connectors` still works on
      phones; the mobile variants just make it lighter and smoother.
 
@@ -261,7 +263,7 @@ function mountScrollWorld(container, config) {
     scene.appendChild(img); stage.appendChild(scene);
     s.el = scene; s.img = img; s.video = null; s.hasClip = false; s.objectUrl = null;
     s.loading = false; s.ready = false; s.painted = false; s.failed = false;
-    s.cur = 0; s.target = 0; s.visible = false; s.lastPrimeAt = 0;
+    s.cur = 0; s.target = 0; s.visible = false; s.lastPrimeAt = 0; s.reveal = null;
   });
 
   // per-section copy / route / nav
@@ -298,7 +300,7 @@ function mountScrollWorld(container, config) {
   // (where the copy holds) and moves quicker near the seams. L=0 linear, L=1 full
   // mid-scene pause. f(0)=0, f(1)=1 always, so seam frames are untouched.
   const lingerEase = (x, L) => { L = clamp(L); const c = x - 0.5; return (1 - L) * x + L * (4 * c * c * c + 0.5); };
-  let vh = window.innerHeight, stageX = 0, totalW = 0, activeIndex = -1, ticking = false;
+  let vh = window.innerHeight, stageX = 0, totalW = 0, activeIndex = -1, ticking = false, curCi = 0;
   let laidOutW = window.innerWidth;   // width the current layout was computed at (see onResize)
 
   function layout() {
@@ -416,7 +418,13 @@ function mountScrollWorld(container, config) {
         //   `anyPainted` is only ever set by rVFC — the stills probe in tick()
         // needs proof of paint, not proof of seek.
         const painted = () => { s.painted = true; s.el.classList.add('has-clip'); };
-        if (CAN_PROVE_PAINT) v.requestVideoFrameCallback(() => { anyPainted = true; painted(); });
+        s.reveal = painted;
+        // First presentation proves video works (anyPainted feeds the stills
+        // probe) — but on mobile that frame is the PRIME's frame ~0, not the
+        // frame the user is at, so the visual reveal waits for the prime's
+        // corrective seek (see primeVideo). Revealing here flashed a clip's
+        // opening frame when it arrived mid-scene, then visibly jumped.
+        if (CAN_PROVE_PAINT) v.requestVideoFrameCallback(() => { anyPainted = true; if (!isMobile()) painted(); });
         if (!CAN_PROVE_PAINT || !isMobile()) v.addEventListener('seeked', painted, { once: true });
         // Never pause() here while a prime is in flight: that pause is exactly
         // what aborts the priming play() (AbortError) and leaves the clip in
@@ -435,6 +443,44 @@ function mountScrollWorld(container, config) {
       }).catch(() => { s.loading = false; });
   }
 
+  // ---- look-ahead clip prefetch ----
+  // The scrub window above only starts a clip's download ~2 viewports before
+  // the camera needs it, and a fast flick crosses that gap in well under a
+  // second while a multi-MB clip takes several — so scenes kept arriving
+  // mid-flight as posters ("the video loads halfway through"). This queue
+  // walks the chain AHEAD of the camera and warms the HTTP cache: fetch,
+  // consume, discard — no blob kept, no decoder created, so it costs no
+  // memory and can safely run further ahead than KEEP allows residency.
+  // loadClip's own fetch then lands as a disk-cache hit.
+  //   Serial on purpose: one stream at full bandwidth beats several competing
+  // ones for time-to-first-usable-clip, and it always yields to an urgent
+  // in-flight loadClip fetch. Forward-only (scroll-back re-fetches are
+  // already cache hits), capped at PREFETCH_AHEAD segments so a visitor who
+  // stops mid-flight doesn't pull the whole chain, and it does nothing until
+  // the visitor shows intent (first gesture or real scroll) — an idle bounce
+  // costs the same bytes as before. Skipped for stills mode and slow
+  // Chromium connections, same policy as the scrub window.
+  const PREFETCH_AHEAD = 4;
+  const prefetchTried = new Set();
+  let prefetchBusy = false;
+  function prefetchAhead(ci) {
+    if (prefetchBusy || stillsOnly || slowNet) return;
+    if (!userReady && (ySmooth || 0) < vh * 0.5) return;    // no intent shown yet
+    if (SEGMENTS.some(x => x.loading && !x.video)) return;  // urgent fetch in flight — yield
+    for (let i = ci + 1; i <= Math.min(ci + PREFETCH_AHEAD, NSEG - 1); i++) {
+      const s = SEGMENTS[i];
+      if (!s.clip || s.loading || s.failed) continue;
+      const url = (phoneClass && s.clipM) ? s.clipM : s.clip;
+      if (prefetchTried.has(url)) continue;
+      prefetchTried.add(url);
+      prefetchBusy = true;
+      // Body must be consumed for the cache to store the full response.
+      fetch(url).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => {})
+        .finally(() => { prefetchBusy = false; });
+      return;   // one at a time; the next tick picks up the next segment
+    }
+  }
+
   function read(yIn) {
     // Prefer the smoothed scroll position (see raf) so every layer — clip time,
     // seam crossfade, copy, rail — stays in lockstep at any input speed. Callers
@@ -443,6 +489,7 @@ function mountScrollWorld(container, config) {
     const fade = CROSSFADE * vh;
     let ci = 0;
     for (let i = 0; i < NSEG; i++) if (y >= SEGMENTS[i].start) ci = i;
+    curCi = ci;
 
     // On a slow connection (Chromium signal only) shrink the prefetch window: fetch the
     // clip you're in, not the neighbourhood. Everyone else prefetches ±1.6 viewports.
@@ -544,6 +591,11 @@ function mountScrollWorld(container, config) {
       }
     }
 
+    // Advance the look-ahead prefetch queue. Runs from tick, not read, so it
+    // keeps draining while the page sits still (read stops once ySmooth
+    // settles). All its guards are O(1)-cheap when there is nothing to do.
+    prefetchAhead(curCi);
+
     // Stills probe. A rejected play() promise is NOT proof that the OS blocks
     // video: WebKit rejects a play interrupted by a concurrent seek or pause, and
     // rejects extra plays under media-resource pressure. This engine used to treat
@@ -606,10 +658,25 @@ function mountScrollWorld(container, config) {
           settle();
           if (!ok) return;   // no proof a frame presented — leave un-primed so retries continue
           v.dataset.swPrimed = '1';
-          // Decoder is warm and a frame is on screen; snap to wherever the
-          // scroll actually is. From here the scrub loop owns the playhead.
+          // Decoder is warm; snap to wherever the scroll actually is — and
+          // REVEAL only once that corrective seek has landed. The prime's
+          // painted frame is frame ~0 of the clip, so a clip arriving
+          // mid-scene that revealed on it flashed its opening frame and then
+          // visibly jumped to the playhead. A warm decoder makes `seeked`
+          // presentation-equivalent here; the timeout covers a seek that
+          // never reports (a reveal with a small pop beats a poster that
+          // never swaps).
+          let shown = false;
+          const show = () => {
+            if (shown || s.video !== v) return;
+            shown = true;
+            if (s.reveal) s.reveal();
+          };
+          v.addEventListener('seeked', show, { once: true });
+          setTimeout(show, 350);
           s.cur = clamp(s.target, 0, 1);
-          try { v.currentTime = clamp(s.target, 0, 0.999) * (v.duration || 1); } catch (e) {}
+          try { v.currentTime = Math.max(0.001, clamp(s.target, 0, 0.999) * (v.duration || 1)); }
+          catch (e) { show(); }
         };
         if (CAN_PROVE_PAINT) {
           v.requestVideoFrameCallback(() => finish(true));
