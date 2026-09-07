@@ -12,6 +12,10 @@
 // work above concept work automatically, so the first real case study takes the
 // top slot on its own.
 //
+// `shape` names the engagement shape the build demonstrates (Build-a-Bot,
+// property, or both) and renders beside the concept-build label, so the proof
+// on this page maps onto the two doors the homepage offers.
+//
 // `lines` holds the service ids from data/services.js that a build draws on.
 // It renders as links back to /services/#id, which is what connects the proof
 // on this page to the offer on that one — both for a reader deciding whether
@@ -19,13 +23,16 @@
 // Every id used here must exist in `services`; nothing validates that but the
 // link will 404 to an anchor that isn't there.
 
+import { terms } from "./build-a-bot";
+
 export const builds = [
   {
     id: "evergreen-softwash",
     concept: true,
     client: "Evergreen Softwash",
     sector: "Exterior cleaning · residential services",
-    lines: ["custom-software", "ai-automation", "growth-marketing"],
+    shape: "Build-a-Bot + property",
+    lines: ["build-a-bot", "web-app", "seo-growth"],
     accent: "#2ef2dc",
     featured: true,
     // Media lives on the featured build only — one moving thing per page.
@@ -43,7 +50,7 @@ export const builds = [
       "Local SEO and Google Business Profile across four service areas",
     ],
     shows:
-      "What the full stack looks like on one small business: film, site, and three agents running the front of house, bought as one scope instead of from five vendors.",
+      "Property plus Build-a-Bot on one small business. The job letter delegates lead qualification, calendar booking and review replies; discounts, arrival promises and complaints naming damage stay with the owner.",
     stack: ["Next.js", "Stripe", "Twilio", "Claude agents", "GBP API"],
   },
   {
@@ -51,7 +58,8 @@ export const builds = [
     concept: true,
     client: "Halcyon Freight",
     sector: "Regional logistics · 40 trucks",
-    lines: ["ai-integration", "ai-automation"],
+    shape: "Build-a-Bot on existing systems",
+    lines: ["build-a-bot"],
     accent: "#ff4e64",
     summary:
       "Rate confirmations, bills of lading and proof-of-delivery photos arrived as email attachments and got typed into a TMS by hand. Roughly nine hundred documents a week, three people doing it, and a two-day lag before anyone could invoice.",
@@ -62,7 +70,7 @@ export const builds = [
       "Exception dashboard showing what the agent could not read, and why",
     ],
     shows:
-      "The pattern we use for document-heavy back offices: never replace the system of record. Sit beside it, and hand back only what you are sure of.",
+      "Build-a-Bot hired onto systems the client already runs. The delegated job is document intake and extraction; anything under the confidence threshold goes to a named person, and the TMS stays the system of record.",
     stack: ["Python", "Claude", "Postgres", "TMS API"],
   },
   {
@@ -70,7 +78,8 @@ export const builds = [
     concept: true,
     client: "Meridian Dental Group",
     sector: "Healthcare · six locations",
-    lines: ["ai-integration", "ai-automation", "custom-software"],
+    shape: "Build-a-Bot + property",
+    lines: ["build-a-bot", "web-app"],
     accent: "#2ef2dc",
     summary:
       "Six practices, six front desks, and a recall list nobody had time to work. Patients who lapsed at eighteen months were never called, because calling them was always less urgent than the person standing at the counter.",
@@ -81,7 +90,7 @@ export const builds = [
       "Per-location reporting the regional manager actually opens",
     ],
     shows:
-      "How we scope AI in a regulated setting: the agent handles scheduling language only, and every clinical thread goes to a person by design rather than by exception.",
+      "A job letter in a regulated setting. The agent is delegated recall and scheduling language only; every clinical thread goes to a person by design, not by exception.",
     stack: ["Next.js", "Claude", "Twilio", "PMS integration"],
   },
   {
@@ -89,13 +98,14 @@ export const builds = [
     concept: true,
     client: "Foundry & Fern",
     sector: "DTC e-commerce · homewares",
-    lines: ["custom-software", "growth-marketing"],
+    shape: "Property · performance",
+    lines: ["web-app", "engineering-bar", "seo-growth"],
     accent: "#ff4e64",
     summary:
       "Good products, good photography, and a storefront that took nine seconds to become interactive on a phone. Paid traffic was being bought and then lost somewhere on the way to the product page.",
     work: [
       "Storefront rebuild against the existing catalogue and checkout",
-      "Core Web Vitals work: 9.1s to 1.4s time-to-interactive on a mid-range Android",
+      "Core Web Vitals work until the storefront was usable on a mid-range Android",
       "Abandoned-cart sequence with per-customer copy rather than one template",
       "Attribution wired so paid spend maps to revenue, not to sessions",
     ],
@@ -107,8 +117,9 @@ export const builds = [
     id: "cartwright-vale",
     concept: true,
     client: "Cartwright & Vale",
-    sector: "B2B SaaS · $18M ARR",
-    lines: ["ai-consulting", "ai-integration"],
+    sector: "B2B SaaS · subscription revenue",
+    shape: "Delegated monitoring",
+    lines: ["build-a-bot", "ai-consulting"],
     accent: "#2ef2dc",
     summary:
       "Churn was visible in the numbers about a month after it was decided in the product. Support tickets, usage decay, invoice disputes and quiet champions leaving all lived in different systems, and nobody could see them as one shape.",
@@ -119,17 +130,20 @@ export const builds = [
       "A written record of every signal that fired and what happened next",
     ],
     shows:
-      "The graph-first approach we write about: model the relationships first, and questions you could not previously ask become ordinary queries.",
+      "Delegated monitoring, still a concept: the agent is allowed to watch and report, never to contact an account. Model the relationships first and the risk digest becomes an ordinary query.",
     stack: ["Postgres", "dbt", "Claude agents", "Metabase"],
   },
 ];
 
-/** How an engagement runs, start to finish. */
+/**
+ * How an engagement runs, start to finish. Shared by /work/ and /build-a-bot/,
+ * so a property build and a Build-a-Bot describe the same five stages.
+ */
 export const stages = [
   {
     step: "01",
     title: "Scope",
-    body: "We work out what you actually need and write it down. You get one document: what gets built, a timeline with real dates, and one fixed price.",
+    body: "Tasks in, tasks out, the tools involved, and the systems it touches. You get one document: what gets built, a timeline with real dates, and one fixed price.",
   },
   {
     step: "02",
@@ -139,16 +153,16 @@ export const stages = [
   {
     step: "03",
     title: "Integrate",
-    body: "Where AI belongs in the build, it goes into your existing systems and runs against your data, your workflows, and your business rules. Pilot first, then production.",
+    body: "Your systems, your records, your business rules. A pilot against real data first, then production, with exceptions routed to the person the scope names.",
   },
   {
     step: "04",
     title: "Hand over",
-    body: "You own all of the code. Nothing is locked to us, and nothing about the handover depends on keeping us on retainer.",
+    body: "You own the spec and the code and configuration. Nothing is locked to us, and nothing about the handover depends on keeping us on retainer.",
   },
   {
     step: "05",
-    title: "Grow",
-    body: "If you want the marketing side too, it becomes a machine we keep running, bringing in customers every month while we tune what performs best.",
+    title: "Stabilise",
+    body: `${terms.stabiliseDays} days included. We watch it run in production, fix what real traffic finds, and tune the stop rules before we step back.`,
   },
 ];

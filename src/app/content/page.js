@@ -10,12 +10,13 @@ import {
   breadcrumbLd,
   graphLd,
   pageOg,
+  routes,
   url,
 } from "@/data/site";
 import { posts, topics } from "@/data/content";
 
 const TITLE = "Content";
-const PATH = "/content/";
+const PATH = routes.content;
 
 /* Title trimmed to fit: the old one ran to 72 characters once the brand
    template was appended and lost "Production Notes" to truncation anyway. Both
@@ -142,7 +143,7 @@ export default function Content() {
       /* The byline is in the intro rather than repeated on all six cards: the
          index needs the author visible once to match its schema, and printing
          the same name six times down a page reads as a template. */
-      intro={`Notes from the work itself, written by ${author.name}. Two running series — loop engineering and graph engineering — plus the occasional piece on what we made and why it was cut that way.`}
+      intro={`Notes on how we build agents and properties. If one of these is the problem you have, describe it to us. Written by ${author.name}: two running series — loop engineering and graph engineering — plus the occasional piece on what we made and why it was cut that way.`}
       accent="#2ef2dc"
     >
       <script
@@ -216,8 +217,8 @@ export default function Content() {
         caption="Faster than reading all of it"
         title="If one of these describes a problem you have, describe it to us"
         body="The quickest route to an answer is to tell us the actual problem. We read every enquiry ourselves, reply within one business day, and the first answer costs nothing."
-        action={{ label: "Ask us directly", href: "/contact/" }}
-        secondary={{ label: "See what we do", href: "/services/" }}
+        action={{ label: "Describe it to us", href: routes.start }}
+        secondary={{ label: "See Build-a-Bot", href: routes.bot }}
         accent="#2ef2dc"
       />
     </PageLayout>

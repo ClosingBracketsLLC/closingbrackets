@@ -1,4 +1,5 @@
-// Single source for the site chrome — the frame around every page.
+// Single source for the site chrome and the things every page shares — the
+// route table, the header/footer links, contact details, the site-wide close.
 //
 // The homepage's scroll world owns its own copy in world.js; anything that
 // wraps it (header, footer, canonical URLs) lives here so a nav change is one
@@ -8,55 +9,136 @@ export const SITE_URL = "https://closingbrackets.com";
 
 export const brand = { name: "Closing Brackets", href: "/" };
 
-// Order is the header order. Adding a route here puts it in the header, the
-// footer, and the mobile nav at once — but remember to add it to
-// public/sitemap.xml and to drop any render.yaml redirect that shadows it.
-export const navLinks = [
-  { label: "Services", href: "/services/" },
-  { label: "Work", href: "/work/" },
-  { label: "Content", href: "/content/" },
-];
+/**
+ * Every route on the site, by name. Pages, data files and the sitemap read
+ * these instead of typing paths, so renaming a route is one edit here plus a
+ * redirect in render.yaml (never a redirect whose source is a real route).
+ */
+export const routes = {
+  home: "/",
+  bot: "/build-a-bot/",
+  work: "/work/",
+  services: "/services/",
+  catalog: "/services/catalog/",
+  content: "/content/",
+  about: "/about/",
+  start: "/start/",
+};
 
-export const cta = { label: "Start a project", href: "/contact/" };
+/** The conversion page, optionally pre-selecting what the visitor wants. */
+export const startHref = (intent) =>
+  intent ? `${routes.start}?intent=${intent}` : routes.start;
 
 /**
- * The named human behind the work.
- *
- * The site ran anonymous — "one small senior team", "the same two people" —
- * which costs on both sides of the same coin. Google's E-E-A-T asks who is
- * behind a claim, and every AI citation engine weights named authorship; a
- * prospect about to describe their business to a stranger is asking the same
- * question in plainer words. One real name answers all of it.
- *
- * `bio` is the byline blurb on the essays. `line` is the accountability
- * sentence used at conversion points, where the promise "a person reads it"
- * only means something once the person has a name.
+ * The pages the sitemap lists, with the last REAL content change per page —
+ * never a deploy date. Articles are added by src/app/sitemap.js from
+ * data/content.js. Order is the header order for the routes that are in it.
+ */
+export const pages = [
+  { path: routes.home, updated: "2026-09-07", changefreq: "monthly", priority: 1 },
+  { path: routes.bot, updated: "2026-09-07", changefreq: "monthly", priority: 0.9 },
+  { path: routes.work, updated: "2026-09-07", changefreq: "monthly", priority: 0.8 },
+  { path: routes.services, updated: "2026-09-07", changefreq: "monthly", priority: 0.8 },
+  { path: routes.catalog, updated: "2026-09-07", changefreq: "monthly", priority: 0.5 },
+  { path: routes.content, updated: "2026-09-07", changefreq: "weekly", priority: 0.6 },
+  { path: routes.about, updated: "2026-09-07", changefreq: "yearly", priority: 0.6 },
+  { path: routes.start, updated: "2026-09-07", changefreq: "yearly", priority: 0.7 },
+];
+
+// Header order. Adding a route here puts it in the header, the footer, and
+// the mobile nav at once.
+export const navLinks = [
+  { label: "Work", href: routes.work },
+  { label: "Build-a-Bot", href: routes.bot },
+  { label: "Services", href: routes.services },
+  { label: "Content", href: routes.content },
+  { label: "About", href: routes.about },
+];
+
+export const cta = { label: "Start a project", href: routes.start };
+
+/** The site's one title and description: <title> default, meta, JSON-LD. */
+export const siteTitle = "Closing Brackets — AI-native web agency";
+export const siteDescription =
+  "We build sites and apps, and Build-a-Bot: a custom agent that handles the tasks you delegate. Fixed scope, real dates, one price. You own the code.";
+
+/**
+ * The studio's public contact details, defined once. The site used to carry
+ * three different addresses (contact page, footer, form fallback) — a lead
+ * sent to the wrong one is a lead lost, so every mailto on the site reads
+ * this object.
+ */
+export const contact = {
+  email: "robert@closingbrackets.com",
+  location: "Spokane / Inland Northwest · remote",
+  tagline: "AI-native web agency. Custom agents for work you delegate.",
+  reply: "the same business day",
+};
+
+/**
+ * The "book a call" control. NEXT_PUBLIC_CALENDAR_URL is the slot for a
+ * Cal.com / Calendly link; until it is set, the control is a mailto that
+ * promises a booking link by reply. Consumers render href/label/note and
+ * never re-check the env themselves.
+ */
+const calendar = process.env.NEXT_PUBLIC_CALENDAR_URL;
+export const call = calendar
+  ? {
+      href: calendar,
+      label: "Book a 15-minute call",
+      note: "Fifteen minutes, no deck. Pick a slot that suits you.",
+    }
+  : {
+      href: `mailto:${contact.email}?subject=${encodeURIComponent("15-minute call")}&body=${encodeURIComponent(
+        "Hi Robert — I'd like a 15-minute call. Please send a booking link.",
+      )}`,
+      label: "Book a 15-minute call",
+      note: "Fifteen minutes, no deck. Say when suits you and we will send a booking link.",
+    };
+
+/**
+ * The named human behind the work. `bio` is the byline blurb on the essays
+ * and the founder panel; `line` is the accountability sentence used at
+ * conversion points, where "a person reads it" only means something once the
+ * person has a name. Set `photo` to a path under /public to render the
+ * founder photo on /about.
  */
 export const author = {
   name: "Robert Campbell",
+  firstName: "Robert",
   role: "Founder",
-  email: "robert@closingbrackets.com",
-  bio: "Robert Campbell is the founder of Closing Brackets, where he builds agent systems, custom software and the loop engineering that keeps them running in production.",
-  line: "Robert reads every enquiry himself.",
+  email: contact.email,
+  photo: undefined,
+  bio: "Robert Campbell is the founder of Closing Brackets, a builder-led studio. He scopes the work, writes the code, and builds the agent systems and the loop engineering that keep them running in production.",
+  line: "Robert reads every enquiry himself and replies the same business day.",
+};
+
+/**
+ * The site-wide closing panel — the same ask on the homepage, /about and
+ * /services. Pages spread it into CtaPanel and may extend the body.
+ */
+export const startClose = {
+  caption: "Before anything starts",
+  title: "Tell us what you want built",
+  body: "A property, a bot, or both. You get scope, dates, and one price before anything starts.",
+  action: cta,
+  secondary: { label: "Get a Build-a-Bot", href: routes.bot },
 };
 
 /** Absolute URL for a site-relative path. */
 export const url = (path = "/") => `${SITE_URL}${path}`;
 
 /**
- * The author as a schema.org Person, by reference.
- *
- * Consumers merge every JSON-LD block on a page and resolve @id across them, so
- * `author: authorRef` on an article points at the same entity the layout
- * publishes rather than declaring a second one.
+ * The author as a schema.org Person, by reference. Consumers merge every
+ * JSON-LD block on a page and resolve @id across them, so `author: authorRef`
+ * on an article points at the entity the layout publishes.
  */
 export const authorRef = { "@id": `${SITE_URL}/#person` };
 
 /**
  * The Person node itself. Emitted by layout.js on every page, and again inside
  * an article's own graph so that block stands on its own — same @id, so the two
- * merge into one entity instead of competing. Defined here rather than at
- * either call site precisely so they cannot drift into two different people.
+ * merge into one entity instead of competing.
  */
 export const personLd = () => ({
   "@type": "Person",
@@ -65,7 +147,7 @@ export const personLd = () => ({
   jobTitle: author.role,
   email: author.email,
   description: author.bio,
-  url: url("/content/"),
+  url: url(routes.content),
   worksFor: { "@id": `${SITE_URL}/#organization` },
 });
 
@@ -74,25 +156,20 @@ export const ogImage = {
   url: "/og.jpg",
   width: 1200,
   height: 630,
-  alt: "Closing Brackets — custom software, growth marketing, and AI automation",
+  alt: "Closing Brackets — AI-native web agency. Build-a-Bot: a custom agent for the tasks you delegate.",
   type: "image/jpeg",
 };
 
 /**
- * Open Graph block for a page.
- *
- * ALWAYS build a page's `openGraph` with this rather than by hand. Next.js
- * shallow-merges metadata: a page that declares `openGraph` REPLACES the
- * layout's object outright instead of merging into it, so a page setting just
- * a title silently drops the site name, locale, type and — the one that
- * matters — the card image, and shares of it render as a bare link.
- *
- * `type` defaults to "website"; articles pass "article" plus `publishedTime`.
+ * Open Graph block for a page. ALWAYS build a page's `openGraph` with this:
+ * Next.js shallow-merges metadata, so a page that declares `openGraph`
+ * REPLACES the layout's object outright, and one that sets just a title
+ * silently drops the site name, locale, type and the card image.
  */
 export function pageOg({ title, description, path, type = "website", ...rest }) {
   return {
     type,
-    siteName: "Closing Brackets",
+    siteName: brand.name,
     locale: "en_US",
     images: [ogImage],
     title,
@@ -103,17 +180,21 @@ export function pageOg({ title, description, path, type = "website", ...rest }) 
 }
 
 /**
- * BreadcrumbList JSON-LD for a second-level page. Google uses it to render the
- * breadcrumb trail in results instead of a bare URL.
+ * BreadcrumbList JSON-LD. `trail` is [{ name, path }] for the ancestors after
+ * Home; the current page is last. Google renders it as the breadcrumb in
+ * results instead of a bare URL.
  */
-export function breadcrumbLd(title, path) {
+export function breadcrumbLd(title, path, trail = []) {
+  const items = [{ name: "Home", path: routes.home }, ...trail, { name: title, path }];
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: url("/") },
-      { "@type": "ListItem", position: 2, name: title, item: url(path) },
-    ],
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: url(item.path),
+    })),
   };
 }
 

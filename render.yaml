@@ -24,10 +24,15 @@ services:
       # dashboard so it is inlined at build time (NEXT_PUBLIC_* is build-time).
       - key: NEXT_PUBLIC_CLARITY_ID
         sync: false
-      # Web3Forms access key for the contact/CTA lead forms. The key is
+      # Web3Forms access key for the /start/ enquiry form. The key is
       # designed to be public (it only routes submissions to your inbox), so
       # inlining it at build time is safe. Get one free at web3forms.com.
       - key: NEXT_PUBLIC_WEB3FORMS_KEY
+        sync: false
+      # Optional: a Cal.com / Calendly booking URL. When set, every "book a
+      # 15-minute call" control on the site links to it; when blank they fall
+      # back to a mailto that promises a booking link by reply.
+      - key: NEXT_PUBLIC_CALENDAR_URL
         sync: false
     # 301 redirects from the pre-redesign URLs. Render only applies a rule
     # when no file exists at the source path; the old route dirs are deleted,
@@ -36,12 +41,12 @@ services:
     #
     # Each source points at the CLOSEST real page rather than dumping every
     # legacy URL on / — a redirect to a page that answers the original intent
-    # keeps that URL's link equity working. Real routes today: /, /services/,
-    # /work/, /content/, /contact/.
+    # keeps that URL's link equity working. Real routes today: /, /build-a-bot/,
+    # /services/, /services/catalog/, /work/, /content/, /about/, /start/.
     #
-    # IMPORTANT: never add a rule whose source is a real route. /services/ and
-    # /work/ used to redirect here and would now shadow the actual pages
-    # (Render only skips a rule when a file exists, and that is not a
+    # IMPORTANT: never add a rule whose source is a real route. /services/,
+    # /work/ and /about/ used to redirect here and would now shadow the actual
+    # pages (Render only skips a rule when a file exists, and that is not a
     # guarantee worth relying on).
     routes:
       # Service-shaped sources → /services/
@@ -65,24 +70,26 @@ services:
       - { type: redirect, source: /blog-single, destination: /content/ }
       - { type: redirect, source: /documentation/, destination: /content/ }
       - { type: redirect, source: /documentation, destination: /content/ }
-      # Conversion-intent sources → /contact/
-      - { type: redirect, source: /sign-in/, destination: /contact/ }
-      - { type: redirect, source: /sign-in, destination: /contact/ }
-      - { type: redirect, source: /sign-up/, destination: /contact/ }
-      - { type: redirect, source: /sign-up, destination: /contact/ }
-      # No page answers these yet, so they go home. Retarget if /about/ ships.
+      # Conversion-intent sources → /start/ (the single conversion page;
+      # /contact/ was the previous one and is retired, not shadowed).
+      - { type: redirect, source: /contact/, destination: /start/ }
+      - { type: redirect, source: /contact, destination: /start/ }
+      - { type: redirect, source: /sign-in/, destination: /start/ }
+      - { type: redirect, source: /sign-in, destination: /start/ }
+      - { type: redirect, source: /sign-up/, destination: /start/ }
+      - { type: redirect, source: /sign-up, destination: /start/ }
+      # Studio / people sources → /about/
+      - { type: redirect, source: /story/, destination: /about/ }
+      - { type: redirect, source: /story, destination: /about/ }
+      - { type: redirect, source: /team/, destination: /about/ }
+      - { type: redirect, source: /team, destination: /about/ }
+      # No page answers these, so they go home.
       # No /* catch-all on purpose — mass-redirecting unknown URLs to / reads
       # as soft-404s and erases the real 404 page.
       - { type: redirect, source: /patent/, destination: / }
       - { type: redirect, source: /patent, destination: / }
-      - { type: redirect, source: /story/, destination: / }
-      - { type: redirect, source: /story, destination: / }
-      - { type: redirect, source: /team/, destination: / }
-      - { type: redirect, source: /team, destination: / }
       - { type: redirect, source: /media-kit/, destination: / }
       - { type: redirect, source: /media-kit, destination: / }
-      - { type: redirect, source: /about/, destination: / }
-      - { type: redirect, source: /about, destination: / }
       - { type: redirect, source: /not-found/, destination: / }
       - { type: redirect, source: /not-found, destination: / }
     # Security + caching headers for a strong Lighthouse "Best Practices" score.

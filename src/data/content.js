@@ -20,7 +20,7 @@
 //   quote — pull quote, x: string
 //   code  — preformatted block, x: string
 //
-// Adding a post also means adding its URL to public/sitemap.xml.
+// The sitemap (src/app/sitemap.js) lists every post from this file.
 
 export const posts = [
   {

@@ -1,7 +1,8 @@
 # Closing Brackets — closingbrackets.com
 
-The company site for **Closing Brackets** (custom software · growth · AI automation,
-Spokane WA). The homepage is a **scroll-scrubbed camera flight**: as the visitor
+The company site for **Closing Brackets** — an AI-native web agency (sites, apps,
+and **Build-a-Bot**, a custom agent for the tasks a client delegates; Spokane WA).
+Positioning and page specs come from `CLOSING-BRACKETS-MASTER-BRIEF.md`. The homepage is a **scroll-scrubbed camera flight**: as the visitor
 scrolls, a pre-rendered camera dives into a neon night-city district, pulls up over
 the skyline, and flies to the next one — six districts, one continuous shot, no cuts.
 Scroll position drives `video.currentTime`; the motion itself is AI-rendered ahead of
@@ -33,9 +34,19 @@ src/app/components/ScrollWorld.js 'use client' bridge: mounts the engine once in
 src/app/components/scrub-engine.js The scroll-world plugin engine + our patch
                                   (scrub inertia — see below). Self-contained:
                                   builds its own DOM, injects its own CSS.
-src/app/contact/page.js           /contact/ — the site's one CTA target. Web3Forms
+src/app/start/page.js             /start/ — the site's one conversion page (form,
+                                  visible email, call slot, FAQ). Web3Forms
                                   client-side POST (works statically), honeypot,
-                                  aria-live status.
+                                  aria-live status. /contact/ 301s here.
+src/app/build-a-bot/page.js       /build-a-bot/ — flagship product page: limits,
+                                  sample job letter, price bands, process.
+src/app/components/HomeTail.js    The structured homepage sections that scroll up
+                                  over the flight once it ends (z-45 curtain).
+src/app/sitemap.js                /sitemap.xml, generated from the route table in
+                                  src/data/site.js (`pages`) + data/content.js.
+src/data/site.js                  Route table, nav, contact, the site-wide close,
+                                  JSON-LD helpers. Add a route HERE, never as a
+                                  string in a page.
 src/app/globals.css               Ink & Neon design tokens + engine theme hookup
                                   (unlayered --sw-* vars beat the engine's
                                   @layer sw defaults by design).
@@ -62,9 +73,11 @@ render.yaml                       Render static-site blueprint: domain, headers,
 | bone | `#F4F7FF` | primary text |
 | slate | `#7C89A6` | secondary text |
 
-**The six districts** (order = flight path): `signal` (hero, h1 owns "custom
-software") → `blueprint` (fixed scope) → `forge` (build floor) → `swarm` (AI agents)
-→ `engine` (growth) → `launch` (finale + CTA → `/contact/`).
+**The six districts** (order = flight path): `signal` (hero: websites, apps, and
+custom AI agents) → `blueprint` (how the agent is scoped) → `forge` (site & app)
+→ `swarm` (Build-a-Bot — the id is an asset name only) → `engine` (the three
+rules) → `launch` (finale + CTA → `/start/`). Below the flight, `HomeTail.js`
+carries the two doors, delegation steps, limits, concept builds, and the footer.
 
 **How the flight works** — architecture B of the scroll-world skill: each district
 has an 8 s *dive* clip (camera descends from a high wide shot into the interior) and
@@ -128,8 +141,11 @@ There is no `start` script — `next start` doesn't exist under `output: "export
 Build-time inlined (`NEXT_PUBLIC_*`); set in `.env` locally and in the Render
 dashboard (`sync: false` in the blueprint):
 
-- `NEXT_PUBLIC_WEB3FORMS_KEY` — Web3Forms access key for the `/contact/` form
+- `NEXT_PUBLIC_WEB3FORMS_KEY` — Web3Forms access key for the `/start/` form
   (public-by-design; it only routes submissions to the inbox)
+- `NEXT_PUBLIC_CALENDAR_URL` — optional Cal.com / Calendly link. When set, every
+  "book a 15-minute call" control links to it; when blank they fall back to a
+  mailto that promises a booking link by reply.
 - `NEXT_PUBLIC_CLARITY_ID` — Microsoft Clarity. Worth keeping on: scroll heatmaps
   are unusually informative on a scroll-driven page.
 
@@ -145,11 +161,11 @@ Render Blueprint (`render.yaml`) — static site on `closingbrackets.com`, publi
 - Repo carries ~260 MB of committed video — intentional (static host, no asset CDN
   pipeline). Clone with `--depth 1` if it bothers you.
 
-### Known gap (follow-up)
+### Redirects
 
-`render.yaml` still 301-redirects ~36 legacy URLs to routes that don't exist yet
-(`/services/`, `/work/`, `/process/`, `/about/`, `/blog/`). `/contact/` is live;
-the rest currently resolve 301 → 404. Either stub those routes or prune the rules.
+`render.yaml` 301-redirects the pre-2026 URLs to the closest real page. Every
+destination exists (`/services/`, `/work/`, `/content/`, `/about/`, `/start/`);
+never add a rule whose source is a real route — it would shadow the page.
 
 ## Planned work
 

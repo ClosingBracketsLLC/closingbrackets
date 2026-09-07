@@ -2,27 +2,56 @@
 //
 // TWO LAYERS, ON PURPOSE:
 //
-//   `services` — the five public lines. These are the same five the homepage
-//   scroll world names and that layout.js publishes as Organization
-//   .hasOfferCatalog. Keep the three in step, or the structured data and the
-//   visible page drift.
+//   `services` — the studio menu, in the master brief's order: Build-a-Bot
+//   first, then the property it runs on, then the engineering bar, then the
+//   two optional lines. These are the five that layout.js publishes as
+//   Organization.hasOfferCatalog (read from here, so they cannot drift) and
+//   that data/work.js `lines` point back at. Keep public/llms.txt in step.
 //
-//   `catalog`, `tiers`, `hybrids`, `hireABot` — the full menu, transcribed from
-//   biz-e-box/docs/product/mission.md §6. That doc is the source of truth: when
-//   a service changes there, change it here.
+//   `catalog`, `tiers`, `hybrids`, `assurances` — the full menu, transcribed from
+//   biz-e-box/docs/product/mission.md §6. Demoted on purpose: it is the menu
+//   we draw a scope from, not the identity of the firm. The offer is still one
+//   project, one price.
 //
-// NO PRICES. mission.md §6 states the pricing model "doesn't need to be
-// customer facing and can live in repo as an information piece" — so ranges
-// stay in the doc and this file carries scope only. Every catalog card ends at
-// "priced on request"; that is deliberate, not an oversight.
+// NO PRICES IN THE CATALOGUE. Ranges stay in that doc and this file carries
+// scope only. The one place the site publishes numbers is /build-a-bot/, as
+// starting bands (data/build-a-bot.js), because the brief asks for them.
+
+import { routes } from "./site";
+import { terms } from "./build-a-bot";
+
+/** Where a line's full description lives when it is a catalogue section. */
+const catalogLink = (anchor) => ({
+  label: "See everything in it",
+  href: `${routes.catalog}#${anchor}`,
+});
 
 export const services = [
   {
-    id: "custom-software",
-    title: "Custom software development",
+    id: "build-a-bot",
+    title: "Build-a-Bot",
+    accent: "#2ef2dc",
+    summary:
+      "A custom agent that handles the tasks you delegate. Not a chatbot, not a platform: one worker with a job description, wired to your tools, with a stop condition and a human it escalates to.",
+    points: [
+      "Scoped by one job letter: what you delegate, what you do not.",
+      "Runs against your data, your workflows, your business rules.",
+      `Typically ${terms.buildDays} days to production, ${terms.stabiliseDays} days of stabilising included, fixed price.`,
+    ],
+    examples: [
+      "Lead qualification and booking",
+      "Recall and reactivation",
+      "Document intake and extraction",
+      "Review responses and quote follow-up",
+    ],
+    link: { label: "The full Build-a-Bot page", href: routes.bot },
+  },
+  {
+    id: "web-app",
+    title: "Web & app",
     accent: "#ff4e64",
     summary:
-      "Software built for how your business actually works, instead of bending the business around a product you rented.",
+      "The property your business stands on, built A to Z: professional sites, storefronts, customer portals, and the apps behind them.",
     points: [
       "Every milestone lands as working software you can use, not a status report.",
       "Built in the open, so you see progress the week it happens.",
@@ -31,90 +60,83 @@ export const services = [
     examples: [
       "Professional website build",
       "E-commerce setup",
-      "Custom CRM and integrations",
-      "Ongoing app features and APIs",
+      "Customer portals and custom apps",
+      "Ongoing features and APIs",
     ],
-    catalogAnchor: "build",
+    link: catalogLink("build"),
+  },
+  {
+    id: "engineering-bar",
+    title: "Engineering bar",
+    accent: "#2ef2dc",
+    summary:
+      "Performance, accessibility, security, and SEO foundations. Part of every build, or a standalone audit on a property you already have.",
+    points: [
+      "Core Web Vitals measured before and after, not promised.",
+      "WCAG AA audit and the remediation to go with it.",
+      "Security hardening with a written report you can show.",
+    ],
+    examples: [
+      "Performance and speed optimisation",
+      "Accessibility (WCAG AA) audit and fixes",
+      "Security hardening",
+      "Basic SEO setup",
+    ],
+    link: catalogLink("build"),
+  },
+  {
+    id: "seo-growth",
+    title: "SEO & growth",
+    accent: "#ff4e64",
+    summary:
+      "For the property we built or the one you have: search, local presence, and conversion work, reported in plain English.",
+    points: [
+      "SEO setup and monthly monitoring.",
+      "Google Business Profile and local search.",
+      "Conversion work on the pages that already get traffic.",
+    ],
+    examples: [
+      "Ongoing SEO monitoring",
+      "Local SEO and Google Business Profile",
+      "Google Ads management",
+      "Conversion rate optimisation",
+    ],
+    link: catalogLink("ongoing"),
   },
   {
     id: "ai-consulting",
     title: "AI consulting",
     accent: "#2ef2dc",
     summary:
-      "A straight answer on where AI pays off in your business, and where it does not.",
+      "We tell you where a bot pays off in your business and where it does not. It usually turns into a job letter, not a strategy deck.",
     points: [
-      "We map the work you do today and mark the places worth automating.",
-      "You get a strategy and roadmap with the reasoning shown, not a shortlist of tools.",
+      "We map the work you do today and mark the places worth delegating.",
       "Each recommendation names what it changes and what it costs to run.",
+      "Reasoning shown, so you can disagree with it.",
     ],
     examples: [
       "AI maturity audit and roadmap",
-      "Marketing audit and 90-day plan",
       "Team AI training and prompt library",
-      "Market research and personas",
-    ],
-    catalogAnchor: "ai-projects",
-  },
-  {
-    id: "ai-integration",
-    title: "AI integration",
-    accent: "#2ef2dc",
-    summary:
-      "Getting AI into your existing systems, from a first pilot through to production.",
-    points: [
-      "Works against your data, your workflows, and your business rules.",
-      "Fits the systems you already run rather than replacing them.",
-      "Taken to production-ready, with the failure cases handled.",
-    ],
-    examples: [
-      "AI integration package",
-      "Custom AI agent swarm build",
       "AI performance and ROI dashboard",
-      "Secure data pipelines",
     ],
-    catalogAnchor: "ai-projects",
-  },
-  {
-    id: "ai-automation",
-    title: "AI automation",
-    accent: "#ff4e64",
-    summary:
-      "Agents that carry the repetitive work, grounded in your own data.",
-    points: [
-      "Handles the steps your team repeats every day.",
-      "Runs against real records, so answers reflect your business.",
-      "Monitored, so you can see what it did and why.",
-    ],
-    examples: [
-      "Hire a single agent",
-      "Agent swarm management",
-      "AI sales and lead generation engine",
-      "Operations automation",
-    ],
-    catalogAnchor: "ai-ongoing",
-  },
-  {
-    id: "growth-marketing",
-    title: "Growth marketing",
-    accent: "#2ef2dc",
-    summary:
-      "Marketing that keeps running after the launch, and brings in customers every month.",
-    points: [
-      "Your marketing becomes a machine we keep running.",
-      "We tune whatever is performing best.",
-      "Reported in plain English, not marketing jargon.",
-    ],
-    examples: [
-      "SEO setup and ongoing monitoring",
-      "Google Ads management",
-      "Content and social",
-      "Conversion rate optimisation",
-    ],
-    catalogAnchor: "ongoing",
+    link: catalogLink("ai-projects"),
   },
 ];
 
-/** The engagement terms, stated the same way everywhere on the site. */
+/** Line above the catalogue — the brief's demotion, in one sentence. */
+export const catalogIntro =
+  "The catalogue is the menu we draw a scope from. The offer is still one project, one price.";
+
+/**
+ * The engagement terms, stated the same way everywhere on the site, and the
+ * fourth line that always follows them. Rendered by EngagementRules.js.
+ */
+export const engagementHeading = {
+  eyebrow: "How we work",
+  title: "The three rules",
+  body: "The same three on every engagement, bot or property. Plus one more: you own the code, and nothing is locked to a retainer for handover.",
+};
+
 export const engagement = [
   {
     title: "Fixed scope",
@@ -127,52 +149,6 @@ export const engagement = [
   {
     title: "One price",
     body: "A single fixed price agreed before anything starts. No hourly billing.",
-  },
-];
-
-/**
- * The questions that actually decide whether someone gets in touch, answered
- * before they have to ask.
- *
- * THESE RENDER ON /contact/, NOT ON /services/. They were on the services page
- * and were removed from it deliberately — that page is the five-line pitch and
- * was growing back into a FAQ appendix. These are buying objections rather than
- * service descriptions, so they belong at the point the objection actually
- * fires: the moment someone is looking at an empty textarea deciding whether
- * to fill it in.
- *
- * Rendered visibly AND emitted as FAQPage structured data — so the answers here
- * are the answers on the page, word for word. Changing one changes both; do not
- * let them drift, and do not move these behind a disclosure toggle. Structured
- * data that does not match what a visitor reads is a manual-action risk.
- *
- * Nothing here may claim more than the rest of the site does. The case-study
- * answer in particular repeats the concept-build position from data/work.js.
- */
-export const faqs = [
-  {
-    q: "How do you price a project?",
-    a: "One fixed price for one written scope, agreed before any work starts. There is no hourly billing and no time-and-materials. If something is not in the scope document, it is not in the price — and if you want it added, we re-price that change on its own rather than letting the total drift.",
-  },
-  {
-    q: "Who owns the code you write?",
-    a: "You do, all of it. The source is handed over at the end of the build and nothing is locked to us. You can take it to another team, keep it in-house, or leave it running untouched; none of that depends on keeping us on a retainer.",
-  },
-  {
-    q: "Do you have real client case studies?",
-    a: "Not published yet. The builds on our work page are concept builds — designed and built by us to show what an engagement produces end to end, with invented companies. Real case studies go up when clients confirm them in writing, and not before. We would rather show you work we can prove we made than results we cannot.",
-  },
-  {
-    q: "Will AI replace the systems we already run?",
-    a: "No. We sit beside your system of record rather than replacing it, working against your data, your workflows and your business rules. That means a pilot first, then production, and a two-way integration with whatever you already run — not a migration.",
-  },
-  {
-    q: "We only want to try one small thing. Is that possible?",
-    a: "Yes, and it is the usual way in. A single agent is scoped, built and running against your own data as its own piece of work, with no commitment to anything after it. Most larger engagements here started as one agent doing one job.",
-  },
-  {
-    q: "How quickly will we hear back?",
-    a: "Within one business day. We read every enquiry ourselves — there is no sales team in between — and the first answer costs nothing. What comes back is either a fixed-scope plan or a straight explanation of why we are not the right people for it.",
   },
 ];
 
@@ -494,11 +470,11 @@ export const catalog = [
       "An agent is not finished when it is built. This is the part that keeps it correct as your business, your data and the models all move.",
     items: [
       {
-        name: "Hire a single agent",
-        brief: "One custom AI employee, for one job.",
+        name: "Build-a-Bot: one delegated job",
+        brief: "One custom agent, for one job you assign.",
         detail:
           "The lowest-friction way in. Custom skill definition and loop engineering, integration with your CRM, email, Slack or website, 24/7 monitoring, a monthly performance report, and one minor tweak a month included.",
-        pairs: "Grows into a swarm when it earns it",
+        pairs: "See /build-a-bot — a second job is a change order or a second bot",
       },
       {
         name: "Agent swarm management and optimisation",
@@ -532,7 +508,7 @@ export const catalog = [
         name: "Full AI strategy retainer",
         brief: "A fractional AI department.",
         detail:
-          "Monthly strategy calls, unlimited minor builds and updates inside the agreed roadmap, ROI reporting, team training, and proactive identification of the next thing worth automating. This is the flagship.",
+          "Monthly strategy calls, minor builds and updates inside the agreed roadmap, ROI reporting, team training, and proactive identification of the next thing worth automating. This is the flagship.",
         pairs: "The top of the AI ladder",
       },
     ],
@@ -581,7 +557,7 @@ export const tiers = [
     n: "07",
     name: "Enterprise Partner",
     term: "12+ months",
-    body: "A fully outsourced product and growth team: heavy custom SaaS and app development, mobile and PWA features, unlimited strategic support, and executive-level reporting.",
+    body: "A fully outsourced product and growth team: heavy custom SaaS and app development, mobile and PWA features, strategic support, and executive-level reporting.",
   },
 ];
 
@@ -616,28 +592,6 @@ export const hybrids = [
     body: "The full Advanced web tier with CRO, custom CRM integrations and hardening, the full AI strategy retainer, and a custom swarm of five to ten-plus agents built and managed.",
   },
 ];
-
-/** The value-menu entry point — deliberately the easiest thing to say yes to. */
-export const hireABot = {
-  title: "Hire a single agent",
-  lede: "One custom AI employee, built for one job in your business. The smallest possible way to find out whether any of this is real.",
-  included: [
-    "Custom skill definition and loop engineering",
-    "Integration with the tools you already use — CRM, email, Slack, your website",
-    "24/7 monitoring and a monthly performance report",
-    "One minor tweak a month, included",
-    "Full data privacy and compliance handling",
-  ],
-  roles: [
-    "Lead qualifier and appointment setter",
-    "Support chatbot with escalation",
-    "Content drafter and social poster",
-    "Review responder",
-    "Invoice and accounts payable assistant",
-    "Research and competitive intelligence",
-    "Personalised email nurturer",
-  ],
-};
 
 /** How every engagement is protected, on both sides. */
 export const assurances = [

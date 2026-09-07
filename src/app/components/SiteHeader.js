@@ -12,7 +12,7 @@ import { brand, cta, navLinks } from "@/data/site";
  * menu on the way back up, so a drift between the two reintroduces exactly the
  * orphaned-panel state it exists to prevent.
  */
-const BURGER_UNDER = 720;
+const BURGER_UNDER = 960;
 
 /**
  * Publishes scroll progress (0..1) as a `--progress` custom property on the
@@ -27,13 +27,20 @@ const BURGER_UNDER = 720;
  *    <html>: the root element is locked to viewport height here, so its own box
  *    never changes when the scroll world sets its track height.
  *
- * `scrim` opts the route into the bar's ink backing (see .site-header::before).
+ * The bar's ink backing (see .site-header::before) switches on once real copy
+ * is passing underneath it: a few pixels of scroll on a standard page. A page
+ * whose top is a fixed stage (the homepage flight) declares where its in-flow
+ * content begins with a `data-scrim-from` element, and the scrim waits until
+ * that element reaches the bar. The threshold is re-read in `measure()`, which
+ * the body ResizeObserver fires whenever the document relayouts — including
+ * the engine setting its track height.
+ *
  * It is written as an ATTRIBUTE from inside the same rAF rather than held as
  * React state on purpose: this fires on every scroll frame, and a setState here
  * would re-render the header — and on the homepage, contend with the engine's
  * video scrubbing — to toggle one class.
  */
-function useScrollProgress(ref, scrim) {
+function useScrollProgress(ref) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -42,9 +49,14 @@ function useScrollProgress(ref, scrim) {
     let frame = 0;
     let last = -1;
     let lastScrim = null;
+    let scrimFrom = 6;
 
     const measure = () => {
       max = Math.max(0, document.body.scrollHeight - window.innerHeight);
+      const anchor = document.querySelector("[data-scrim-from]");
+      scrimFrom = anchor
+        ? anchor.getBoundingClientRect().top + window.scrollY - el.offsetHeight
+        : 6;
     };
     const paint = () => {
       frame = 0;
@@ -59,7 +71,7 @@ function useScrollProgress(ref, scrim) {
 
       // Off at the very top so the hero band still meets the bar with nothing
       // between them; on as soon as anything is actually passing underneath.
-      const want = scrim && window.scrollY > 6 ? "on" : null;
+      const want = window.scrollY > scrimFrom ? "on" : null;
       if (want !== lastScrim) {
         lastScrim = want;
         if (want) el.setAttribute("data-scrim", want);
@@ -74,21 +86,23 @@ function useScrollProgress(ref, scrim) {
       schedule();
     };
 
+    // The body ResizeObserver is the one relayout signal: a window resize
+    // changes the body's box too, so a separate resize listener only doubled
+    // the measurement (and phones fire resize continuously as the URL bar
+    // collapses during scroll).
     remeasure();
     const observer = new ResizeObserver(remeasure);
     observer.observe(document.body);
     window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", remeasure);
     return () => {
       if (frame) cancelAnimationFrame(frame);
       observer.disconnect();
       window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", remeasure);
       // Navigating from a standard page to the homepage must not leave the ink
       // backing behind on the transparent bar.
       el.removeAttribute("data-scrim");
     };
-  }, [ref, scrim]);
+  }, [ref]);
 }
 
 /**
@@ -111,10 +125,7 @@ export default function SiteHeader() {
   // of either form so a link written without the slash still lights up.
   const here = pathname?.replace(/\/?$/, "/");
 
-  // The homepage is a fixed scroll world — nothing passes under the bar there,
-  // and the transparent-over-video look is the approved one. Every other route
-  // scrolls real copy beneath it and needs the ink backing.
-  useScrollProgress(headerRef, here !== "/");
+  useScrollProgress(headerRef);
 
   // Close on navigation. Without this the panel stays open over the page the
   // visitor just asked for. Adjusted during render against the previous path
@@ -132,7 +143,7 @@ export default function SiteHeader() {
   //
   // The width case is not cosmetic. Above BURGER_UNDER the burger is display:
   // none and the inline nav is back, so a menu left open from a narrow layout
-  // hangs under a bar that already lists the same three links, and its
+  // hangs under a bar that already lists the same five links, and its
   // `aria-expanded` now describes a control the visitor cannot see. Rotating a
   // tablet with the menu open is the ordinary way to land there.
   useEffect(() => {
@@ -155,6 +166,11 @@ export default function SiteHeader() {
 
   return (
     <header className="site-header" ref={headerRef}>
+      {/* First tab stop on every page. Visually hidden until focused (see
+          .site-skip in globals.css); targets the page's main landmark. */}
+      <a href="#main" className="site-skip">
+        Skip to content
+      </a>
       <Link href={brand.href} className="site-brand">
         <img src="/logo-mark.svg" alt="" width="24" height="28" />
         <span className="site-brand__name">{brand.name}</span>

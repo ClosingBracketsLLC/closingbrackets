@@ -2,24 +2,22 @@ import Link from "next/link";
 import PageLayout from "../components/PageLayout";
 import ContentsBanner from "../components/ContentsBanner";
 import CtaPanel from "../components/CtaPanel";
-import {
-  AccentList,
-  FrameList,
-  Numeral,
-  SectionHeading,
-} from "../components/primitives";
+import EngagementRules from "../components/EngagementRules";
+import { AccentList, FrameList, Numeral } from "../components/primitives";
 import {
   SITE_URL,
   breadcrumbLd,
   graphLd,
   itemListLd,
   pageOg,
+  routes,
+  startClose,
   url,
 } from "@/data/site";
-import { engagement, hireABot, services } from "@/data/services";
+import { catalogIntro, services } from "@/data/services";
 
 const TITLE = "Services";
-const PATH = "/services/";
+const PATH = routes.services;
 
 /* Title and description are both cut to fit rather than to fit everything in.
    The old title ran to 70 characters with the brand template appended, which
@@ -27,14 +25,14 @@ const PATH = "/services/";
    the differentiating. Head terms here; the rest of the service vocabulary
    lives in the h2s and the Service nodes below, where length costs nothing. */
 export const metadata = {
-  title: "Custom Software Development & AI Services",
+  title: "Services: Build-a-Bot, Web & App, Engineering",
   description:
-    "Custom software development, AI consulting, integration and automation, and growth marketing. Fixed scope, real dates, one price — never hourly billing.",
+    "The studio menu: Build-a-Bot, a custom agent for the tasks you delegate; web and app builds; the engineering bar; SEO and growth; AI consulting. Fixed scope, real dates, one price.",
   alternates: { canonical: url(PATH) },
   openGraph: pageOg({
-    title: "Services — custom software, AI, and growth marketing",
+    title: "Services — Build-a-Bot first, then the property it runs on",
     description:
-      "Five lines of work and about fifty services behind them. Fixed scope, real dates, one price, no hourly billing.",
+      "A short studio menu, not a catalogue: Build-a-Bot, web & app, engineering bar, SEO & growth, AI consulting. Fixed scope, real dates, one price.",
     path: PATH,
   }),
 };
@@ -194,11 +192,8 @@ function ServicePanel({ service, index, span, tone, splash = false }) {
           becomes the panel's footer, and the links across a tier sit on a
           visible shared baseline instead of merely at a matching height. */}
       <div className="cb-footrule mt-auto pt-6">
-        <Link
-          href={`/services/catalog/#${service.catalogAnchor}`}
-          className="cb-link"
-        >
-          See everything in it
+        <Link href={service.link.href} className="cb-link">
+          {service.link.label}
           <span aria-hidden>→</span>
         </Link>
       </div>
@@ -210,8 +205,8 @@ export default function Services() {
   return (
     <PageLayout
       eyebrow={TITLE}
-      title="Five lines of work: custom software, AI, and growth"
-      intro="One small senior team scopes the work, writes the code, and is still there when it goes live. Below is the shape of what we do; the full catalogue runs to about fifty services."
+      title="Build-a-Bot first, then the property it runs on"
+      intro="The studio menu, short. One small senior team scopes the work, writes the code, and is still there when it goes live — for a custom agent, a site or app, or both."
       accent="#2ef2dc"
       width="max-w-6xl"
     >
@@ -251,100 +246,23 @@ export default function Services() {
         ))}
       </section>
 
-      {/* ---------------------------------------------------------------- */}
-      {/* The terms, stated on the page that sells the work.
-
-          `engagement` has been exported from data/services.js since it was
-          written and rendered nowhere — so the three commitments that are the
-          actual differentiator (fixed scope, real dates, one price, no hourly
-          billing) appeared only in a meta description and inside closing-panel
-          body copy nobody reads twice. They are what a prospect comparing
-          agencies is trying to establish, and they belong directly after "here
-          is what we do" and directly before the first ask.
-
-          It also answers the pricing question honestly on a page that carries
-          no prices: the model is public even though the numbers are not. */}
-      <section className="mt-24">
-        <SectionHeading eyebrow="How we work" title="The terms, before you ask">
-          The same three on every engagement, whichever of the five lines above
-          it comes from.
-        </SectionHeading>
-        <div className="cb-strip mt-9 sm:grid-cols-3">
-          {engagement.map((term, i) => (
-            <div
-              key={term.title}
-              style={{ "--cb-accent": i % 2 ? "#ff4e64" : "#2ef2dc" }}
-              className={`cb-cell cb-tone ${
-                i % 2 ? "cb-tone--bl" : "cb-tone--tr"
-              } p-6 sm:p-7`}
-            >
-              <Numeral value={i + 1} className="text-4xl" />
-              <h3 className="mt-4 font-[family-name:var(--font-display)] text-xl leading-snug text-bone">
-                {term.title}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-slate">{term.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* The value-menu entry point, given its own stage — it is the easiest
-          thing on the page to say yes to, and the usual route into the rest.
-          The page's one speech balloon lands here, on the loudest moment. */}
-      <section
-        style={{ "--cb-accent": "#ff4e64" }}
-        className="cb-panel cb-panel--marked relative mt-24 isolate overflow-hidden p-8 sm:p-11"
-      >
-        <span aria-hidden className="cb-speedlines" />
-        <h2 className="max-w-xl font-[family-name:var(--font-display)] text-3xl leading-tight text-balance text-bone sm:text-4xl">
-          {hireABot.title}
-        </h2>
-
-        <p className="cb-balloon mt-7 max-w-xl p-6 text-lg leading-relaxed text-bone">
-          {hireABot.lede}
-        </p>
-
-        <div className="mt-12 grid gap-9 sm:grid-cols-2">
-          <div>
-            <h3 className="cb-subhead">What comes with it</h3>
-            <AccentList items={hireABot.included} className="mt-4" />
-          </div>
-          <div>
-            <h3 className="cb-subhead">Jobs people hire one for</h3>
-            <FrameList items={hireABot.roles} label="Agent roles" className="mt-4" />
-          </div>
-        </div>
-
-        {/* The panel called this the easiest thing on the page to say yes to
-            and then gave nobody a way to say it. Everything above sells one
-            agent; the next section sold the catalogue instead, so the reader
-            most ready to act was handed a link to more reading. */}
-        <div className="mt-11 flex flex-wrap items-center gap-4">
-          <Link href="/contact/" className="cb-halftone cb-btn">
-            Hire one agent
-          </Link>
-          <Link href="/work/" className="cb-btn cb-btn--ghost">
-            See one running
-          </Link>
-        </div>
-      </section>
+      <EngagementRules />
 
       {/* ---------------------------------------------------------------- */}
       <section className="mt-24">
         <Link
-          href="/services/catalog/"
+          href={routes.catalog}
           style={{ "--cb-accent": "#2ef2dc" }}
           className="cb-panel cb-panel--lift cb-panel--marked group flex flex-col gap-8 p-8 sm:flex-row sm:items-center sm:justify-between sm:p-10"
         >
           <div className="max-w-xl">
             <h2 className="font-[family-name:var(--font-display)] text-2xl leading-tight text-bone">
-              Every service, with what is actually in it
+              The full catalogue, for scoping
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-slate">
-              Project work, ongoing retainers, AI builds and bundled tiers — each
-              one described in full rather than in a bullet, and each one priced
-              on the scope you agree rather than on a rate card.
+              {catalogIntro} Project work, ongoing services, AI builds and
+              bundled tiers, each described in full and each priced on the
+              scope you agree rather than on a rate card.
             </p>
             <span className="cb-link mt-6">
               Open the catalogue <span aria-hidden>→</span>
@@ -359,11 +277,9 @@ export default function Services() {
       </section>
 
       <CtaPanel
-        caption="One business day"
-        title="Tell us what you want to build"
-        body="Describe the project and you will know the exact scope, real dates, and one fixed price before anything starts. We read every enquiry ourselves, and the first answer costs nothing."
-        action={{ label: "Get a fixed-scope plan", href: "/contact/" }}
-        secondary={{ label: "See how a project runs", href: "/work/" }}
+        {...startClose}
+        body={`${startClose.body} We read every enquiry ourselves, and the first answer costs nothing.`}
+        secondary={{ label: "See how a project runs", href: routes.work }}
         className="mt-6"
       />
     </PageLayout>

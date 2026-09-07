@@ -3,28 +3,26 @@
 // Consumed twice, deliberately: `ScrollWorld` feeds it to the scrub engine as
 // runtime config, and `page.js` renders the same copy as the static `data-sw-seo`
 // block. The engine builds its DOM client-side, so that block is the ONLY
-// crawlable text on the page — driving both from this file is what stops the
-// visible copy and the indexed copy from drifting apart.
+// crawlable text inside the flight — driving both from this file is what stops
+// the visible copy and the indexed copy from drifting apart. (The structured
+// homepage sections below the flight live in data/home.js and render as
+// ordinary in-flow HTML in HomeTail.js.)
 //
 // Asset paths are absolute (`/assets/...`). They must be: `trailingSlash: true`
-// means a page like /contact/ would resolve relative paths one level too deep.
+// means a page like /start/ would resolve relative paths one level too deep.
+//
+// THE COPY IS THE OWNER'S, VERBATIM (2026-09-07). The six scenes are video-
+// locked (signal → blueprint → forge → swarm → engine → launch) but the story
+// they carry follows the master brief: the agency in one line, how an agent is
+// scoped, the site/app door, the Build-a-Bot door, the three rules, the ask.
+// "swarm" survives only as an asset id; nothing visible says it.
+//
+// Section CTAs: the hero carries both doors (the brief wants the offer and its
+// CTA readable on the first screen), two middle scenes carry a ghost sidetrack,
+// and the finale carries the ask. Buttons take their slide's `accent` at
+// runtime, so a CTA always matches the colour of its own dot on the route rail.
 
-// Brand and the persistent header CTA now live in data/site.js — they frame
-// every page, not just this one. The finale's own button stays here: it is part
-// of the scene copy, and deliberately differs from the header CTA because by
-// that point the visitor knows what the fixed-scope plan is.
-//
-// Section CTAs: two in the whole flight. The Forge carries a `secondary`
-// (ghost) button and the finale the only `primary`, so there is one obvious
-// action on the page and one quiet sidetrack — not a button per scene competing
-// with the flight itself. The other four scenes are deliberately bare: the hero
-// because its call to action is the scroll hint (and the header's "Start a
-// project" is already on screen above it), the rest because a claim you can
-// keep flying past does not need a door next to it.
-//
-// Buttons take their slide's `accent` at runtime, so a CTA always matches the
-// colour of its own dot on the route rail. Adding one back = a `cta` key here;
-// nothing in the CSS needs to know about it.
+import { cta, routes } from "./site";
 
 export const sections = [
   {
@@ -38,22 +36,26 @@ export const sections = [
     accent: "#2EF2DC",
     scroll: 1.7,
     linger: 0.45,
-    eyebrow: "AI-native agency",
-    title: "Custom solutions for your business",
-    body: "AI Integration, Custom Software, and Growth Strategy. Tailored to your business, with no compromises",
+    eyebrow: "AI-native web agency",
+    title: "Websites, apps, and custom AI agents.",
+    body: "We build the site or app. We can also build an agent that does a job you assign.",
+    cta: {
+      primary: { label: "Get a Build-a-Bot", href: routes.bot },
+      secondary: cta,
+    },
   },
   {
     id: "blueprint",
-    label: "The Blueprint",
+    label: "The Scope",
     still: "/assets/blueprint.webp",
     poster: "/assets/blueprint-poster.webp",
     posterMobile: "/assets/blueprint-poster-m.webp",
     clip: "/assets/vid/blueprint.mp4",
     clipMobile: "/assets/vid/blueprint-m.mp4",
     accent: "#2EF2DC",
-    eyebrow: "AI consulting",
-    title: "Where AI pays off, drawn to scale",
-    body: "Built from the ground up, your AI strategy is a blueprint for growth. We show you where to invest, and how to get the most out of it.",
+    eyebrow: "How the agent is scoped",
+    title: "You list the jobs. That is the scope.",
+    body: "What it should do. What it should not do. We build that, and nothing else.",
   },
   {
     id: "forge",
@@ -64,16 +66,14 @@ export const sections = [
     clip: "/assets/vid/forge.mp4",
     clipMobile: "/assets/vid/forge-m.mp4",
     accent: "#FF4E64",
-    eyebrow: "Custom software development",
-    title: "Working software at every milestone",
+    eyebrow: "Site & app",
+    title: "You get working software as we go.",
     body: "Each stage comes off the floor as software you can use, not a status report. When we hand it over, you own all of the code.",
-    // Claims about how a build runs should be checkable in one click. /work/
-    // carries both the concept-build disclosure and the stage-by-stage process.
-    cta: { secondary: { label: "See the work", href: "/work/" } },
+    cta: { secondary: { label: "See the work", href: routes.work } },
   },
   {
     id: "swarm",
-    label: "The Swarm",
+    label: "Build-a-Bot",
     still: "/assets/swarm.webp",
     poster: "/assets/swarm-poster.webp",
     posterMobile: "/assets/swarm-poster-m.webp",
@@ -82,22 +82,23 @@ export const sections = [
     accent: "#2EF2DC",
     scroll: 1.5,
     linger: 0.35,
-    eyebrow: "AI automation",
-    title: "Agents grounded in your data",
-    body: "We integrate AI into your existing systems, from pilot to production: your data, your workflows, your business rules. The result is a swarm of agents that work for you.",
+    eyebrow: "Build-a-Bot",
+    title: "An agent that does a job you assign.",
+    body: "Bookings, follow-ups, paperwork — wired to tools you already use. A person handles anything it should not.",
+    cta: { secondary: { label: "How it works", href: routes.bot } },
   },
   {
     id: "engine",
-    label: "Growth Engine",
+    label: "The Rules",
     still: "/assets/engine.webp",
     poster: "/assets/engine-poster.webp",
     posterMobile: "/assets/engine-poster-m.webp",
     clip: "/assets/vid/engine.mp4",
     clipMobile: "/assets/vid/engine-m.mp4",
     accent: "#FF4E64",
-    eyebrow: "Growth marketing that runs",
-    title: "An engine for new customers",
-    body: "Your marketing becomes a machine that never turns off. The result is organic growth, powered by AI, and optimized for your business.",
+    eyebrow: "How we work",
+    title: "One scope. Real dates. One price.",
+    body: "Written down before we start. No hourly billing. You own the work when it ships.",
   },
   {
     id: "launch",
@@ -110,12 +111,10 @@ export const sections = [
     accent: "#FF4E64",
     scroll: 1.8,
     linger: 0.5,
-    eyebrow: "To the Moon!",
-    title: "Prepare for Lift Off!",
-    body: "We are ready to launch your project into the world. Our team will ensure a smooth and successful launch, with all systems go.",
-    // The flight's only primary, and the only coral pill in it. Every earlier
-    // scene offers a ghost sidetrack; this one is the ask.
-    cta: { primary: { label: "Get Started", href: "/contact/" } },
+    eyebrow: "Start",
+    title: "Tell us what you need.",
+    body: "Site, app, agent, or a mix. You get the scope and the price before we start.",
+    cta: { primary: cta },
   },
 ];
 

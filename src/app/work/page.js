@@ -2,23 +2,24 @@ import Link from "next/link";
 import PageLayout from "../components/PageLayout";
 import ClipFrame from "../components/ClipFrame";
 import CtaPanel from "../components/CtaPanel";
-import { AccentList, Numeral, SectionHeading, TagRow } from "../components/primitives";
-import { breadcrumbLd, graphLd, itemListLd, pageOg, url } from "@/data/site";
+import ProcessStrip from "../components/ProcessStrip";
+import { AccentList, BuildTags, SectionHeading, TagRow } from "../components/primitives";
+import { breadcrumbLd, graphLd, itemListLd, pageOg, routes, url } from "@/data/site";
 import { services } from "@/data/services";
 import { builds, stages } from "@/data/work";
 
 const TITLE = "Work";
-const PATH = "/work/";
+const PATH = routes.work;
 
 export const metadata = {
   title: "Work & How a Project Runs",
   description:
-    "Concept builds showing what a Closing Brackets engagement produces, and the five stages every project runs through: scope, build, integrate, hand over, grow.",
+    "Concept builds showing how a property and a delegated Build-a-Bot agent look in a real operation, and the five stages every project runs through: scope, build, integrate, hand over, stabilise.",
   alternates: { canonical: url(PATH) },
   openGraph: pageOg({
     title: "Work — what we build, and how a project runs",
     description:
-      "Concept builds showing what an engagement produces end to end, and the five stages every project runs through.",
+      "Concept builds — a property and a delegated agent in a real operation — and the five stages every project runs through.",
     path: PATH,
   }),
 };
@@ -70,7 +71,7 @@ const jsonLd = graphLd(
     "@type": "ItemList",
     name: "How a Closing Brackets project runs",
     description:
-      "The five stages every engagement moves through, in the same order every time.",
+      "The five stages every engagement moves through — property build or Build-a-Bot — in the same order every time.",
     numberOfItems: stages.length,
     itemListElement: stages.map((stage, i) => ({
       "@type": "ListItem",
@@ -97,7 +98,7 @@ function ServiceLines({ ids }) {
                 is inert terms in identical boxes, so without a distinct
                 affordance half the terms on the panel are clickable and nothing
                 says which half. */}
-            <Link href={`/services/#${line.id}`} className="cb-tag cb-tag--link">
+            <Link href={`${routes.services}#${line.id}`} className="cb-tag cb-tag--link">
               {line.title}
             </Link>
           </li>
@@ -148,7 +149,7 @@ export default function Work() {
     <PageLayout
       eyebrow={TITLE}
       title="What we build, and how a project runs"
-      intro="Every engagement follows the same five stages, and you can tell which one you are in at any point. Below are builds that show what comes out the other end."
+      intro="These are concept builds — configurations we use to show how a property and a delegated agent look in a real operation. They are not claimed as paying-client case studies. Every project, bot or property, runs through the same five stages below."
       accent="#ff4e64"
       width="max-w-6xl"
     >
@@ -162,7 +163,7 @@ export default function Work() {
 
           What still carries the disclosure until that lands: the per-card
           "Concept build" eyebrow on every build below, the "What it shows"
-          label standing in for "Outcome", the FAQ answer on /contact/, and the
+          label standing in for "Outcome", the FAQ answer on /start/, and the
           deliberate absence of Review/Rating/testimonial structured data (see
           the note on jsonLd above). Do not remove those as well — a page of
           invented companies with no disclosure at all is the one thing on this
@@ -187,19 +188,14 @@ export default function Work() {
           />
         )}
         <div className="p-7 sm:p-10">
-          <div className="flex flex-wrap items-center gap-3">
-            {featured.concept && (
-              <span className="cb-eyebrow text-[var(--cb-accent)]">Concept build</span>
-            )}
-            <span className="text-xs text-slate">{featured.sector}</span>
-          </div>
+          <BuildTags build={featured} />
           <h2 className="mt-5 font-[family-name:var(--font-display)] text-3xl leading-tight text-bone sm:text-4xl">
             {featured.client}
           </h2>
           <div className="mt-6">
             <BuildBody build={featured} columns />
           </div>
-          <Link href="/content/evergreen-softwash-launch-film/" className="cb-link mt-9">
+          <Link href={`${routes.content}evergreen-softwash-launch-film/`} className="cb-link mt-9">
             How the film was cut <span aria-hidden>→</span>
           </Link>
         </div>
@@ -215,12 +211,7 @@ export default function Work() {
               TIERS[i % TIERS.length].span
             } flex scroll-mt-28 flex-col p-7 sm:p-9`}
           >
-            <div className="flex flex-wrap items-center gap-3">
-              {build.concept && (
-                <span className="cb-eyebrow text-[var(--cb-accent)]">Concept build</span>
-              )}
-              <span className="text-xs text-slate">{build.sector}</span>
-            </div>
+            <BuildTags build={build} />
             <h2 className="mt-5 font-[family-name:var(--font-display)] text-2xl leading-tight text-bone">
               {build.client}
             </h2>
@@ -231,45 +222,21 @@ export default function Work() {
         ))}
       </div>
 
-      {/* ---------------------------------------------------------------- */}
-      {/* Five panels, read left to right — the shape of the process is the
-          point, so it gets the strip rather than a stack of full-width rows. */}
       <section className="mt-24">
         <SectionHeading eyebrow="The process" title="How a project runs">
-          The same five stages every time, in the same order, so you can always
-          say which one you are in and what comes next.
+          The same five stages for a property build and for a Build-a-Bot, in
+          the same order, so you can always say which one you are in and what
+          comes next. Thirty days of stabilising is included in both.
         </SectionHeading>
-        <ol className="cb-strip mt-9 sm:grid-cols-2 lg:grid-cols-5">
-          {stages.map((stage, i) => (
-            <li
-              key={stage.step}
-              style={{ "--cb-accent": i % 2 ? "#ff4e64" : "#2ef2dc" }}
-              /* Padding tightens at the five-across breakpoint. The row is
-                 fixed at the content column's width, so each cell is ~215px
-                 there and generous padding was eating it: the copy fell to
-                 roughly twenty characters a line, which is below the point
-                 where a measure reads as a paragraph at all. Five in a row is
-                 the shape of the process and stays; the padding is what gives. */
-              className={`cb-cell cb-tone ${
-                i % 2 ? "cb-tone--bl" : "cb-tone--tr"
-              } p-6 sm:p-7 lg:px-5 lg:py-6`}
-            >
-              <Numeral value={stage.step} className="text-4xl" />
-              <h3 className="mt-4 font-[family-name:var(--font-display)] text-xl leading-snug text-bone">
-                {stage.title}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-slate">{stage.body}</p>
-            </li>
-          ))}
-        </ol>
+        <ProcessStrip />
       </section>
 
       <CtaPanel
         caption="Stage one"
         title="Start with a fixed-scope plan"
-        body="The first stage is the scope document. Tell us what you want built and you will have what gets made, a timeline with real dates, and one fixed price — before any work begins."
-        action={{ label: "Get a fixed-scope plan", href: "/contact/" }}
-        secondary={{ label: "See what we do", href: "/services/" }}
+        body="The first stage is the scope: a job letter for a bot, a scope document for a property. Tell us what you want built and you will have what gets made, a timeline with real dates, and one fixed price — before any work begins."
+        action={{ label: "Start with a fixed-scope plan", href: routes.start }}
+        secondary={{ label: "See Build-a-Bot", href: routes.bot }}
         accent="#2ef2dc"
         className="mt-20"
       />

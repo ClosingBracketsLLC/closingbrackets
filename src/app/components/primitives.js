@@ -86,3 +86,87 @@ export function Numeral({ value, className = "text-5xl" }) {
     </span>
   );
 }
+
+/* ------------------------------------------------------------------ */
+/* Strip cells — the comic-page vocabulary every listing page shares.  */
+/* ------------------------------------------------------------------ */
+
+export const ACCENT = { cyan: "#2ef2dc", coral: "#ff4e64" };
+
+/**
+ * Accent and dot-screen corner for the i-th cell of a strip. Cells alternate
+ * cyan/coral and screen from opposite corners, so a row of cells reads as a
+ * page someone laid out rather than wallpaper. An explicit `accent` keeps the
+ * colour but still alternates the corner.
+ */
+export function cellTone(i, accent) {
+  const odd = i % 2 === 1;
+  return {
+    style: { "--cb-accent": accent ?? (odd ? ACCENT.coral : ACCENT.cyan) },
+    tone: odd ? "cb-tone--bl" : "cb-tone--tr",
+  };
+}
+
+/**
+ * A strip of numbered cells: numeral, title, body. The shape behind every
+ * "steps", "stages", "rules" and "what happens next" block on the site.
+ * `items` is [{ title, body, accent? }]; `numeral(item, i)` overrides the
+ * 1-based default (the process stages carry their own "01" labels).
+ * Renders an <ol> unless the items are not a sequence.
+ */
+export function NumberedStrip({
+  items,
+  cols = "sm:grid-cols-3",
+  as: Tag = "ol",
+  numeral = (_item, i) => i + 1,
+  cellClass = "p-6 sm:p-7",
+  className = "mt-9",
+}) {
+  const Cell = Tag === "ol" ? "li" : "div";
+  return (
+    <Tag className={`cb-strip ${cols} ${className}`}>
+      {items.map((item, i) => {
+        const { style, tone } = cellTone(i, item.accent);
+        return (
+          <Cell key={item.title} style={style} className={`cb-cell cb-tone ${tone} ${cellClass}`}>
+            <Numeral value={numeral(item, i)} className="text-4xl" />
+            <h3 className="mt-4 font-[family-name:var(--font-display)] text-xl leading-snug text-bone">
+              {item.title}
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-slate">{item.body}</p>
+          </Cell>
+        );
+      })}
+    </Tag>
+  );
+}
+
+/**
+ * The narration box with a captioned list — the page's one loud device where
+ * it is used (the limits on the homepage, /build-a-bot/ and /about/).
+ */
+export function NarrationList({ eyebrow, items, accent = ACCENT.coral, className = "" }) {
+  return (
+    <div style={{ "--cb-accent": accent }} className={`cb-narration p-7 sm:p-8 ${className}`}>
+      <p className="cb-eyebrow text-[var(--cb-accent)]">{eyebrow}</p>
+      <AccentList items={items} className="mt-4" />
+    </div>
+  );
+}
+
+/**
+ * The label row on a build card: "Concept build", the engagement shape, and
+ * the sector. This is the honesty disclosure — every card that shows a build
+ * carries it, on /work/ and on the homepage alike.
+ */
+export function BuildTags({ build }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+      {build.concept && (
+        <span className="cb-eyebrow text-[var(--cb-accent)]">Concept build</span>
+      )}
+      {build.shape && <span className="cb-eyebrow">{build.shape}</span>}
+      <span className="text-xs text-slate">{build.sector}</span>
+    </div>
+  );
+}

@@ -25,8 +25,8 @@ from PIL import Image
 REPO = Path(__file__).resolve().parents[2]
 
 # Client-facing surfaces always mirror the homepage h1.
-H1 = "Custom solutions for your business"
-EYEBROW = "AI-Native Agency"
+H1 = "Websites, apps, and custom AI agents."
+EYEBROW = "AI-native web agency"
 BROWSERS = ["/opt/brave.com/brave/brave", "google-chrome", "chromium"]
 
 

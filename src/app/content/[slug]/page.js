@@ -1,7 +1,16 @@
 import Link from "next/link";
 import PageLayout from "../../components/PageLayout";
 import ClipFrame from "../../components/ClipFrame";
-import { SITE_URL, author, authorRef, pageOg, personLd, url } from "@/data/site";
+import {
+  SITE_URL,
+  author,
+  authorRef,
+  breadcrumbLd,
+  pageOg,
+  personLd,
+  routes,
+  url,
+} from "@/data/site";
 import { posts } from "@/data/content";
 
 /* Static export: every article URL has to be enumerable at build time. */
@@ -108,27 +117,16 @@ export default async function Post({ params }) {
       : {}),
   };
 
-  const breadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-      { "@type": "ListItem", position: 2, name: "Content", item: url("/content/") },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: post.title,
-        item: url(`/content/${post.slug}/`),
-      },
-    ],
-  };
+  const breadcrumb = breadcrumbLd(post.title, `${routes.content}${post.slug}/`, [
+    { name: "Content", path: routes.content },
+  ]);
 
   return (
     <PageLayout
       eyebrow={post.series}
       crumbs={[
-        { label: "Home", href: "/" },
-        { label: "Content", href: "/content/" },
+        { label: "Home", href: routes.home },
+        { label: "Content", href: routes.content },
       ]}
       title={post.title}
       intro={post.summary}
@@ -235,21 +233,15 @@ export default async function Post({ params }) {
           Got this problem right now?
         </h2>
         <p className="mt-3 max-w-lg text-sm leading-relaxed text-slate">
-          Describe it and we will tell you what we would do about it. One
-          business day, no charge for the first answer.
+          Describe it and we will tell you what we would do about it — and
+          whether there is a job letter in it. The first answer costs nothing.
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
-          <Link
-            href="/contact/"
-            className="cb-halftone cb-btn"
-          >
-            Start a conversation
+          <Link href={routes.start} className="cb-halftone cb-btn">
+            Start a project
           </Link>
-          <Link
-            href="/content/"
-            className="cb-btn cb-btn--ghost"
-          >
-            All writing
+          <Link href={routes.bot} className="cb-btn cb-btn--ghost">
+            See Build-a-Bot
           </Link>
         </div>
       </section>

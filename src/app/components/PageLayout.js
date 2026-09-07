@@ -30,7 +30,7 @@ export default function PageLayout({
       {/* Brand-token atmosphere (globals.css) so every page reads as one site. */}
       <div aria-hidden className="site-glow" />
 
-      <main style={{ "--cb-accent": accent }}>
+      <main id="main" style={{ "--cb-accent": accent }}>
         <header className="cb-hero">
           <SwarmField accent={accent} className="cb-hero__swarm" />
           <div className={`mx-auto w-full ${width} px-6`}>

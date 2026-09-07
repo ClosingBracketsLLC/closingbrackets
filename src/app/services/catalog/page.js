@@ -3,18 +3,18 @@ import Link from "next/link";
 import PageLayout from "../../components/PageLayout";
 import ContentsBanner from "../../components/ContentsBanner";
 import CtaPanel from "../../components/CtaPanel";
-import { SITE_URL, graphLd, itemListLd, pageOg, url } from "@/data/site";
-import { assurances, catalog, hybrids, tiers } from "@/data/services";
+import { breadcrumbLd, graphLd, itemListLd, pageOg, routes, url } from "@/data/site";
+import { assurances, catalog, catalogIntro, hybrids, tiers } from "@/data/services";
 import { Numeral } from "../../components/primitives";
 
 const TITLE = "Service catalogue";
-const PATH = "/services/catalog/";
+const PATH = routes.catalog;
 
 export const metadata = {
   title: "Full Service Catalogue",
   /* Trimmed to fit: at 181 characters this was cut off mid-list in results. */
   description:
-    "Every service Closing Brackets offers, in full: project builds, monthly retainers, AI audits, agent swarms, automation, growth marketing, and bundled tiers.",
+    "The full Closing Brackets catalogue for scoping: project builds, monthly services, AI projects, automation, growth marketing, and bundled tiers. One project, one price.",
   alternates: { canonical: url(PATH) },
   /* Built with pageOg, never by hand: Next shallow-merges metadata, so a page
      declaring `openGraph` REPLACES the layout's object rather than merging
@@ -87,17 +87,7 @@ const toneAt = (i) => TONES[i % TONES.length];
    them, so this is the halfway mark as a reader experiences it. */
 const MID_BREAK = "ai-projects";
 
-/* Three levels deep, so the breadcrumb helper in data/site.js (which only
-   models two) does not fit — this one is built out here. */
-const breadcrumb = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-    { "@type": "ListItem", position: 2, name: "Services", item: url("/services/") },
-    { "@type": "ListItem", position: 3, name: TITLE, item: url(PATH) },
-  ],
-};
+const breadcrumb = breadcrumbLd(TITLE, PATH, [{ name: "Services", path: routes.services }]);
 
 /* The page is a listing, so it says so. Sections rather than all ~50 services:
    an ItemList entry wants a URL, the sections have anchors and the individual
@@ -122,11 +112,11 @@ export default function Catalog() {
     <PageLayout
       eyebrow="Catalogue"
       crumbs={[
-        { label: "Home", href: "/" },
-        { label: "Services", href: "/services/" },
+        { label: "Home", href: routes.home },
+        { label: "Services", href: routes.services },
       ]}
       title="Everything we offer, in full"
-      intro={`${count} services across project work, ongoing retainers, AI builds and bundled tiers. Each one says what is actually in it. Nothing here is priced on this page — scope comes first, then one fixed price for exactly that scope.`}
+      intro={`${catalogIntro} ${count} services across project work, ongoing services, AI builds and bundled tiers, each saying what is actually in it. Nothing is priced on this page — scope comes first, then one fixed price for exactly that scope.`}
       accent="#2ef2dc"
       width="max-w-6xl"
     >
@@ -221,7 +211,7 @@ export default function Catalog() {
               have to read the rest. Name it and we will come back with the scope,
               real dates, and one price for exactly that.
             </p>
-            <Link href="/contact/" className="cb-halftone cb-btn shrink-0">
+            <Link href={routes.start} className="cb-halftone cb-btn shrink-0">
               Get a fixed-scope plan
             </Link>
           </aside>
@@ -354,8 +344,8 @@ export default function Catalog() {
         caption="Fifty services, one conversation"
         title="Not sure which of these you need?"
         body="That is what the first conversation is for. Describe the problem rather than the service, and we will tell you which of the above actually applies — including when the answer is none of them."
-        action={{ label: "Start a conversation", href: "/contact/" }}
-        secondary={{ label: "Back to services", href: "/services/" }}
+        action={{ label: "Start a conversation", href: routes.start }}
+        secondary={{ label: "Back to services", href: routes.services }}
         className="mt-20"
       />
     </PageLayout>

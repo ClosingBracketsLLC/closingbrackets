@@ -1,7 +1,20 @@
 import { Archivo, Archivo_Black } from "next/font/google";
 import Script from "next/script";
 import SiteHeader from "./components/SiteHeader";
-import { SITE_URL, author, navLinks, ogImage, personLd, url } from "@/data/site";
+import Analytics from "./components/Analytics";
+import {
+  SITE_URL,
+  brand,
+  contact,
+  navLinks,
+  ogImage,
+  personLd,
+  routes,
+  siteDescription,
+  siteTitle,
+  url,
+} from "@/data/site";
+import { services } from "@/data/services";
 import "./globals.css";
 
 // Self-hosted at build time by next/font, so the static export makes no
@@ -26,17 +39,13 @@ const display = Archivo_Black({
   variable: "--font-display",
 });
 
-// The site's one canonical description — meta tag and JSON-LD both read it.
-const DESCRIPTION =
-  "AI-native agency: custom software, AI consulting and integration, automation, growth marketing. Fixed scope, real dates, one price, no hourly billing.";
-
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Custom Software Development, Growth & AI | Closing Brackets",
-    template: "%s | Closing Brackets",
+    default: siteTitle,
+    template: `%s | ${brand.name}`,
   },
-  description: DESCRIPTION,
+  description: siteDescription,
   openGraph: {
     type: "website",
     siteName: "Closing Brackets",
@@ -63,11 +72,12 @@ const jsonLd = {
     {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
-      name: "Closing Brackets",
+      name: brand.name,
       url: `${SITE_URL}/`,
       logo: `${SITE_URL}/icon.svg`,
-      email: author.email,
-      description: DESCRIPTION,
+      email: contact.email,
+      description: siteDescription,
+      slogan: contact.tagline,
       // Names the human behind the org. Search and AI answer engines both
       // resolve entities before they trust claims, and an organisation with no
       // person attached is a weaker entity than one with a founder.
@@ -75,38 +85,35 @@ const jsonLd = {
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "Sales",
-        email: author.email,
-        url: url("/contact/"),
+        email: contact.email,
+        url: url(routes.start),
         availableLanguage: "English",
       },
       // Remote-first, so the service area is stated rather than an address.
+      // `location` names the studio's home without publishing a street.
       areaServed: { "@type": "Country", name: "United States" },
+      location: { "@type": "Place", name: "Spokane, Washington" },
       // The topics this entity is actually about. Cheap, accurate, and it is
       // what an answer engine matches against when deciding whether we are a
       // relevant source for a question rather than merely a page about it.
       knowsAbout: [
+        "Custom AI agents (Build-a-Bot)",
+        "Delegated-work automation",
         "Custom software development",
-        "AI agents",
+        "Web and app development",
         "AI integration",
-        "Workflow automation",
         "Loop engineering",
         "Graph engineering",
-        "Growth marketing",
+        "SEO",
       ],
-      // The visible h1 says "custom solutions" by design; the service-line
-      // keywords live here (and in the title tag / h2s) instead.
+      // Read from data/services.js so the structured data and the visible
+      // studio menu cannot drift apart.
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: "Services",
-        itemListElement: [
-          "Custom software development",
-          "AI consulting",
-          "AI integration",
-          "AI automation",
-          "Growth marketing",
-        ].map((name) => ({
+        itemListElement: services.map(({ title }) => ({
           "@type": "Offer",
-          itemOffered: { "@type": "Service", name },
+          itemOffered: { "@type": "Service", name: title },
         })),
       },
     },
@@ -118,7 +125,7 @@ const jsonLd = {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
       url: `${SITE_URL}/`,
-      name: "Closing Brackets",
+      name: brand.name,
       publisher: { "@id": `${SITE_URL}/#organization` },
     },
     // Declares the header nav to crawlers, which helps them treat these as the
@@ -158,10 +165,15 @@ export default function RootLayout({ children }) {
         />
         <SiteHeader />
         {children}
+        {/* Analytics and its event listener ship only when Clarity is
+            configured; without an id both would be dead weight on every page. */}
         {clarityId ? (
-          <Script id="clarity" strategy="lazyOnload">
-            {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${clarityId}");`}
-          </Script>
+          <>
+            <Analytics />
+            <Script id="clarity" strategy="lazyOnload">
+              {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${clarityId}");`}
+            </Script>
+          </>
         ) : null}
       </body>
     </html>

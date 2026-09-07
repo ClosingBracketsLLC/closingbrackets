@@ -155,7 +155,8 @@
  * other.
  *
  * So the scrim is scoped exactly to the case that needs it — SiteHeader sets
- * data-scrim="on" only on non-home routes and only once actually scrolled — and
+ * data-scrim="on" only once real copy is actually under the bar (on the
+ * homepage that means past the end of the flight; see SiteHeader.js) — and
  * the homepage's transparent bar is left untouched.
  *
  * A plain ink gradient rather than a blur: the page background IS the night sky
@@ -182,6 +183,26 @@
 }
 .site-header[data-scrim="on"]::before {
   opacity: 1;
+}
+
+/* Skip link: off-canvas until it takes focus, then a coral pill at the
+   top-left, above everything (the header is z-50). */
+.site-skip {
+  position: absolute;
+  left: 12px;
+  top: -100px;
+  z-index: 60;
+  padding: 10px 16px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--coral);
+  text-decoration: none;
+}
+.site-skip:focus-visible {
+  top: 12px;
+  outline: 2px solid var(--bone);
+  outline-offset: 2px;
 }
 
 .site-brand {
@@ -249,9 +270,10 @@
 }
 
 /* Small-screen menu ------------------------------------------------- */
-/* The three links do not fit beside brand + CTA below ~720px, and the
-   homepage has no footer to fall back on (it is a fixed scroll world), so
-   without this there is no route to the other pages on a phone at all. */
+/* Five uppercase, tracked labels plus brand + CTA need roughly 960px; below
+   that the CTA slides off-screen invisibly (html{overflow-x:hidden} clips
+   instead of scrolling), so the burger takes over. Measure `cta.right >
+   innerWidth`, never scrollWidth, when re-tuning this. */
 .site-burger {
   display: none;
   width: 40px;
@@ -325,7 +347,7 @@
 /* The burger breakpoint. SiteHeader mirrors this width as BURGER_UNDER and
    watches it with matchMedia to close an open menu on the way back up to the
    inline nav — change one and change the other. */
-@media (max-width: 720px) {
+@media (max-width: 960px) {
   .site-nav {
     display: none;
   }
@@ -717,12 +739,14 @@
 }
 
 /* Outlined display numeral — the big ghosted figure behind a stage or step.
-   -webkit-text-stroke is the only cross-browser way to get a hollow face. */
+   -webkit-text-stroke is the only cross-browser way to get a hollow face.
+   70% accent, not less: coral at 55% over ink measured 2.5:1, under the 3:1
+   floor for large text; 70% is ~3.45:1 and still reads as a ghost. */
 .cb-numeral {
   font-family: var(--font-display);
   line-height: 0.8;
   color: transparent;
-  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--cb-accent) 55%, transparent);
+  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--cb-accent) 70%, transparent);
   user-select: none;
 }
 

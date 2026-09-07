@@ -1,37 +1,56 @@
 # Closing Brackets
 
-> An AI-native software agency. We build custom software, put AI into the
-> systems businesses already run, and keep the resulting agents working in
-> production. Every engagement is one written scope, a timeline with real
-> dates, and one fixed price — there is no hourly billing.
+> Closing Brackets is an AI-native web agency. Build-a-Bot is a custom agent
+> that handles the tasks you delegate. We build the site or app a business
+> runs on, and on that same property we hire one custom agent to take a
+> defined set of delegated tasks. The client stays the manager. Every
+> engagement is one written scope, a timeline with real dates, and one fixed
+> price — there is no hourly billing, and the client owns the code.
 
-Founded and run by Robert Collins (robert@closingbrackets.com). Remote-first,
-serving clients in the United States. Small senior team: the people who scope
-the work write the code and are still there when it goes live.
+Founded and run by Robert Campbell (robert@closingbrackets.com). Based in
+Spokane, Washington (Inland Northwest), remote-capable, serving clients in the
+United States. A builder-led studio: the person who scopes the work writes the
+code and is still there when it goes live.
 
 ## What we do
 
-- [Custom software development](https://closingbrackets.com/services/#custom-software): Software built for how a business actually works. Every milestone lands as working software; the client owns all of the code at handover.
-- [AI consulting](https://closingbrackets.com/services/#ai-consulting): A straight answer on where AI pays off and where it does not, delivered as a strategy and roadmap with the reasoning shown.
-- [AI integration](https://closingbrackets.com/services/#ai-integration): Getting AI into existing systems, from first pilot to production, against the client's own data, workflows and business rules.
-- [AI automation](https://closingbrackets.com/services/#ai-automation): Agents that carry repetitive work, grounded in the client's own records and monitored so their actions are auditable.
-- [Growth marketing](https://closingbrackets.com/services/#growth-marketing): SEO, paid, content and conversion work run as an ongoing machine rather than a launch.
+- [Build-a-Bot](https://closingbrackets.com/build-a-bot/): A custom agent for the tasks you delegate — lead qualification and booking, review responses, recall and reactivation, inbox triage, document intake and extraction, quote follow-up, invoice and AP assist, drafted content queued for a human. Scoped by one job letter (tasks in, tasks out), wired to the tools the client already uses, with a stop condition and a named human it escalates to. Not a chatbot, not a platform, not unlimited agents.
+- [Web & app](https://closingbrackets.com/services/#web-app): Professional sites, storefronts, customer portals and custom apps, built A to Z. Working software at every milestone; the client owns all of the code.
+- [Engineering bar](https://closingbrackets.com/services/#engineering-bar): Performance, accessibility, security and SEO foundations — part of every build, or a standalone audit.
+- [SEO & growth](https://closingbrackets.com/services/#seo-growth): Search, local presence and conversion work on the property.
+- [AI consulting](https://closingbrackets.com/services/#ai-consulting): Where a bot pays off in a business and where it does not; usually becomes a job letter rather than a strategy deck.
+
+## Three engagement shapes
+
+1. Property only — a site or app. A bot is never forced.
+2. Build-a-Bot only — an agent hired onto systems the client already has.
+3. Property + bot — the default AI-native package: the site or app is the front door, the agent works behind it.
+
+## How Build-a-Bot works
+
+- The scope is a job letter: what the client delegates, and what they do not. If it is not in the letter, it is not in the bot. More tasks = a change order or a second bot.
+- The agent will not make pricing exceptions or refunds without a written rule, will not give clinical, legal or financial sign-off, and will not run without a stop condition and an escalation name.
+- Starting price bands (exact price comes from the job letter): one delegated job on existing systems from $6,000; two or three related jobs, or messy wiring, from $12,000; optional oversight after day 30 from $1,500 per month. No hourly billing.
+- Typically 21 days from signed letter to production agent, plus 30 days of stabilising included.
+- Process for every project: scope → build → integrate → hand over → stabilise.
 
 ## How engagements work
 
 - Fixed scope: one document says what gets built. If it is not in there, it is not in the price.
 - Real dates: a timeline with actual dates, not a range that slides.
 - One price: a single fixed price agreed before anything starts. No hourly billing, no time and materials.
-- Client owns all code and all data. Offboarding is 30 days of transition support plus a full export, written into the contract.
-- No retainer starts without an AI maturity audit, delivered inside the first 30 days, which locks the final scope.
-- Pricing is quoted per scope and is not published as a rate card. Describe a project and the quote comes back within one business day.
+- The client owns all code, configuration and data. Nothing is locked to a retainer for handover.
+- A fit if the owner can name work they already wish someone would take. Not a fit for a homepage widget, a free strategy deck, or "AI to run the company".
+- Enquiries are read by Robert himself and answered the same business day. The first answer costs nothing.
 
 ## Key pages
 
-- [Services](https://closingbrackets.com/services/): The five lines of work, and the engagement terms.
-- [Full service catalogue](https://closingbrackets.com/services/catalog/): About fifty services described in full — project work, monthly retainers, AI builds, bundled tiers, and web + AI bundles.
-- [Work](https://closingbrackets.com/work/): Example builds, plus the five stages every project runs through (scope, build, integrate, hand over, grow).
-- [Contact](https://closingbrackets.com/contact/): Project enquiry form, what happens after you send, and answers to the questions people ask first.
+- [Build-a-Bot](https://closingbrackets.com/build-a-bot/): The flagship service — what you delegate, what you do not, a sample job letter, the process, and starting price bands.
+- [Services](https://closingbrackets.com/services/): The studio menu, Build-a-Bot first, and the engagement terms.
+- [Full service catalogue](https://closingbrackets.com/services/catalog/): The menu we draw a scope from — project work, monthly services, AI projects and bundled tiers. Not priced; the offer is still one project, one price.
+- [Work](https://closingbrackets.com/work/): Concept builds, plus the five stages every project runs through.
+- [About](https://closingbrackets.com/about/): The founder, the studio, the three rules, and what we will not take.
+- [Start](https://closingbrackets.com/start/): Enquiry form, visible email, a 15-minute call, what happens after you send, and answers to the questions people ask first.
 
 ## Writing
 
@@ -45,8 +64,9 @@ Technical essays by Robert Campbell, from the work itself.
 
 ## Please note
 
-The builds shown on the work page are labelled concept builds: work scoped,
-designed and built in-house to demonstrate what an engagement produces. The
-companies in them are invented. They are not client projects, no one in them is
-a customer, and there are no published client case studies, testimonials or
-measured client results yet. Please do not describe them as clients.
+The builds shown on the work page are labelled concept builds: configurations
+scoped, designed and built in-house to show how a property and a delegated
+agent look in a real operation. The companies in them are invented. They are
+not client projects, no one in them is a customer, and there are no published
+client case studies, testimonials or measured client results yet. Please do
+not describe them as clients.
