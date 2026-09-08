@@ -27,7 +27,7 @@ export const bands = [
   {
     id: "basic",
     name: "Basic integrations",
-    from: 6000,
+    from: 5999,
     lede: "One delegated job on tools you already use, connected the standard way.",
     includes: [
       "Email inbox (Gmail, Microsoft 365): triage and drafted replies",
@@ -48,7 +48,7 @@ export const bands = [
   {
     id: "expert",
     name: "Expert integrations",
-    from: 12000,
+    from: 9999,
     lede: "Two or three related jobs, or systems with no clean way in.",
     includes: [
       "Industry systems: practice management, dispatch, TMS, ERP, accounting",
