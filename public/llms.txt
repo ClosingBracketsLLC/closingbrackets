@@ -30,7 +30,8 @@ code and is still there when it goes live.
 
 - The scope is a job letter: what the client delegates, and what they do not. If it is not in the letter, it is not in the bot. More tasks = a change order or a second bot.
 - The agent will not make pricing exceptions or refunds without a written rule, will not give clinical, legal or financial sign-off, and will not run without a stop condition and an escalation name.
-- Starting price bands (exact price comes from the job letter): one delegated job on existing systems from $6,000; two or three related jobs, or messy wiring, from $12,000; optional oversight after day 30 from $1,500 per month. No hourly billing.
+- Starting price bands (exact price comes from the job letter): Basic integrations — one delegated job on tools the client already uses (email, calendar, web forms, Google Business Profile, SMS, a CRM with a standard API, spreadsheets) — from $6,000. Expert integrations — two or three related jobs, or industry systems, document extraction, accounting sync, two-way sync into a system of record, legacy tools — from $12,000. Optional oversight after day 30 from $249 per month. No hourly billing.
+- Not sure what to delegate? A free one-hour walkthrough of the business, after which Robert suggests the small integrations to start with and the bigger ones to plan for.
 - Typically 21 days from signed letter to production agent, plus 30 days of stabilising included.
 - Process for every project: scope → build → integrate → hand over → stabilise.
 

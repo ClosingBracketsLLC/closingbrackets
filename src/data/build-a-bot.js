@@ -16,25 +16,73 @@ export const terms = { buildDays: 21, stabiliseDays: 30 };
 
 export const timeline = `Typically ${terms.buildDays} days from signed letter to production agent, plus ${terms.stabiliseDays} days of stabilising.`;
 
-/** Starting price bands — published as bands, never as a rate card. */
+/**
+ * Starting price bands — published as bands, never as a rate card. Two
+ * groups by how the agent is wired in, which is what a customer is really
+ * buying when they hire an AI employee: the job is the same shape either way,
+ * the systems it has to reach are not. `from` is the floor; the exact price
+ * comes from the job letter. Feeds the page, its JSON-LD offers and llms.txt.
+ */
 export const bands = [
-  { name: "One delegated job on systems you already have", from: 6000 },
-  { name: "Two or three related jobs, or messy wiring", from: 12000 },
-  { name: "Optional oversight after day 30", from: 1500, per: "month" },
+  {
+    id: "basic",
+    name: "Basic integrations",
+    from: 6000,
+    lede: "One delegated job on tools you already use, connected the standard way.",
+    includes: [
+      "Email inbox (Gmail, Microsoft 365): triage and drafted replies",
+      "Calendar booking (Google, Outlook, Calendly)",
+      "Website forms and inbound leads: qualify, reply, book",
+      "Google Business Profile and review responses",
+      "SMS reminders and recall (Twilio)",
+      "A CRM with a standard API (HubSpot, Pipedrive, Zoho)",
+      "Spreadsheets, Airtable or Notion as the record",
+    ],
+    examples: [
+      "After-hours lead qualifier that books the job",
+      "Review responder",
+      "Recall and reactivation by SMS",
+      "Inbox triage and quote follow-up",
+    ],
+  },
+  {
+    id: "expert",
+    name: "Expert integrations",
+    from: 12000,
+    lede: "Two or three related jobs, or systems with no clean way in.",
+    includes: [
+      "Industry systems: practice management, dispatch, TMS, ERP, accounting",
+      "Document intake and extraction from PDFs, scans and photos, with confidence thresholds",
+      "Invoice and accounts-payable assist with accounting sync",
+      "Two-way sync into a system of record, custom data pipelines",
+      "Legacy or desktop-only tools, multi-location routing",
+      "Human-in-the-loop queues and an exception dashboard",
+    ],
+    examples: [
+      "Freight documents read straight into the TMS",
+      "Multi-location dental recall with pre-filled intake",
+      "Quote to invoice across two systems",
+    ],
+  },
 ];
+
+/** The optional monthly retainer after the included stabilising period. */
+export const oversight = {
+  name: `Oversight after day ${terms.stabiliseDays}`,
+  from: 249,
+  per: "month",
+  body: "Optional, and you can stop it. Monitoring, model updates as they land, a monthly report, and one minor tweak a month. Expert integrations cost more to watch; the letter says how much.",
+};
 
 export const bandsNote = "Exact price comes from the job letter. No hourly billing.";
 
 /**
- * Paid scoping (brief §8): when the task is not obvious enough to price from
- * one conversation, the job letter is written as its own piece of work. A
- * short block on the product page, not a product of its own.
+ * The free walkthrough — how a job that is not obvious yet gets found. Small
+ * integrations first, the bigger ones planned for later.
  */
-export const scoping = {
-  title: "When the job is not obvious yet",
-  from: 2500,
-  to: 4500,
-  body: "We write the job letter as its own piece of work: a few working sessions, a map of the systems and the people involved, and a letter with tasks in, tasks out, and a price you can take to us or to anyone else.",
+export const walkthrough = {
+  title: "Not obvious yet? Start with a free hour",
+  body: "Robert walks through your business with you for an hour, at no charge, and comes back with the small integrations worth starting with and the bigger ones worth planning for. No deck, no hard sell.",
 };
 
 /** The optional budget question on /start/, kept beside the bands it frames. */

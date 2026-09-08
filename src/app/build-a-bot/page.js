@@ -12,7 +12,7 @@ import {
   SectionHeading,
   cellTone,
 } from "../components/primitives";
-import { SITE_URL, breadcrumbLd, graphLd, pageOg, routes, url } from "@/data/site";
+import { SITE_URL, breadcrumbLd, call, graphLd, pageOg, routes, url } from "@/data/site";
 import {
   bands,
   bandsNote,
@@ -23,9 +23,10 @@ import {
   isNot,
   letter,
   notDelegate,
-  scoping,
+  oversight,
   timeline,
   usd,
+  walkthrough,
 } from "@/data/build-a-bot";
 
 const TITLE = "Build-a-Bot";
@@ -53,7 +54,7 @@ const jsonLd = graphLd(breadcrumbLd(TITLE, PATH), {
   description: hero.intro,
   provider: { "@id": `${SITE_URL}/#organization` },
   areaServed: { "@type": "Country", name: "United States" },
-  offers: bands.map((band) => ({
+  offers: [...bands, oversight].map((band) => ({
     "@type": "Offer",
     name: band.name,
     priceCurrency: "USD",
@@ -146,41 +147,78 @@ export default function BuildABot() {
       </section>
 
       {/* Starting bands. Published on purpose (the brief asks for them), as
-          bands rather than a rate card: the exact price is the letter's. */}
+          bands rather than a rate card: the exact price is the letter's. Two
+          groups by how the agent is wired in, then the optional retainer and
+          the free hour for anyone who cannot name the job yet. */}
       <section id="price" className="mt-24 scroll-mt-28">
         <SectionHeading eyebrow="Starting price bands" title="What a Build-a-Bot costs">
           {bandsNote} {timeline}
         </SectionHeading>
-        <div className="cb-strip mt-9 sm:grid-cols-3">
+        <div className="cb-strip mt-9 lg:grid-cols-2">
           {bands.map((band, i) => {
             const { style, tone } = cellTone(i);
             return (
-              <div key={band.name} style={style} className={`cb-cell cb-tone ${tone} flex flex-col p-6 sm:p-7`}>
+              <article
+                key={band.id}
+                id={band.id}
+                style={style}
+                className={`cb-cell cb-tone ${tone} flex scroll-mt-28 flex-col p-7 sm:p-9`}
+              >
                 <p className="cb-eyebrow text-[var(--cb-accent)]">From</p>
                 <p className="mt-3 font-[family-name:var(--font-display)] text-3xl leading-none text-bone sm:text-4xl">
                   {usd(band.from)}
-                  {band.per ? <span className="text-base text-slate"> / {band.per}</span> : null}
                 </p>
-                <p className="mt-5 text-sm leading-relaxed text-slate">{band.name}</p>
-              </div>
+                <h3 className="mt-5 font-[family-name:var(--font-display)] text-xl leading-snug text-bone">
+                  {band.name}
+                </h3>
+                <p className="mt-3 leading-relaxed text-slate">{band.lede}</p>
+                <div className="mt-6">
+                  <h4 className="cb-subhead">What it connects to</h4>
+                  <FrameList items={band.includes} label={`${band.name}: systems`} className="mt-4" />
+                </div>
+                <div className="mt-6">
+                  <h4 className="cb-subhead">Jobs at this level</h4>
+                  <AccentList items={band.examples} className="mt-4" />
+                </div>
+              </article>
             );
           })}
         </div>
 
-        {/* Paid scoping, as a footnote to the bands rather than a fourth band:
-            it is how a price gets found when one conversation is not enough. */}
-        <aside
-          style={{ "--cb-accent": ACCENT.coral }}
-          className="cb-panel mt-6 flex flex-col gap-5 p-7 sm:flex-row sm:items-start sm:justify-between sm:p-8"
-        >
-          <div className="max-w-xl">
-            <p className="cb-eyebrow text-[var(--cb-accent)]">{scoping.title}</p>
-            <p className="mt-3 text-sm leading-relaxed text-slate">{scoping.body}</p>
+        <div className="cb-strip mt-3 sm:grid-cols-2">
+          <div
+            style={{ "--cb-accent": ACCENT.cyan }}
+            className="cb-cell cb-tone cb-tone--tl flex flex-col p-6 sm:p-7"
+          >
+            <p className="cb-eyebrow text-[var(--cb-accent)]">From</p>
+            <p className="mt-3 font-[family-name:var(--font-display)] text-3xl leading-none text-bone">
+              {usd(oversight.from)}
+              <span className="text-base text-slate"> / {oversight.per}</span>
+            </p>
+            <h3 className="mt-5 font-[family-name:var(--font-display)] text-xl leading-snug text-bone">
+              {oversight.name}
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-slate">{oversight.body}</p>
           </div>
-          <p className="shrink-0 font-[family-name:var(--font-display)] text-xl text-bone">
-            {usd(scoping.from)}–{usd(scoping.to)}
-          </p>
-        </aside>
+
+          {/* The free hour, where paid scoping used to be: how a price gets
+              found when nobody can name the job yet. */}
+          <div
+            style={{ "--cb-accent": ACCENT.coral }}
+            className="cb-cell cb-tone cb-tone--br flex flex-col p-6 sm:p-7"
+          >
+            <p className="cb-eyebrow text-[var(--cb-accent)]">Free</p>
+            <h3 className="mt-3 font-[family-name:var(--font-display)] text-xl leading-snug text-bone">
+              {walkthrough.title}
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-slate">{walkthrough.body}</p>
+            <div className="cb-footrule mt-auto pt-6">
+              <a href={call.href} className="cb-btn cb-btn--ghost">
+                Book the hour
+              </a>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="mt-24">
