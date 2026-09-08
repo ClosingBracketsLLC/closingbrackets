@@ -23,6 +23,7 @@ import {
   isNot,
   letter,
   notDelegate,
+  scoping,
   timeline,
   usd,
 } from "@/data/build-a-bot";
@@ -165,6 +166,21 @@ export default function BuildABot() {
             );
           })}
         </div>
+
+        {/* Paid scoping, as a footnote to the bands rather than a fourth band:
+            it is how a price gets found when one conversation is not enough. */}
+        <aside
+          style={{ "--cb-accent": ACCENT.coral }}
+          className="cb-panel mt-6 flex flex-col gap-5 p-7 sm:flex-row sm:items-start sm:justify-between sm:p-8"
+        >
+          <div className="max-w-xl">
+            <p className="cb-eyebrow text-[var(--cb-accent)]">{scoping.title}</p>
+            <p className="mt-3 text-sm leading-relaxed text-slate">{scoping.body}</p>
+          </div>
+          <p className="shrink-0 font-[family-name:var(--font-display)] text-xl text-bone">
+            {usd(scoping.from)}–{usd(scoping.to)}
+          </p>
+        </aside>
       </section>
 
       <section className="mt-24">

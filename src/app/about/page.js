@@ -51,8 +51,19 @@ export default function About() {
       />
 
       {/* The founder. A builder-led studio: engineering background at a high
-          level, nothing personal. The photo cell renders only once
-          author.photo is set in data/site.js. */}
+          level, nothing personal. The photo cell and the Loom walkthrough
+          below render only once author.photo / author.loom are set. */}
+      {author.loom && (
+        <figure className="cb-panel mt-8 overflow-hidden">
+          <iframe
+            src={author.loom}
+            title={`${author.name} walks through one delegated job`}
+            className="aspect-video w-full"
+            allow="fullscreen"
+            loading="lazy"
+          />
+        </figure>
+      )}
       <section className="cb-strip mt-8 lg:grid-cols-12">
         {author.photo && (
           <div className="cb-cell overflow-hidden lg:col-span-4">

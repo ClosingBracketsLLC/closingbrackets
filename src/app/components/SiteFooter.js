@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { brand, call, contact, cta, navLinks, routes } from "@/data/site";
+import { brand, call, contact, cta, legalLinks, navLinks, routes } from "@/data/site";
 
 /**
  * Footer for every page. The homepage renders it at the foot of the in-flow
@@ -43,9 +43,16 @@ export default function SiteFooter() {
           </Link>
         </nav>
       </div>
-      <p className="mt-8">
-        &copy; {new Date().getFullYear()} {brand.name}
-      </p>
+      <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
+        <p>
+          &copy; {new Date().getFullYear()} {brand.name}
+        </p>
+        {legalLinks.map(({ label, href }) => (
+          <Link key={href} href={href} className="transition hover:text-cyan">
+            {label}
+          </Link>
+        ))}
+      </div>
     </footer>
   );
 }

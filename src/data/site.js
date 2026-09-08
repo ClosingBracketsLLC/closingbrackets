@@ -23,6 +23,8 @@ export const routes = {
   content: "/content/",
   about: "/about/",
   start: "/start/",
+  privacy: "/privacy/",
+  terms: "/terms/",
 };
 
 /** The conversion page, optionally pre-selecting what the visitor wants. */
@@ -43,6 +45,8 @@ export const pages = [
   { path: routes.content, updated: "2026-09-07", changefreq: "weekly", priority: 0.6 },
   { path: routes.about, updated: "2026-09-07", changefreq: "yearly", priority: 0.6 },
   { path: routes.start, updated: "2026-09-07", changefreq: "yearly", priority: 0.7 },
+  { path: routes.privacy, updated: "2026-09-07", changefreq: "yearly", priority: 0.2 },
+  { path: routes.terms, updated: "2026-09-07", changefreq: "yearly", priority: 0.2 },
 ];
 
 // Header order. Adding a route here puts it in the header, the footer, and
@@ -56,6 +60,12 @@ export const navLinks = [
 ];
 
 export const cta = { label: "Start a project", href: routes.start };
+
+/** Footer-only links: the legal pages the enquiry form makes necessary. */
+export const legalLinks = [
+  { label: "Privacy", href: routes.privacy },
+  { label: "Terms", href: routes.terms },
+];
 
 /** The site's one title and description: <title> default, meta, JSON-LD. */
 export const siteTitle = "Closing Brackets — AI-native web agency";
@@ -108,7 +118,10 @@ export const author = {
   firstName: "Robert",
   role: "Founder",
   email: contact.email,
+  // Set to a path under /public to render the founder photo on /about, and
+  // to a Loom share URL to embed the 60–90 second walkthrough beside it.
   photo: undefined,
+  loom: undefined,
   bio: "Robert Campbell is the founder of Closing Brackets, a builder-led studio. He scopes the work, writes the code, and builds the agent systems and the loop engineering that keep them running in production.",
   line: "Robert reads every enquiry himself and replies the same business day.",
 };

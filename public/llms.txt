@@ -47,7 +47,7 @@ code and is still there when it goes live.
 
 - [Build-a-Bot](https://closingbrackets.com/build-a-bot/): The flagship service — what you delegate, what you do not, a sample job letter, the process, and starting price bands.
 - [Services](https://closingbrackets.com/services/): The studio menu, Build-a-Bot first, and the engagement terms.
-- [Full service catalogue](https://closingbrackets.com/services/catalog/): The menu we draw a scope from — project work, monthly services, AI projects and bundled tiers. Not priced; the offer is still one project, one price.
+- [Service catalogue](https://closingbrackets.com/services/catalog/): The menu we draw a scope from, grouped by the five lines of work. Not priced; the offer is still one project, one price. No bundled tiers, retainers or agent fleets.
 - [Work](https://closingbrackets.com/work/): Concept builds, plus the five stages every project runs through.
 - [About](https://closingbrackets.com/about/): The founder, the studio, the three rules, and what we will not take.
 - [Start](https://closingbrackets.com/start/): Enquiry form, visible email, a 15-minute call, what happens after you send, and answers to the questions people ask first.

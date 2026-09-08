@@ -25,6 +25,18 @@ export const bands = [
 
 export const bandsNote = "Exact price comes from the job letter. No hourly billing.";
 
+/**
+ * Paid scoping (brief §8): when the task is not obvious enough to price from
+ * one conversation, the job letter is written as its own piece of work. A
+ * short block on the product page, not a product of its own.
+ */
+export const scoping = {
+  title: "When the job is not obvious yet",
+  from: 2500,
+  to: 4500,
+  body: "We write the job letter as its own piece of work: a few working sessions, a map of the systems and the people involved, and a letter with tasks in, tasks out, and a price you can take to us or to anyone else.",
+};
+
 /** The optional budget question on /start/, kept beside the bands it frames. */
 export const budgetBands = ["< $8k", "$8–25k", "$25k+", "Not sure"];
 
