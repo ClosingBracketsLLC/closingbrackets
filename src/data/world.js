@@ -17,9 +17,9 @@
 // scoped, the site/app door, the Build-a-Bot door, the three rules, the ask.
 // "swarm" survives only as an asset id; nothing visible says it.
 //
-// Section CTAs: the hero carries both doors (the brief wants the offer and its
-// CTA readable on the first screen), two middle scenes carry a ghost sidetrack,
-// and the finale carries the ask. Buttons take their slide's `accent` at
+// Section CTAs: the hero carries the Build-a-Bot door (the header's "Start a
+// project" is already on screen above it), two middle scenes carry a ghost
+// sidetrack, and the finale carries the ask. Buttons take their slide's `accent` at
 // runtime, so a CTA always matches the colour of its own dot on the route rail.
 
 import { cta, routes } from "./site";
@@ -39,10 +39,8 @@ export const sections = [
     eyebrow: "AI-native web agency",
     title: "Websites, apps, and custom AI agents.",
     body: "We build the site or app. We can also build an agent that does a job you assign.",
-    cta: {
-      primary: { label: "Get a Build-a-Bot", href: routes.bot },
-      secondary: cta,
-    },
+    // One button: the header already carries "Start a project".
+    cta: { primary: { label: "Build A Bot", href: routes.bot } },
   },
   {
     id: "blueprint",
