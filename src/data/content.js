@@ -2,8 +2,9 @@
 //
 // Every entry is written by us and stands on its own. The one thing to keep
 // honest is the media: the Evergreen Softwash film is a CONCEPT PIECE produced
-// to show the format, and both the index card and the piece itself say so in
-// visible text. See the same note in data/work.js.
+// to show the format, cut before the site launched (evergreensoftwash.com went
+// live in September 2026 without it), and both the index card and the piece
+// itself say so in visible text. See the same note in data/work.js.
 //
 // SHAPE:
 //   slug, title, summary, date (YYYY-MM-DD), readingMinutes, kind, series,
@@ -34,7 +35,8 @@ export const posts = [
     date: "2026-07-24",
     readingMinutes: 4,
     // Media block for the article header. `concept: true` drives the visible
-    // disclaimer — this was produced as a demonstration, not for a client.
+    // disclaimer — the spot was produced as a demonstration of the format and
+    // is not on the live site.
     media: {
       concept: true,
       poster: "/assets/work/evergreen-poster.webp",
@@ -42,7 +44,7 @@ export const posts = [
       clip: "/assets/vid/evergreen.mp4",
       clipMobile: "/assets/vid/evergreen-m.mp4",
       caption:
-        "Evergreen Softwash — hero spot. Concept piece, produced to show the format.",
+        "Evergreen Softwash — hero spot. Concept piece, produced to show the format; the site launched without it.",
     },
     body: [
       {
@@ -83,7 +85,7 @@ export const posts = [
       { t: "h2", x: "Where the film sits in the funnel" },
       {
         t: "p",
-        x: "On its own, a film is a cost. It earns out when it is one part of a system that catches the attention it generates. For the Evergreen concept build that meant the spot ran above a booking page that quotes instantly from an address and a roof area, and behind the booking page sat a qualifier agent that could hold a conversation at eleven at night and put the job on the crew calendar without waking anyone.",
+        x: "On its own, a film is a cost. It earns out when it is one part of a system that catches the attention it generates. This spot was cut as a concept piece while the Evergreen site was being built, and the site launched without it: photography, tiered pricing and a quote form carry the page instead. That is the right order. The page that quotes and captures the lead has to exist before a film is worth paying to place above it, and the film only ever earns what the page can close.",
       },
       {
         t: "p",

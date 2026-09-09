@@ -59,7 +59,7 @@ export const terms = {
       h: "The site",
       p: [
         "The content here describes what we do and how we think about it. It is information, not advice, and it may change without notice. You may read, link to and quote it with attribution; you may not present it as your own.",
-        "The builds on the work page are concept builds: configurations we scoped, designed and built to show what an engagement produces. The companies in them are invented. They are not client projects, and no one in them is a customer.",
+        "The work page labels each build. Builds marked live are in production at the domains linked from them. Builds marked concept are configurations we scoped, designed and built to show what an engagement produces; the companies in those are invented, they are not client projects, and no one in them is a customer.",
       ],
     },
     {

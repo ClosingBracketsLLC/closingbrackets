@@ -162,9 +162,9 @@ export function NarrationList({ eyebrow, items, accent = ACCENT.coral, className
 export function BuildTags({ build }) {
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      {build.concept && (
-        <span className="cb-eyebrow text-[var(--cb-accent)]">Concept build</span>
-      )}
+      <span className="cb-eyebrow text-[var(--cb-accent)]">
+        {build.concept ? "Concept build" : "Live"}
+      </span>
       {build.shape && <span className="cb-eyebrow">{build.shape}</span>}
       <span className="text-xs text-slate">{build.sector}</span>
     </div>

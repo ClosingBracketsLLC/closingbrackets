@@ -149,5 +149,5 @@ export const close = {
   title: "Describe the tasks you want to hand off",
   body: "The first answer is free. The job letter and the price come next.",
   action: { label: "Start a Build-a-Bot", href: startHref("bot") },
-  secondary: { label: "See a concept build", href: routes.work },
+  secondary: { label: "See the work", href: routes.work },
 };

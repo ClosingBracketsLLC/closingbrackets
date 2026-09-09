@@ -500,8 +500,13 @@ function mountScrollWorld(container, config) {
       else if (s.video && Math.abs(i - ci) > KEEP) releaseClip(s);
       const local = clamp((y - s.start) / (s.end - s.start), 0, 1);
       s.target = s.linger ? lingerEase(local, s.linger) : local;
+      // The FINAL segment never fades out: past its end it holds its last frame
+      // (the finale's closing shot) as the backdrop the in-flow page scrolls
+      // over. Fading it exposed whatever sits under the stage — the
+      // server-rendered scene-0 hero at z-5 — as a still of the first scene.
       let outside = 0;
-      if (y < s.start) outside = s.start - y; else if (y > s.end) outside = y - s.end;
+      if (y < s.start) outside = s.start - y;
+      else if (y > s.end && i !== NSEG - 1) outside = y - s.end;
       const op = smooth(1 - outside / fade);
       s.el.style.opacity = op; s.visible = op > 0.001;
       s.el.style.zIndex = (i === ci) ? '120' : String(100 + Math.round(op * 10));

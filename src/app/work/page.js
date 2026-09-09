@@ -14,12 +14,12 @@ const PATH = routes.work;
 export const metadata = {
   title: "Work & How a Project Runs",
   description:
-    "Concept builds showing how a property and a delegated Build-a-Bot agent look in a real operation, and the five stages every project runs through: scope, build, integrate, hand over, stabilise.",
+    "Live builds — Evergreen Softwash and Doge Buddy — beside concept builds showing how a property and a delegated Build-a-Bot agent look in a real operation, and the five stages every project runs through: scope, build, integrate, hand over, stabilise.",
   alternates: { canonical: url(PATH) },
   openGraph: pageOg({
     title: "Work — what we build, and how a project runs",
     description:
-      "Concept builds — a property and a delegated agent in a real operation — and the five stages every project runs through.",
+      "Two live builds, the concept builds beside them, and the five stages every project runs through.",
     path: PATH,
   }),
 };
@@ -40,8 +40,8 @@ const TIERS = [
   { span: "lg:col-span-7", tone: "cb-tone--tr" },
 ];
 
-/* Real client work sorts above concept builds automatically, so the first
-   confirmed case study takes the top slot without touching this file. */
+/* Live work sorts above concept builds automatically: flipping a build's
+   `concept` flag in data/work.js moves it up without touching this file. */
 const ordered = [...builds].sort(
   (a, b) => Number(a.concept ?? false) - Number(b.concept ?? false),
 );
@@ -50,9 +50,10 @@ const others = ordered.filter((b) => b !== featured);
 const allConcept = ordered.every((b) => b.concept);
 
 /* An ItemList and nothing more. There is deliberately no Review, Rating or
-   testimonial markup anywhere on this page: these are concept builds, and
-   structured data claiming otherwise would be the one lie a prospect could
-   catch us in. See the note at the top of data/work.js. */
+   testimonial markup anywhere on this page: two builds are live but nothing
+   here is a client-confirmed result, and structured data claiming otherwise
+   would be the one lie a prospect could catch us in. See the note at the top
+   of data/work.js. */
 const jsonLd = graphLd(
   breadcrumbLd(TITLE, PATH),
   itemListLd(
@@ -127,15 +128,28 @@ function BuildBody({ build, columns = false }) {
         </div>
 
         <div className={columns ? "mt-8 lg:mt-0" : "mt-7"}>
-          {/* Concept builds say what they demonstrate; a real case study would
-              carry a client-confirmed outcome in the same slot. */}
-          <p className="cb-eyebrow">{build.concept ? "What it shows" : "Outcome"}</p>
+          {/* Concept builds say what they demonstrate; live builds say where
+              they stand in production. Neither slot carries a number a client
+              has not confirmed — see data/work.js. */}
+          <p className="cb-eyebrow">{build.concept ? "What it shows" : "In production"}</p>
           <p
             className="mt-3 text-sm leading-relaxed"
             style={{ color: "var(--cb-accent)" }}
           >
             {build.concept ? build.shows : build.outcome}
           </p>
+          {build.url && (
+            /* The proof itself: a live build links out to the thing. A plain
+               anchor, not next/link — it leaves the site. */
+            <a
+              href={build.url}
+              target="_blank"
+              rel="noopener"
+              className="cb-link mt-5"
+            >
+              Visit {new URL(build.url).hostname} <span aria-hidden>↗</span>
+            </a>
+          )}
           <TagRow items={build.stack} label="Technology used" className="mt-6" />
           <ServiceLines ids={build.lines} />
         </div>
@@ -149,7 +163,7 @@ export default function Work() {
     <PageLayout
       eyebrow={TITLE}
       title="What we build, and how a project runs"
-      intro="These are concept builds — configurations we use to show how a property and a delegated agent look in a real operation. They are not claimed as paying-client case studies. Every project, bot or property, runs through the same five stages below."
+      intro="Two of these builds are live: Evergreen Softwash and Doge Buddy are in production at their own domains, and each links out so you can use it. The rest are concept builds — configurations we use to show how a property and a delegated agent look in a real operation — and every one says so. Every project, bot or property, runs through the same five stages below."
       accent="#ff4e64"
       width="max-w-6xl"
     >
@@ -159,15 +173,13 @@ export default function Work() {
       />
 
       {/* The "Read this first" narration box that used to sit here was removed
-          on request, ahead of real client work replacing these builds.
-
-          What still carries the disclosure until that lands: the per-card
-          "Concept build" eyebrow on every build below, the "What it shows"
-          label standing in for "Outcome", the FAQ answer on /start/, and the
-          deliberate absence of Review/Rating/testimonial structured data (see
-          the note on jsonLd above). Do not remove those as well — a page of
-          invented companies with no disclosure at all is the one thing on this
-          site a prospect could catch us in. */}
+          on request. What carries the disclosure instead: the intro above, the
+          per-card "Concept build" / "Live" eyebrow on every build below, the
+          "What it shows" label standing in for "In production", the FAQ answer
+          on /start/, and the deliberate absence of Review/Rating/testimonial
+          structured data (see the note on jsonLd above). Do not remove those
+          as well — invented companies with no disclosure is the one thing on
+          this site a prospect could catch us in. */}
 
       {/* Featured build — the splash panel, and the only moving thing on the
           page. Screened bottom-right, where the copy is: a dot tone laid over

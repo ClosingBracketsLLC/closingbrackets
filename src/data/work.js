@@ -1,20 +1,26 @@
 // Copy for /work/.
 //
-// NOTE ON HONESTY: everything in `builds` is a CONCEPT BUILD — a project
-// designed and built to show what an engagement looks like end to end. The
-// companies are invented. Nothing here is a client, a testimonial, or a
-// measured result, and the page labels every card as such in visible text.
-// That distinction is the whole point: fabricated social proof is worse than
-// none, and it is the one thing a prospect can check.
+// NOTE ON HONESTY: `builds` mixes two kinds of entry, and the page labels each
+// one in visible text.
 //
-// TURNING ONE INTO A REAL CASE STUDY: set `concept: false` and replace `shows`
-// with an `outcome` the client would confirm in writing. The page sorts real
-// work above concept work automatically, so the first real case study takes the
-// top slot on its own.
+//   concept: false — a LIVE BUILD, in production at `url`. Evergreen Softwash
+//   and Doge Buddy launched in September 2026. What they say is what shipped,
+//   read from the repos; nothing is a testimonial or a measured result, and
+//   there are no client-confirmed numbers here until a client confirms one in
+//   writing. `outcome` is the honest state of the thing today.
+//
+//   concept: true — a CONCEPT BUILD: a project designed and built to show what
+//   an engagement looks like end to end. The companies are invented. That
+//   distinction is the whole point: fabricated social proof is worse than
+//   none, and it is the one thing a prospect can check.
+//
+// The page sorts live work above concept work automatically. To promote a
+// concept build, set `concept: false`, add `url`, and replace `shows` with an
+// `outcome` the client would confirm.
 //
 // `shape` names the engagement shape the build demonstrates (Build-a-Bot,
-// property, or both) and renders beside the concept-build label, so the proof
-// on this page maps onto the two doors the homepage offers.
+// property, or both) and renders beside the label, so the proof on this page
+// maps onto the two doors the homepage offers.
 //
 // `lines` holds the service ids from data/services.js that a build draws on.
 // It renders as links back to /services/#id, which is what connects the proof
@@ -28,30 +34,56 @@ import { terms } from "./build-a-bot";
 export const builds = [
   {
     id: "evergreen-softwash",
-    concept: true,
+    concept: false,
     client: "Evergreen Softwash",
-    sector: "Exterior cleaning · residential services",
-    shape: "Build-a-Bot + property",
-    lines: ["build-a-bot", "web-app", "seo-growth"],
+    url: "https://evergreensoftwash.com",
+    sector: "Exterior cleaning & detailing · Puget Sound",
+    shape: "Property",
+    lines: ["web-app", "engineering-bar", "seo-growth"],
     accent: "#2ef2dc",
     featured: true,
     // Media lives on the featured build only — one moving thing per page.
+    // The film is a concept piece cut ahead of launch; the site went live
+    // with photography instead, and the article linked from the card says so.
     poster: "/assets/work/evergreen-poster.webp",
     posterMobile: "/assets/work/evergreen-poster-m.webp",
     clip: "/assets/vid/evergreen.mp4",
     clipMobile: "/assets/vid/evergreen-m.mp4",
     summary:
-      "A regional soft-wash company with a full crew calendar and no way to fill the gaps. Every booking came through a phone number one person answered, and every quote meant driving out to the property. We built the whole front end of the business: the film that gets attention, the site that converts it, and the agents that answer at two in the morning.",
+      "Luxury soft washing, pressure washing and concierge detailing for fine homes, vehicles, aircraft and watercraft across greater Puget Sound. The business needed its front of house built end to end: a site that explains five services, prices them in tiers, takes a quote request instead of a phone call, and gets found across twelve service areas.",
     work: [
-      "Brand identity and a launch film, cut as a single dusk hero spot",
-      "Booking site with instant quoting from address and roof area",
-      "Lead qualifier agent that books straight into the crew calendar",
-      "Review responder that answers every review inside an hour",
-      "Local SEO and Google Business Profile across four service areas",
+      "Static Astro site on the brand kit: five service pages, each with tiered pricing, a process and its own FAQs",
+      "Quote form with spam defences, relayed straight to the sales inbox",
+      "Service-area coverage for twelve Puget Sound towns, with structured data for local search",
+      "A journal with four launch articles and an RSS feed",
+      "One 19 KB script, WebP-only images and inlined critical CSS: the engineering bar, on a phone",
+      "A five-second hero spot, cut as a concept piece ahead of launch",
     ],
-    shows:
-      "Property plus Build-a-Bot on one small business. The job letter delegates lead qualification, calendar booking and review replies; discounts, arrival promises and complaints naming damage stay with the owner.",
-    stack: ["Next.js", "Stripe", "Twilio", "Claude agents", "GBP API"],
+    outcome:
+      "Fully static, so there is nothing to patch and nothing to scale. Every service, price, town and opening hour is a data file rather than a page edit, and the quote form lands in the owner's inbox the moment it is sent.",
+    stack: ["Astro", "TypeScript", "Web3Forms", "Render"],
+  },
+  {
+    id: "doge-buddy",
+    concept: false,
+    client: "Doge Buddy",
+    url: "https://dogebuddy.com",
+    sector: "Dog supplies · DTC e-commerce",
+    shape: "Build-a-Bot + property",
+    lines: ["build-a-bot", "web-app", "engineering-bar"],
+    accent: "#ff4e64",
+    summary:
+      "A dog-supply store run by one owner and the agents they delegate to. The storefront is a Shopify Hydrogen build; behind it an ops service sources products, places supplier orders, answers support email and scores the catalogue — and every consequential action waits on an owner approval.",
+    work: [
+      "Hydrogen storefront on Shopify, with four collections built from one category source of truth",
+      "Sourcing agent: weekly trend harvest, supplier lookup and priced proposals the owner approves into live listings",
+      "Fulfilment that splits a mixed-origin order into one supplier order per warehouse, with per-leg delivery windows",
+      "Support agent on the shared inbox: triage and drafted replies that only go out behind an owner approval",
+      "Nightly product scoring and a weekly deprecation digest; underperformers retire only when the owner says so",
+    ],
+    outcome:
+      "The job letter in practice. The agents may propose, draft and score; the owner approves. Refunds are locked to manual approval and the store's all-sales-final policy is enforced in code, so no agent can promise what the business does not offer.",
+    stack: ["Hydrogen", "Shopify", "Claude Agent SDK", "Postgres", "pg-boss", "Railway"],
   },
   {
     id: "halcyon-freight",
@@ -60,7 +92,7 @@ export const builds = [
     sector: "Regional logistics · 40 trucks",
     shape: "Build-a-Bot on existing systems",
     lines: ["build-a-bot"],
-    accent: "#ff4e64",
+    accent: "#2ef2dc",
     summary:
       "Rate confirmations, bills of lading and proof-of-delivery photos arrived as email attachments and got typed into a TMS by hand. Roughly nine hundred documents a week, three people doing it, and a two-day lag before anyone could invoice.",
     work: [
@@ -80,7 +112,7 @@ export const builds = [
     sector: "Healthcare · six locations",
     shape: "Build-a-Bot + property",
     lines: ["build-a-bot", "web-app"],
-    accent: "#2ef2dc",
+    accent: "#ff4e64",
     summary:
       "Six practices, six front desks, and a recall list nobody had time to work. Patients who lapsed at eighteen months were never called, because calling them was always less urgent than the person standing at the counter.",
     work: [
@@ -92,26 +124,6 @@ export const builds = [
     shows:
       "A job letter in a regulated setting. The agent is delegated recall and scheduling language only; every clinical thread goes to a person by design, not by exception.",
     stack: ["Next.js", "Claude", "Twilio", "PMS integration"],
-  },
-  {
-    id: "foundry-and-fern",
-    concept: true,
-    client: "Foundry & Fern",
-    sector: "DTC e-commerce · homewares",
-    shape: "Property · performance",
-    lines: ["web-app", "engineering-bar", "seo-growth"],
-    accent: "#ff4e64",
-    summary:
-      "Good products, good photography, and a storefront that took nine seconds to become interactive on a phone. Paid traffic was being bought and then lost somewhere on the way to the product page.",
-    work: [
-      "Storefront rebuild against the existing catalogue and checkout",
-      "Core Web Vitals work until the storefront was usable on a mid-range Android",
-      "Abandoned-cart sequence with per-customer copy rather than one template",
-      "Attribution wired so paid spend maps to revenue, not to sessions",
-    ],
-    shows:
-      "That performance work is growth work. Nothing in the funnel changed except how fast it arrived.",
-    stack: ["Next.js", "Shopify Storefront API", "Klaviyo", "GA4"],
   },
   {
     id: "cartwright-vale",

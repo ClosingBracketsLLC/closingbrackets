@@ -40,8 +40,8 @@ export const faqs = [
     a: "You do, all of it. The source is handed over at the end of the build and nothing is locked to us. You can take it to another team, keep it in-house, or leave it running untouched; none of that depends on keeping us on a retainer.",
   },
   {
-    q: "Do you have real client case studies?",
-    a: "Not published yet. The builds on our work page are concept builds — designed and built by us to show what an engagement produces end to end, with invented companies. Real case studies go up when clients confirm them in writing, and not before. We would rather show you work we can prove we made than results we cannot.",
+    q: "Is any of the work on your site real?",
+    a: "Yes. Two builds on our work page are live: Evergreen Softwash, a marketing site for an exterior-cleaning business in Puget Sound, and Doge Buddy, a Shopify storefront with delegated agents running sourcing, fulfilment and support behind owner approval. Both are linked so you can use them. The other builds on that page are concept builds — designed and built by us with invented companies — and every one says so. We publish no testimonials or results a client has not confirmed in writing.",
   },
   {
     q: "Will AI replace the systems we already run?",

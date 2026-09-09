@@ -1,11 +1,13 @@
 // Copy for the homepage sections BELOW the scroll-world flight (HomeTail.js).
 //
 // The flight (data/world.js) is the cinematic précis; this is the structured
-// half of the same page — the two doors, how delegation works, the limits,
-// three concept builds, the three rules, fit / not a fit, and the close.
-// Section order is the master brief's, and the wording is the brief's where
-// it gave any. The limits (`notDelegate`), the three rules (`engagement`) and
-// the close (`startClose`) are shared with other pages and live with them.
+// half of the same page — the two doors, how delegation works, the limits, and
+// the close. The three rules, the concept-build strip and the fit / not-a-fit
+// pair were cut from the homepage on 2026-09-08; the rules still render on
+// /services/ and /about/, and `fit` stays exported here because /about/ reads
+// it. Section order is the master brief's, and the wording is the brief's
+// where it gave any. The limits (`notDelegate`) and the close (`startClose`)
+// are shared with other pages and live with them.
 
 import { cta, routes } from "./site";
 import { terms } from "./build-a-bot";
@@ -22,7 +24,7 @@ export const doors = [
       `Typically ${terms.buildDays} days from signed letter to production agent`,
       `Fixed price, with ${terms.stabiliseDays} days of stabilising included`,
     ],
-    cta: { label: "Get a Build-a-Bot", href: routes.bot },
+    cta: { label: "Build A Bot", href: routes.bot },
   },
   {
     id: "property",
@@ -51,16 +53,6 @@ export const headings = {
     title: "How delegation works",
     body: "Three steps. The letter is the contract, and the agent does the work you hand it — nothing more.",
   },
-  work: {
-    eyebrow: "Selected work",
-    title: "Concept builds",
-    body: "Configurations we built to show how a property and a delegated agent look in a real operation. They are not paying-client case studies, and every one says so.",
-  },
-  fit: {
-    eyebrow: "Before you write",
-    title: "A fit, or not",
-    body: "Cheaper for both of us to know now.",
-  },
 };
 
 /** How delegation works — brief §5.1, verbatim. */
@@ -70,10 +62,7 @@ export const delegation = [
   { title: "The agent runs", body: "The agent runs against your data and tools. Exceptions go to a named human." },
 ];
 
-/** Three concept builds for the homepage — the best delegated-work stories. */
-export const selectedWorkIds = ["evergreen-softwash", "halcyon-freight", "meridian-dental"];
-
-/** Fit / not a fit — brief §6, verbatim. Also read by /about/. */
+/** Fit / not a fit — brief §6, verbatim. Read by /about/. */
 export const fit = {
   yes: "A fit if you can name work you already wish someone would take — leads after hours, documents in a pile, patients who lapsed, reviews sitting unanswered.",
   no: "Not a fit if you want a widget on the homepage, a free strategy deck, or an agent that runs the company.",

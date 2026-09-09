@@ -49,7 +49,7 @@ code and is still there when it goes live.
 - [Build-a-Bot](https://closingbrackets.com/build-a-bot/): The flagship service — what you delegate, what you do not, a sample job letter, the process, and starting price bands.
 - [Services](https://closingbrackets.com/services/): The studio menu, Build-a-Bot first, and the engagement terms.
 - [Service catalogue](https://closingbrackets.com/services/catalog/): The menu we draw a scope from, grouped by the five lines of work. Not priced; the offer is still one project, one price. No bundled tiers, retainers or agent fleets.
-- [Work](https://closingbrackets.com/work/): Concept builds, plus the five stages every project runs through.
+- [Work](https://closingbrackets.com/work/): Two live builds — Evergreen Softwash (evergreensoftwash.com, a static marketing site for an exterior-cleaning business in Puget Sound) and Doge Buddy (dogebuddy.com, a Shopify Hydrogen storefront with delegated sourcing, fulfilment and support agents behind owner approval) — plus labelled concept builds and the five stages every project runs through.
 - [About](https://closingbrackets.com/about/): The founder, the studio, the three rules, and what we will not take.
 - [Start](https://closingbrackets.com/start/): Enquiry form, visible email, a 15-minute call, what happens after you send, and answers to the questions people ask first.
 
@@ -65,9 +65,13 @@ Technical essays by Robert Campbell, from the work itself.
 
 ## Please note
 
-The builds shown on the work page are labelled concept builds: configurations
+Two builds on the work page are live and linked: Evergreen Softwash
+(evergreensoftwash.com) and Doge Buddy (dogebuddy.com), both launched in
+September 2026. They may be described as live work by Closing Brackets. There
+are no published testimonials or client-confirmed measured results for either.
+
+The remaining builds on that page are labelled concept builds: configurations
 scoped, designed and built in-house to show how a property and a delegated
 agent look in a real operation. The companies in them are invented. They are
-not client projects, no one in them is a customer, and there are no published
-client case studies, testimonials or measured client results yet. Please do
-not describe them as clients.
+not client projects, and no one in them is a customer. Please do not describe
+them as clients.

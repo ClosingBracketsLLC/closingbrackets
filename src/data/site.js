@@ -37,16 +37,16 @@ export const startHref = (intent) =>
  * data/content.js. Order is the header order for the routes that are in it.
  */
 export const pages = [
-  { path: routes.home, updated: "2026-09-07", changefreq: "monthly", priority: 1 },
-  { path: routes.bot, updated: "2026-09-07", changefreq: "monthly", priority: 0.9 },
-  { path: routes.work, updated: "2026-09-07", changefreq: "monthly", priority: 0.8 },
+  { path: routes.home, updated: "2026-09-08", changefreq: "monthly", priority: 1 },
+  { path: routes.bot, updated: "2026-09-08", changefreq: "monthly", priority: 0.9 },
+  { path: routes.work, updated: "2026-09-08", changefreq: "monthly", priority: 0.8 },
   { path: routes.services, updated: "2026-09-07", changefreq: "monthly", priority: 0.8 },
   { path: routes.catalog, updated: "2026-09-07", changefreq: "monthly", priority: 0.5 },
-  { path: routes.content, updated: "2026-09-07", changefreq: "weekly", priority: 0.6 },
+  { path: routes.content, updated: "2026-09-08", changefreq: "weekly", priority: 0.6 },
   { path: routes.about, updated: "2026-09-07", changefreq: "yearly", priority: 0.6 },
-  { path: routes.start, updated: "2026-09-07", changefreq: "yearly", priority: 0.7 },
+  { path: routes.start, updated: "2026-09-08", changefreq: "yearly", priority: 0.7 },
   { path: routes.privacy, updated: "2026-09-07", changefreq: "yearly", priority: 0.2 },
-  { path: routes.terms, updated: "2026-09-07", changefreq: "yearly", priority: 0.2 },
+  { path: routes.terms, updated: "2026-09-08", changefreq: "yearly", priority: 0.2 },
 ];
 
 // Header order. Adding a route here puts it in the header, the footer, and
@@ -135,7 +135,7 @@ export const startClose = {
   title: "Tell us what you want built",
   body: "A property, a bot, or both. You get scope, dates, and one price before anything starts.",
   action: cta,
-  secondary: { label: "Get a Build-a-Bot", href: routes.bot },
+  secondary: { label: "Build A Bot", href: routes.bot },
 };
 
 /** Absolute URL for a site-relative path. */
