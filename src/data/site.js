@@ -114,7 +114,7 @@ export const call = calendar
  * founder photo on /about.
  */
 export const author = {
-  name: "Robert Campbell",
+  name: "Robert Collins",
   firstName: "Robert",
   role: "Founder",
   email: contact.email,
@@ -122,7 +122,7 @@ export const author = {
   // to a Loom share URL to embed the 60–90 second walkthrough beside it.
   photo: undefined,
   loom: undefined,
-  bio: "Robert Campbell is the founder of Closing Brackets, a builder-led studio. He scopes the work, writes the code, and builds the agent systems and the loop engineering that keep them running in production.",
+  bio: "Robert Collins is the founder of Closing Brackets, a builder-led studio. He scopes the work, writes the code, and builds the agent systems and the loop engineering that keep them running in production.",
   line: "Robert reads every enquiry himself and replies the same business day.",
 };
 

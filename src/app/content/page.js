@@ -25,7 +25,7 @@ const PATH = routes.content;
 export const metadata = {
   title: "Loop Engineering & Graph Engineering",
   description:
-    "Essays by Robert Campbell on loop engineering — context budgets, retries, stopping conditions — graph engineering, and what survives contact with production.",
+    "Essays by Robert Collins on loop engineering — context budgets, retries, stopping conditions — graph engineering, and what survives contact with production.",
   alternates: { canonical: url(PATH) },
   openGraph: pageOg({
     title: "Content — loop engineering, graph engineering, production notes",

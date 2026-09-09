@@ -7,7 +7,7 @@
 > engagement is one written scope, a timeline with real dates, and one fixed
 > price — there is no hourly billing, and the client owns the code.
 
-Founded and run by Robert Campbell (robert@closingbrackets.com). Based in
+Founded and run by Robert Collins (robert@closingbrackets.com). Based in
 Spokane, Washington (Inland Northwest), remote-capable, serving clients in the
 United States. A builder-led studio: the person who scopes the work writes the
 code and is still there when it goes live.
@@ -55,7 +55,7 @@ code and is still there when it goes live.
 
 ## Writing
 
-Technical essays by Robert Campbell, from the work itself.
+Technical essays by Robert Collins, from the work itself.
 
 - [Loop engineering: the loop is the product](https://closingbrackets.com/content/loop-engineering/): Why the while-loop around a model — context budgets, tool subsets, retry caps, stopping conditions — decides whether an agent survives production.
 - [Loops that know when to stop](https://closingbrackets.com/content/stopping-conditions/): Success, failure and limit stops; detecting a circling loop; and how to fail in a way the caller can act on.
