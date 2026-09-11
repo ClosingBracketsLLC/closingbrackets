@@ -1,66 +1,23 @@
-// Copy for the homepage sections BELOW the scroll-world flight (HomeTail.js).
+// Copy for the homepage section BELOW the scroll-world flight (HomeTail.js).
 //
 // The flight (data/world.js) is the cinematic précis; this is the structured
-// half of the same page — the two doors, how delegation works, the limits, and
-// the close. The three rules, the concept-build strip and the fit / not-a-fit
-// pair were cut from the homepage on 2026-09-08; the rules still render on
-// /services/ and /about/, and `fit` stays exported here because /about/ reads
-// it. Section order is the master brief's, and the wording is the brief's
-// where it gave any. The limits (`notDelegate`) and the close (`startClose`)
-// are shared with other pages and live with them.
+// half of the same page. Since 2026-09-10 that half is one section: the two
+// tabbed drawing sets in data/process.js, under the heading here. The two
+// doors and the three-step delegation strip they replaced are gone (the
+// delegation wording survives as the Build-a-Bot sequence's job-letter beat);
+// the three rules, the concept-build strip and the fit / not-a-fit pair were
+// cut earlier (2026-09-08). `fit` stays exported because /about/ reads it.
+// The limits (`notDelegate`) and the close (`startClose`) are shared with
+// other pages and live with them.
 
-import { cta, routes } from "./site";
-import { terms } from "./build-a-bot";
-
-export const doors = [
-  {
-    id: "bot",
-    accent: "#2ef2dc",
-    eyebrow: "Build-a-Bot",
-    title: "A custom agent for the tasks you delegate",
-    body: "One worker with a job description, wired to the tools you already use, with a stop condition and a named human it escalates to. You stay the manager.",
-    points: [
-      "Scoped by one job letter: tasks in, tasks out",
-      `Typically ${terms.buildDays} days from signed letter to production agent`,
-      `Fixed price, with ${terms.stabiliseDays} days of stabilising included`,
-    ],
-    cta: { label: "Build A Bot", href: routes.bot },
-  },
-  {
-    id: "property",
-    accent: "#ff4e64",
-    eyebrow: "Site & app",
-    title: "The property your business stands on",
-    body: "Sites, apps, storefronts and customer portals, built A to Z with the usual engineering bar: performance, accessibility, security, SEO.",
-    points: [
-      "Working software at every milestone, not a status report",
-      "Fixed scope, real dates, one price",
-      "You own the code when we hand it over",
-    ],
-    cta,
-  },
-];
-
-/** Section headings and standfirsts, in page order. */
+/** Section heading and standfirst for the process tabs. */
 export const headings = {
-  doors: {
-    eyebrow: "Two doors",
-    title: "A bot, a property, or both",
-    body: "Build-a-Bot is a custom agent hired onto the systems you already have. Site & app is the property it works behind. Most projects take both; neither is forced on you.",
-  },
-  delegation: {
-    eyebrow: "Build-a-Bot",
-    title: "How delegation works",
-    body: "Three steps. The letter is the contract, and the agent does the work you hand it — nothing more.",
+  process: {
+    eyebrow: "The process",
+    title: "How it gets built",
+    body: "Two services, one way of working: scoped in writing, built in the open, handed over with the code. Pick the one you came for and walk the drawings.",
   },
 };
-
-/** How delegation works — brief §5.1, verbatim. */
-export const delegation = [
-  { title: "You name the tasks", body: "You name the tasks you will delegate, and the ones you will not." },
-  { title: "We write one job letter", body: "We write one job letter. That is the scope." },
-  { title: "The agent runs", body: "The agent runs against your data and tools. Exceptions go to a named human." },
-];
 
 /** Fit / not a fit — brief §6, verbatim. Read by /about/. */
 export const fit = {

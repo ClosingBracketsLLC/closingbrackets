@@ -1322,6 +1322,101 @@ body {
   color: var(--bone);
 }
 
+/* ------------------------------------------------------------------ */
+/* Sheet tabs — the homepage process section's two drawing sets         */
+/* (ProcessTabs.js).                                                    */
+/*                                                                      */
+/* Index tabs on a bound set of drawings, not a segmented control: the  */
+/* tabs are square and heavily inked like every panel edge on the site, */
+/* and the selected one shares the strip's fill and covers the rule     */
+/* beneath it, so the panel below reads as the sheet pulled forward.    */
+/* Each tab carries its own --cb-accent (cyan for Build-a-Bot, coral    */
+/* for Site & app) so the marker and the active border say which set   */
+/* is open without any extra label.                                     */
+/* ------------------------------------------------------------------ */
+.cb-sheets__tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid var(--cb-ink);
+}
+.cb-sheets__tab {
+  --cb-accent: var(--cyan);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: -2px;
+  padding: 13px 20px 12px;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--slate);
+  background: transparent;
+  border: 2px solid transparent;
+  border-bottom-color: var(--cb-ink);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+/* The square marker AccentList uses, so the tab and the bullets inside its
+   panel share one vocabulary. Dim until the tab is the open one. */
+.cb-sheets__tab::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: var(--cb-accent);
+  opacity: 0.45;
+  transition: opacity 0.2s;
+}
+.cb-sheets__tab:hover {
+  color: var(--bone);
+}
+.cb-sheets__tab[aria-selected="true"] {
+  color: var(--bone);
+  background: color-mix(in srgb, var(--panel) 88%, var(--ink));
+  border-color: color-mix(in srgb, var(--cb-accent) 62%, var(--cb-ink));
+  border-bottom-color: color-mix(in srgb, var(--panel) 88%, var(--ink));
+}
+.cb-sheets__tab[aria-selected="true"]::before {
+  opacity: 1;
+}
+.cb-sheets__tab:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+.cb-sheets__panel {
+  padding-top: 28px;
+}
+.cb-sheets__panel:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 6px;
+}
+/* One short settle when a sheet is opened — motion that answers the click.
+   The global reduced-motion rule at the foot of this file zeroes it. */
+.cb-sheets__panel:not([hidden]) {
+  animation: cb-sheet-in 0.22s ease-out;
+}
+@keyframes cb-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* The drawing inside a process cell: a pencil sheet pinned flush to the
+   frame. The ground is paper-toned so the lazy placeholder reads as the
+   sheet before its lines arrive, and a hairline beneath it marks where the
+   caption starts, like a title block. */
+.cb-sheet {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  background: color-mix(in srgb, var(--bone) 90%, var(--slate));
+  border-bottom: 1px solid color-mix(in srgb, var(--rain) 90%, transparent);
+}
+
 /* The scroll world is the page — never let the document scroll sideways. */
 html {
   overflow-x: hidden;

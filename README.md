@@ -77,7 +77,9 @@ render.yaml                       Render static-site blueprint: domain, headers,
 custom AI agents) → `blueprint` (how the agent is scoped) → `forge` (site & app)
 → `swarm` (Build-a-Bot — the id is an asset name only) → `engine` (the three
 rules) → `launch` (finale + CTA → `/start/`). Below the flight, `HomeTail.js`
-carries the two doors, delegation steps, limits, the close, and the footer.
+carries the process section (two tabbed drawing sets, `ProcessTabs.js` +
+`data/process.js`, artwork from `scripts/process/pipeline.sh`), the close, and
+the footer.
 
 **How the flight works** — architecture B of the scroll-world skill: each district
 has an 8 s *dive* clip (camera descends from a high wide shot into the interior) and

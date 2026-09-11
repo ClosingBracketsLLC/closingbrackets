@@ -37,7 +37,7 @@ export const startHref = (intent) =>
  * data/content.js. Order is the header order for the routes that are in it.
  */
 export const pages = [
-  { path: routes.home, updated: "2026-09-08", changefreq: "monthly", priority: 1 },
+  { path: routes.home, updated: "2026-09-10", changefreq: "monthly", priority: 1 },
   { path: routes.bot, updated: "2026-09-08", changefreq: "monthly", priority: 0.9 },
   { path: routes.work, updated: "2026-09-08", changefreq: "monthly", priority: 0.8 },
   { path: routes.services, updated: "2026-09-07", changefreq: "monthly", priority: 0.8 },
