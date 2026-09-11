@@ -11,7 +11,7 @@ import { author } from "./site";
 export const hero = {
   title: "Tell us what you want built",
   intro:
-    "A Build-a-Bot, a site or app, or both. Describe it below, in your words. We read every enquiry ourselves, and the first answer costs nothing. What comes back is the scope, real dates, and one price.",
+    "Build-a-Bot, a site or app, or both. Describe it below, in your words. We read every enquiry ourselves, and the first answer costs nothing. What comes back is the scope, real dates, and one price.",
 };
 
 /** What happens after the send button, in the order it happens. */
@@ -53,7 +53,7 @@ export const faqs = [
   },
   {
     q: "What is a job letter?",
-    a: "The scope of a Build-a-Bot, written as a delegation: the tasks you hand to the agent, and the tasks you do not. It names the tools it may act in, the person it escalates to, and the condition that stops it. The letter is the contract — if it is not in the letter, it is not in the bot.",
+    a: "The scope of Build-a-Bot, written as a delegation: the tasks you hand to the agent, and the tasks you do not. It names the tools it may act in, the person it escalates to, and the condition that stops it. The letter is the contract — if it is not in the letter, it is not in the bot.",
   },
   {
     q: "What will the agent not do?",

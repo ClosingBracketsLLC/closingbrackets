@@ -29,7 +29,8 @@
 // Every id used here must exist in `services`; nothing validates that but the
 // link will 404 to an anchor that isn't there.
 
-import { terms } from "./build-a-bot";
+import { startHref } from "./site";
+import { propertyFrom, terms, usd } from "./build-a-bot";
 
 export const builds = [
   {
@@ -42,6 +43,11 @@ export const builds = [
     lines: ["web-app", "engineering-bar", "seo-growth"],
     accent: "#2ef2dc",
     featured: true,
+    // The ribbon on the splash: what a build like this starts at, and the
+    // range behind it. Links into /start/ with the property intent picked.
+    ribbon: { label: `Similar builds from ${usd(propertyFrom)}`, href: startHref("site") },
+    ribbonNote:
+      "That floor buys a fast static site that scores 100 on Lighthouse. The other end is a full SaaS app. Same team, and the scope document says which you need.",
     // Media lives on the featured build only — one moving thing per page.
     // The film is a concept piece cut ahead of launch; the site went live
     // with photography instead, and the article linked from the card says so.
@@ -149,7 +155,7 @@ export const builds = [
 
 /**
  * How an engagement runs, start to finish. Shared by /work/ and /build-a-bot/,
- * so a property build and a Build-a-Bot describe the same five stages.
+ * so a property build and Build-a-Bot describe the same five stages.
  */
 export const stages = [
   {

@@ -343,7 +343,7 @@ export const catalog = [
         name: "Reputation management and reviews",
         brief: "More good reviews, faster answers to bad ones.",
         detail:
-          "Continuous monitoring, review responses, automated review request flows, and monthly reporting. Often the first job people delegate to a Build-a-Bot instead.",
+          "Continuous monitoring, review responses, automated review request flows, and monthly reporting. Often the first job people delegate to Build-a-Bot instead.",
       },
       {
         name: "Conversion rate optimisation",

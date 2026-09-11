@@ -64,7 +64,7 @@ export const sections = [
     clip: "/assets/vid/forge.mp4",
     clipMobile: "/assets/vid/forge-m.mp4",
     accent: "#FF4E64",
-    eyebrow: "Site & app",
+    eyebrow: "Web & app",
     title: "You get working software as we go.",
     body: "Each stage comes off the floor as software you can use, not a status report. When we hand it over, you own all of the code.",
     cta: { secondary: { label: "See the work", href: routes.work } },

@@ -74,7 +74,7 @@ render.yaml                       Render static-site blueprint: domain, headers,
 | slate | `#7C89A6` | secondary text |
 
 **The six districts** (order = flight path): `signal` (hero: websites, apps, and
-custom AI agents) → `blueprint` (how the agent is scoped) → `forge` (site & app)
+custom AI agents) → `blueprint` (how the agent is scoped) → `forge` (web & app)
 → `swarm` (Build-a-Bot — the id is an asset name only) → `engine` (the three
 rules) → `launch` (finale + CTA → `/start/`). Below the flight, `HomeTail.js`
 carries the process section (two tabbed drawing sets, `ProcessTabs.js` +

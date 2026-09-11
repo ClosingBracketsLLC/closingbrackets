@@ -6,7 +6,7 @@ import { NarrationList, Numeral } from "./primitives";
 import { tracks } from "@/data/process";
 
 /**
- * The two drawing sets on the homepage: how a Build-a-Bot gets built, how a
+ * The two drawing sets on the homepage: how Build-a-Bot gets built, how a
  * site or app gets built. Copy and artwork come from data/process.js.
  *
  * A real tablist (roving tabindex, arrow keys, Home/End, selection follows

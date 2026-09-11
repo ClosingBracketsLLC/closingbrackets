@@ -77,6 +77,13 @@ export const oversight = {
 export const bandsNote = "Exact price comes from the job letter. No hourly billing.";
 
 /**
+ * Where a property build starts. Shown on /work/ as the ribbon on the
+ * featured live build: a fast static site at the floor, a full SaaS app at
+ * the other end, and the scope document says which. A floor, not a quote.
+ */
+export const propertyFrom = 699;
+
+/**
  * The free walkthrough — how a job that is not obvious yet gets found. Small
  * integrations first, the bigger ones planned for later.
  */
@@ -148,6 +155,6 @@ export const close = {
   caption: "The first answer is free",
   title: "Describe the tasks you want to hand off",
   body: "The first answer is free. The job letter and the price come next.",
-  action: { label: "Start a Build-a-Bot", href: startHref("bot") },
+  action: { label: "Start Build-a-Bot", href: startHref("bot") },
   secondary: { label: "See the work", href: routes.work },
 };

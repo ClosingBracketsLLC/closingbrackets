@@ -19,7 +19,7 @@
 // aprons. Build-a-Bot: the client walks the team through the shop, signs the
 // one-page letter while the robot is still a dashed outline, the team builds
 // and wires it, the client watches its first trial, it takes the back-office
-// desk, an engineer watches the gauges through the first month. Site & app:
+// desk, an engineer watches the gauges through the first month. Web & app:
 // the property is a stage set (three page panels under an arched header on a
 // round platform with footlights, described identically in every prompt):
 // a maquette on the kickoff table, wireframes pinned and strung on a wall,
@@ -90,7 +90,7 @@ export const tracks = [
   },
   {
     id: "web",
-    label: "Site & app",
+    label: "Web & app",
     accent: "#ff4e64",
     lede: "The property your business stands on: sites, apps, storefronts and customer portals. Working software at every milestone, one price, and you own the code.",
     steps: withArt("web", [

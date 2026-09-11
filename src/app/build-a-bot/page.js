@@ -151,7 +151,7 @@ export default function BuildABot() {
           groups by how the agent is wired in, then the optional retainer and
           the free hour for anyone who cannot name the job yet. */}
       <section id="price" className="mt-24 scroll-mt-28">
-        <SectionHeading eyebrow="Starting price bands" title="What a Build-a-Bot costs">
+        <SectionHeading eyebrow="Starting price bands" title="What Build-a-Bot costs">
           {bandsNote} {timeline}
         </SectionHeading>
         <div className="cb-strip mt-9 lg:grid-cols-2">

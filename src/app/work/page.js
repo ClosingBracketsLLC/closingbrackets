@@ -189,21 +189,37 @@ export default function Work() {
         style={{ "--cb-accent": featured.accent }}
         className="cb-panel cb-splash cb-tone cb-tone--br mt-8 scroll-mt-28 overflow-hidden"
       >
-        {featured.clip && (
-          <ClipFrame
-            poster={featured.poster}
-            posterMobile={featured.posterMobile}
-            clip={featured.clip}
-            clipMobile={featured.clipMobile}
-            alt={`${featured.client} — launch film still`}
-            className="aspect-[16/9] w-full sm:aspect-[21/9]"
-          />
-        )}
+        <div className="relative">
+          {featured.clip && (
+            <ClipFrame
+              poster={featured.poster}
+              posterMobile={featured.posterMobile}
+              clip={featured.clip}
+              clipMobile={featured.clipMobile}
+              alt={`${featured.client} — launch film still`}
+              className="aspect-[16/9] w-full sm:aspect-[21/9]"
+            />
+          )}
+          {/* The price ribbon: a printed sash pinned across the film's bottom
+              edge, the way a "from" price is stuck on a poster. One per page,
+              on the live build only — it is a floor for builds like this one,
+              and the note under the title says what sits at either end. */}
+          {featured.ribbon && (
+            <span className="cb-ribbon-wrap">
+              <Link href={featured.ribbon.href} className="cb-ribbon cb-halftone">
+                {featured.ribbon.label}
+              </Link>
+            </span>
+          )}
+        </div>
         <div className="p-7 sm:p-10">
           <BuildTags build={featured} />
           <h2 className="mt-5 font-[family-name:var(--font-display)] text-3xl leading-tight text-bone sm:text-4xl">
             {featured.client}
           </h2>
+          {featured.ribbonNote && (
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate">{featured.ribbonNote}</p>
+          )}
           <div className="mt-6">
             <BuildBody build={featured} columns />
           </div>
@@ -236,7 +252,7 @@ export default function Work() {
 
       <section className="mt-24">
         <SectionHeading eyebrow="The process" title="How a project runs">
-          The same five stages for a property build and for a Build-a-Bot, in
+          The same five stages for a property build and for Build-a-Bot, in
           the same order, so you can always say which one you are in and what
           comes next. Thirty days of stabilising is included in both.
         </SectionHeading>

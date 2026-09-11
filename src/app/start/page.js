@@ -20,7 +20,7 @@ const PATH = routes.start;
 
 export const metadata = {
   title: "Start a Project",
-  description: `Tell Closing Brackets what you want built: a Build-a-Bot, a site or app, or both. ${author.line} What comes back is scope, real dates, and one price.`,
+  description: `Tell Closing Brackets what you want built: Build-a-Bot, a site or app, or both. ${author.line} What comes back is scope, real dates, and one price.`,
   alternates: { canonical: url(PATH) },
   openGraph: pageOg({
     title: "Start a project with Closing Brackets",
@@ -40,7 +40,7 @@ const jsonLd = graphLd(
     url: url(PATH),
     name: "Start a project with Closing Brackets",
     description:
-      "Describe a Build-a-Bot, a site or app, or both, and get back scope, real dates, and one price. Replies the same business day.",
+      "Describe Build-a-Bot, a site or app, or both, and get back scope, real dates, and one price. Replies the same business day.",
     mainEntity: { "@id": `${SITE_URL}/#organization` },
   },
   faqLd(faqs),

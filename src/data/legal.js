@@ -65,14 +65,14 @@ export const terms = {
     {
       h: "Engagements",
       p: [
-        "Work starts only when a written scope has been agreed: a job letter for a Build-a-Bot, a scope document for a site or app. That document, and any terms attached to it, governs the engagement. Prices on this site are starting bands, not quotes, and nothing here is an offer to contract.",
+        "Work starts only when a written scope has been agreed: a job letter for Build-a-Bot, a scope document for a site or app. That document, and any terms attached to it, governs the engagement. Prices on this site are starting bands, not quotes, and nothing here is an offer to contract.",
         "On handover you own the code, configuration and specification produced for you, as the scope describes. Nothing about that handover depends on keeping us on a retainer.",
       ],
     },
     {
       h: "Agents",
       p: [
-        "A Build-a-Bot acts only within the tasks its job letter delegates, with the stop condition and escalation the letter names. It is not a substitute for clinical, legal or financial judgement, and the letter will say so where that applies.",
+        "Build-a-Bot acts only within the tasks its job letter delegates, with the stop condition and escalation the letter names. It is not a substitute for clinical, legal or financial judgement, and the letter will say so where that applies.",
       ],
     },
     {
